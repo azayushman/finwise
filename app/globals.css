@@ -1,26 +1,127 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ── Tailwind v4 theme extension ── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* FinWise Color Palette */
+  --color-navy-950:  #040D1A;
+  --color-navy-900:  #0A1628;
+  --color-navy-800:  #122040;
+  --color-navy-700:  #1E3A5F;
+  --color-navy-600:  #274E7F;
+  --color-navy-500:  #2E5F9A;
+  --color-navy-400:  #4A80BF;
+  --color-navy-300:  #7AAAD6;
+  --color-navy-200:  #A8C5E8;
+  --color-navy-100:  #D6E8F7;
+  --color-navy-50:   #EEF5FC;
+
+  --color-fin-green-700: #007A5C;
+  --color-fin-green-600: #00A87E;
+  --color-fin-green-500: #00C896;
+  --color-fin-green-400: #1DDBA8;
+  --color-fin-green-300: #5EECC5;
+  --color-fin-green-100: #CFFAEE;
+  --color-fin-green-50:  #E8FFF8;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base styles ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F8FAFC;
+  color: #0F172A;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom animations (not in Tailwind v4 by default) ── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer-text {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 200, 150, 0.3); }
+  50%       { box-shadow: 0 0 0 12px rgba(0, 200, 150, 0); }
+}
+
+/* ── Utility classes ── */
+.animate-fade-in  { animation: fade-in  0.4s ease both; }
+.animate-slide-up { animation: slide-up 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-slide-down { animation: slide-down 0.3s ease both; }
+.animate-scale-in { animation: scale-in 0.4s ease both; }
+.animate-float    { animation: float 5s ease-in-out infinite; }
+
+.delay-100 { animation-delay: 0.10s; }
+.delay-150 { animation-delay: 0.15s; }
+.delay-200 { animation-delay: 0.20s; }
+.delay-300 { animation-delay: 0.30s; }
+.delay-400 { animation-delay: 0.40s; }
+.delay-500 { animation-delay: 0.50s; }
+
+/* ── Gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, #00C896 0%, #5EECC5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Gradient animated BG ── */
+.hero-gradient-bg {
+  background: linear-gradient(160deg, #040D1A 0%, #0A1628 40%, #122040 100%);
+  background-size: 200% 200%;
+}
+
+/* ── Glassmorphism card ── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* ── Progress bar animated fill ── */
+.progress-fill {
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
