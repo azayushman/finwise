@@ -6,12 +6,12 @@ import { AmbientBackground } from "@/components/ui/AmbientBackground";
 
 export function CtaSection() {
   return (
-    <section className="py-24 bg-white" aria-label="Call to action">
+    <section className="py-24 bg-[#07111F]" aria-label="Call to action">
       <div className="max-w-7xl mx-auto px-6">
         <ScrollReveal direction="up">
           <div
-            className="relative rounded-3xl p-16 text-center overflow-hidden"
-            style={{ background: "linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%)" }}
+            className="relative rounded-3xl p-16 text-center overflow-hidden border border-[#8B5CF6]/30 shadow-[0_20px_60px_rgba(109,93,251,0.15)]"
+            style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 50%, #1E1B4B 100%)" }}
           >
             <AmbientBackground variant="dark" />
 
@@ -20,7 +20,7 @@ export function CtaSection() {
               <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4">
                 Your financial future starts today.
               </h2>
-              <p className="text-lg max-w-lg mx-auto mb-10" style={{ color: "#A8C5E8" }}>
+              <p className="text-lg max-w-lg mx-auto mb-10 text-[#94A3B8]">
                 Join over 50,000 learners building better money habits with FinWise — completely free.
               </p>
               <div className="flex flex-wrap justify-center gap-4">

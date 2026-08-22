@@ -56,7 +56,7 @@ export function StatsSection() {
   return (
     <section
       className="py-24 relative overflow-hidden"
-      style={{ background: "#0A1628" }}
+      style={{ background: "#07111F" }}
       aria-labelledby="stats-title"
     >
       <AmbientBackground variant="subtle-dark" />
@@ -71,7 +71,7 @@ export function StatsSection() {
             Financial literacy is a crisis.<br />
             <span className="gradient-text">We&apos;re the solution.</span>
           </h2>
-          <p className="text-lg max-w-xl mx-auto" style={{ color: "#A8C5E8" }}>
+          <p className="text-lg max-w-xl mx-auto" style={{ color: "#94A3B8" }}>
             Two-thirds of adults worldwide can&apos;t pass a basic financial literacy test. FinWise is changing that.
           </p>
         </ScrollReveal>
@@ -83,13 +83,13 @@ export function StatsSection() {
               <div
                 role="listitem"
                 className="rounded-2xl p-8 text-center h-full transition-all duration-250 hover:-translate-y-1.5"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: "rgba(11,31,58,0.8)", border: "1px solid rgba(139,92,246,0.18)" }}
               >
                 <div
                   ref={stat.counterRef as React.RefObject<HTMLDivElement>}
                   className="text-5xl font-black tracking-tight leading-none mb-3"
                   style={{
-                    background: "linear-gradient(135deg, #fff 0%, #5EECC5 100%)",
+                    background: "linear-gradient(135deg, #FFF 0%, #C4B5FD 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
@@ -97,7 +97,7 @@ export function StatsSection() {
                 >
                   {stat.display}
                 </div>
-                <p className="text-sm leading-relaxed" style={{ color: "#A8C5E8" }}>
+                <p className="text-sm leading-relaxed" style={{ color: "#94A3B8" }}>
                   {stat.label}
                 </p>
               </div>
@@ -110,22 +110,22 @@ export function StatsSection() {
           <div
             ref={progressRef}
             className="rounded-2xl p-8"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+            style={{ background: "rgba(16,42,76,0.6)", border: "1px solid rgba(139,92,246,0.18)" }}
           >
             <h3 className="text-base font-bold text-white mb-6">Popular topics on FinWise this week</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6" role="list">
               {progressItems.map((item) => (
                 <div key={item.name} role="listitem">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium" style={{ color: "#A8C5E8" }}>{item.name}</span>
-                    <span className="text-sm font-bold" style={{ color: "#00C896" }}>{item.pct}%</span>
+                    <span className="text-sm font-medium" style={{ color: "#94A3B8" }}>{item.name}</span>
+                    <span className="text-sm font-bold" style={{ color: "#8B5CF6" }}>{item.pct}%</span>
                   </div>
-                  <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+                  <div className="h-1.5 rounded-full" style={{ background: "rgba(11,31,58,0.8)" }}>
                     <div
                       className="h-full rounded-full progress-fill"
                       style={{
                         width: progressVisible ? `${item.pct}%` : "0%",
-                        background: "linear-gradient(90deg, #00A87E, #00C896)",
+                        background: "linear-gradient(90deg, #4F46E5, #8B5CF6)",
                       }}
                     />
                   </div>

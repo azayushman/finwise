@@ -18,11 +18,11 @@ interface ButtonProps {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary:   "text-white font-semibold shadow-[0_4px_14px_rgba(0,200,150,0.28)] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,200,150,0.38)] active:translate-y-0",
-  secondary: "bg-slate-100 text-slate-700 hover:bg-slate-200 font-semibold",
-  ghost:     "text-white font-semibold border border-white/25 bg-white/10 hover:bg-white/20 hover:border-white/40",
-  navy:      "text-white font-semibold hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(10,22,40,0.2)]",
-  outline:   "bg-transparent text-slate-700 border border-slate-300 font-semibold hover:border-navy-400 hover:text-navy-800 hover:bg-slate-50",
+  primary:   "text-white font-semibold shadow-[0_4px_14px_rgba(109,93,251,0.35)] hover:-translate-y-0.5 hover:shadow-[0_6px_25px_rgba(109,93,251,0.5)] active:translate-y-0",
+  secondary: "bg-[#102A4C] text-[#F5F7FF] hover:bg-[#1A365D] border border-[#8B5CF6]/20 font-semibold",
+  ghost:     "text-white font-semibold border border-[#8B5CF6]/30 bg-[#0B1F3A]/70 hover:bg-[#6D5DFB]/20 hover:border-[#8B5CF6]/60 shadow-sm",
+  navy:      "text-white font-semibold hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,93,251,0.25)] border border-[#8B5CF6]/25",
+  outline:   "bg-transparent text-[#F5F7FF] border border-[#8B5CF6]/30 font-semibold hover:border-[#8B5CF6] hover:bg-[#6D5DFB]/10",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -33,8 +33,8 @@ const sizeStyles: Record<ButtonSize, string> = {
 };
 
 function getInlineStyle(variant: ButtonVariant): React.CSSProperties {
-  if (variant === "primary") return { background: "linear-gradient(135deg, #00C896 0%, #00A87E 100%)" };
-  if (variant === "navy")    return { background: "linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%)" };
+  if (variant === "primary") return { background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" };
+  if (variant === "navy")    return { background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" };
   return {};
 }
 
@@ -51,7 +51,7 @@ export function Button({
   ariaLabel,
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00C896] disabled:opacity-50 disabled:pointer-events-none";
+    "inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B5CF6] disabled:opacity-50 disabled:pointer-events-none";
 
   const classes = `${base} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
   const style   = getInlineStyle(variant);

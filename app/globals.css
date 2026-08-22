@@ -5,26 +5,27 @@
   /* Fonts */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* FinWise Color Palette */
-  --color-navy-950:  #040D1A;
-  --color-navy-900:  #0A1628;
-  --color-navy-800:  #122040;
-  --color-navy-700:  #1E3A5F;
-  --color-navy-600:  #274E7F;
-  --color-navy-500:  #2E5F9A;
-  --color-navy-400:  #4A80BF;
-  --color-navy-300:  #7AAAD6;
-  --color-navy-200:  #A8C5E8;
-  --color-navy-100:  #D6E8F7;
-  --color-navy-50:   #EEF5FC;
+  /* FinWise Navy + Violet Theme Palette */
+  --color-navy-950:  #07111F;
+  --color-navy-900:  #0B1F3A;
+  --color-navy-800:  #102A4C;
+  --color-navy-700:  #1A365D;
+  --color-navy-600:  #23477A;
+  --color-navy-500:  #3B82F6;
+  --color-navy-400:  #60A5FA;
+  --color-navy-300:  #93C5FD;
+  --color-navy-200:  #BFDBFE;
+  --color-navy-100:  #DBEAFE;
+  --color-navy-50:   #EFF6FF;
 
-  --color-fin-green-700: #007A5C;
-  --color-fin-green-600: #00A87E;
-  --color-fin-green-500: #00C896;
-  --color-fin-green-400: #1DDBA8;
-  --color-fin-green-300: #5EECC5;
-  --color-fin-green-100: #CFFAEE;
-  --color-fin-green-50:  #E8FFF8;
+  --color-fin-violet-700: #4F46E5;
+  --color-fin-violet-600: #6D5DFB;
+  --color-fin-violet-500: #8B5CF6;
+  --color-fin-violet-400: #A78BFA;
+  --color-fin-violet-300: #C4B5FD;
+  --color-fin-violet-200: #DDD6FE;
+  --color-fin-violet-100: #EDE9FE;
+  --color-fin-violet-50:  #F5F3FF;
 }
 
 /* ── Base styles ── */
@@ -34,16 +35,17 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #07111F;
 }
 
 body {
-  background-color: #F8FAFC;
-  color: #0F172A;
+  background-color: #07111F;
+  color: #F5F7FF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Custom animations (not in Tailwind v4 by default) ── */
+/* ── Custom animations ── */
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -81,8 +83,8 @@ body {
 }
 
 @keyframes pulse-ring {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 200, 150, 0.3); }
-  50%       { box-shadow: 0 0 0 12px rgba(0, 200, 150, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(109, 93, 251, 0.4); }
+  50%       { box-shadow: 0 0 0 12px rgba(109, 93, 251, 0); }
 }
 
 /* ── Utility classes ── */
@@ -101,7 +103,7 @@ body {
 
 /* ── Gradient text ── */
 .gradient-text {
-  background: linear-gradient(135deg, #00C896 0%, #5EECC5 100%);
+  background: linear-gradient(135deg, #C4B5FD 0%, #8B5CF6 50%, #6D5DFB 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -109,14 +111,14 @@ body {
 
 /* ── Gradient animated BG ── */
 .hero-gradient-bg {
-  background: linear-gradient(160deg, #040D1A 0%, #0A1628 40%, #122040 100%);
+  background: linear-gradient(160deg, #07111F 0%, #0B1F3A 40%, #102A4C 100%);
   background-size: 200% 200%;
 }
 
 /* ── Glassmorphism card ── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(11, 31, 58, 0.75);
+  border: 1px solid rgba(139, 92, 246, 0.18);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
@@ -140,7 +142,7 @@ body {
   --fw-glow-y: -9999px;
   background: radial-gradient(
     600px circle at var(--fw-glow-x) var(--fw-glow-y),
-    rgba(0, 200, 150, 0.06),
+    rgba(109, 93, 251, 0.08),
     transparent 60%
   );
   transition: opacity 0.3s ease;
@@ -212,7 +214,7 @@ body {
   left: 0;
   width: 3px;
   height: 0;
-  background: linear-gradient(180deg, #00C896, #5EECC5);
+  background: linear-gradient(180deg, #8B5CF6, #6D5DFB);
   border-radius: 0 0 2px 0;
   transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -223,15 +225,15 @@ body {
 
 /* ── Step circle glow ── */
 .step-glow {
-  box-shadow: 0 0 0 0 rgba(0, 200, 150, 0);
+  box-shadow: 0 0 0 0 rgba(109, 93, 251, 0);
   transition: box-shadow 0.4s ease;
 }
 
 .step-glow:hover {
-  box-shadow: 0 0 20px rgba(0, 200, 150, 0.25);
+  box-shadow: 0 0 20px rgba(109, 93, 251, 0.35);
 }
 
-/* ── Reduced motion: respect user preference ── */
+/* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .fw-cursor-glow,
   .animate-float {

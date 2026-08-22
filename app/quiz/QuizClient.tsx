@@ -16,7 +16,7 @@ interface Question {
   category: string;
   question: string;
   options: string[];
-  correct: number; // index
+  correct: number;
   explanation: string;
 }
 
@@ -163,19 +163,11 @@ const QUESTIONS: Question[] = [
   },
 ];
 
-/* ══════════════════════════════════════════════════════════════════════════
-   Category metadata
-   ══════════════════════════════════════════════════════════════════════════ */
-
 const CATEGORY_COLORS: Record<string, string> = {
-  Budgeting: "#4A80BF", Saving: "#00C896", "Compound Interest": "#8B5CF6",
-  Inflation: "#F59E0B", "Credit Scores": "#EC4899", Investing: "#2E5F9A",
-  Diversification: "#14B8A6", Risk: "#EF4444",
+  Budgeting: "#8B5CF6", Saving: "#6D5DFB", "Compound Interest": "#A78BFA",
+  Inflation: "#F59E0B", "Credit Scores": "#EC4899", Investing: "#3B82F6",
+  Diversification: "#60A5FA", Risk: "#EF4444",
 };
-
-/* ══════════════════════════════════════════════════════════════════════════
-   Component
-   ══════════════════════════════════════════════════════════════════════════ */
 
 type QuizState = "intro" | "active" | "review" | "results";
 
@@ -210,19 +202,19 @@ export function QuizClient() {
       name,
       ...data,
       pct: Math.round((data.correct / data.total) * 100),
-      color: CATEGORY_COLORS[name] || "#6B7280",
+      color: CATEGORY_COLORS[name] || "#6D5DFB",
     }));
   }, [answers]);
 
   /* ── Grade ── */
-  const grade = percentage >= 90 ? { label: "Outstanding!", emoji: "🏆", color: "#00C896" }
-    : percentage >= 70 ? { label: "Great Job!", emoji: "⭐", color: "#00A87E" }
+  const grade = percentage >= 90 ? { label: "Outstanding!", emoji: "🏆", color: "#8B5CF6" }
+    : percentage >= 70 ? { label: "Great Job!", emoji: "⭐", color: "#6D5DFB" }
     : percentage >= 50 ? { label: "Good Start", emoji: "💪", color: "#F59E0B" }
     : { label: "Keep Learning", emoji: "📚", color: "#EF4444" };
 
   /* ── Handlers ── */
   function handleSelectOption(optIdx: number) {
-    if (showFeedback) return; // locked after submit
+    if (showFeedback) return;
     setSelectedOption(optIdx);
   }
 
@@ -279,13 +271,12 @@ export function QuizClient() {
     handleStartQuiz();
   }
 
-  /* ── Render ── */
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
       {/* Hero */}
       <div
         className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #0A1628 0%, #1E3A5F 100%)" }}
+        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
       >
         <AmbientBackground variant="dark" />
         <div className="max-w-7xl mx-auto relative z-10">
@@ -294,7 +285,7 @@ export function QuizClient() {
             Test Your<br />
             <span className="gradient-text">Financial IQ.</span>
           </h1>
-          <p className="text-lg max-w-2xl leading-relaxed" style={{ color: "#A8C5E8" }}>
+          <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
             {totalQuestions} questions across {categoryBreakdown.length} topics. Find your gaps,
             reinforce your knowledge, and level up your financial literacy.
           </p>
@@ -308,10 +299,10 @@ export function QuizClient() {
           <ScrollReveal direction="up">
             <div className="text-center">
               {/* Quiz info card */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-10 mb-8">
+              <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/20 rounded-3xl p-10 mb-8 shadow-2xl">
                 <div className="text-6xl mb-4">🧠</div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-3">Financial Literacy Quiz</h2>
-                <p className="text-sm text-slate-500 max-w-md mx-auto mb-8">
+                <h2 className="text-2xl font-bold text-white mb-3">Financial Literacy Quiz</h2>
+                <p className="text-sm text-[#94A3B8] max-w-md mx-auto mb-8">
                   Test your knowledge of budgeting, saving, investing, credit, and more.
                   Each question includes a beginner-friendly explanation.
                 </p>
@@ -322,8 +313,8 @@ export function QuizClient() {
                     { value: "~8 min", label: "Duration" },
                   ].map(s => (
                     <div key={s.label}>
-                      <div className="text-2xl font-black" style={{ color: "#00C896" }}>{s.value}</div>
-                      <div className="text-xs text-slate-400 uppercase tracking-wider mt-0.5">{s.label}</div>
+                      <div className="text-2xl font-black text-[#8B5CF6]">{s.value}</div>
+                      <div className="text-xs text-[#94A3B8] uppercase tracking-wider mt-0.5">{s.label}</div>
                     </div>
                   ))}
                 </div>
@@ -334,7 +325,7 @@ export function QuizClient() {
                     <span
                       key={c.name}
                       className="px-3 py-1 rounded-full text-xs font-semibold border"
-                      style={{ color: c.color, borderColor: c.color + "40", background: c.color + "10" }}
+                      style={{ color: c.color, borderColor: c.color + "40", background: c.color + "15" }}
                     >
                       {c.name}
                     </span>
@@ -343,8 +334,8 @@ export function QuizClient() {
 
                 <button
                   onClick={handleStartQuiz}
-                  className="px-10 py-4 rounded-full text-lg font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                  style={{ background: "linear-gradient(135deg, #00C896 0%, #00A87E 100%)" }}
+                  className="px-10 py-4 rounded-full text-lg font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(109,93,251,0.5)]"
+                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
                 >
                   Start Quiz →
                 </button>
@@ -359,19 +350,19 @@ export function QuizClient() {
             {/* Progress bar */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-slate-700">
+                <span className="text-sm font-semibold text-slate-300">
                   {state === "review" ? "Reviewing" : "Question"} {currentIdx + 1} of {totalQuestions}
                 </span>
-                <span className="text-sm font-semibold" style={{ color: "#00C896" }}>
+                <span className="text-sm font-semibold text-[#8B5CF6]">
                   {Math.round(((currentIdx + 1) / totalQuestions) * 100)}%
                 </span>
               </div>
-              <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${((currentIdx + 1) / totalQuestions) * 100}%`,
-                    background: "linear-gradient(90deg, #00C896, #00A87E)",
+                    background: "linear-gradient(90deg, #6D5DFB, #8B5CF6)",
                   }}
                 />
               </div>
@@ -389,14 +380,14 @@ export function QuizClient() {
                     onClick={() => handleJumpTo(i)}
                     className={`w-7 h-7 rounded-full text-[10px] font-bold transition-all duration-150 border ${
                       isCurrent
-                        ? "border-[#00C896] scale-110 shadow-md"
+                        ? "border-[#8B5CF6] scale-110 shadow-[0_0_12px_rgba(139,92,246,0.6)]"
                         : answered
                           ? isCorrect
-                            ? "border-green-300 bg-green-50 text-green-700"
-                            : "border-red-300 bg-red-50 text-red-700"
-                          : "border-slate-200 text-slate-400 hover:border-slate-300"
+                            ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300"
+                            : "border-rose-500/50 bg-rose-500/20 text-rose-300"
+                          : "border-[#8B5CF6]/20 bg-[#102A4C]/50 text-[#94A3B8] hover:border-[#8B5CF6]/50"
                     }`}
-                    style={isCurrent ? { background: "#00C896", color: "#fff", borderColor: "#00C896" } : undefined}
+                    style={isCurrent ? { background: "#8B5CF6", color: "#fff", borderColor: "#8B5CF6" } : undefined}
                     aria-label={`Go to question ${i + 1}`}
                   >
                     {i + 1}
@@ -406,7 +397,7 @@ export function QuizClient() {
             </div>
 
             {/* Question card */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-8 mb-6">
+            <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/20 rounded-3xl p-8 mb-6 shadow-xl">
               <div className="flex items-center gap-2 mb-4">
                 <Badge
                   variant={
@@ -419,7 +410,7 @@ export function QuizClient() {
                   {q.category}
                 </Badge>
               </div>
-              <h2 className="text-lg font-bold text-slate-900 leading-relaxed mb-6">
+              <h2 className="text-xl font-bold text-white leading-relaxed mb-6">
                 {q.question}
               </h2>
 
@@ -431,26 +422,26 @@ export function QuizClient() {
                   const isWrongSelected = showFeedback && isSelected && !isCorrectOpt;
                   const isCorrectShown = showFeedback && isCorrectOpt;
 
-                  let borderColor = "border-slate-200";
-                  let bgColor = "bg-white";
-                  let textColor = "text-slate-700";
-                  let circleStyle: React.CSSProperties = { background: "#F1F5F9", color: "#64748B" };
+                  let borderColor = "border-[#8B5CF6]/20";
+                  let bgColor = "bg-[#102A4C]/60";
+                  let textColor = "text-slate-200";
+                  let circleStyle: React.CSSProperties = { background: "#0B1F3A", color: "#94A3B8", border: "1px solid rgba(139,92,246,0.2)" };
 
                   if (isCorrectShown) {
-                    borderColor = "border-green-400";
-                    bgColor = "bg-green-50";
-                    textColor = "text-slate-900";
-                    circleStyle = { background: "#00C896", color: "#fff" };
+                    borderColor = "border-emerald-400";
+                    bgColor = "bg-emerald-950/40";
+                    textColor = "text-white";
+                    circleStyle = { background: "#10B981", color: "#fff" };
                   } else if (isWrongSelected) {
-                    borderColor = "border-red-400";
-                    bgColor = "bg-red-50";
-                    textColor = "text-slate-900";
+                    borderColor = "border-rose-400";
+                    bgColor = "bg-rose-950/40";
+                    textColor = "text-white";
                     circleStyle = { background: "#EF4444", color: "#fff" };
                   } else if (isSelected) {
-                    borderColor = "border-[#00C896]";
-                    bgColor = "bg-[#00C896]/5";
-                    textColor = "text-slate-900";
-                    circleStyle = { background: "#00C896", color: "#fff" };
+                    borderColor = "border-[#8B5CF6]";
+                    bgColor = "bg-[#6D5DFB]/20";
+                    textColor = "text-white";
+                    circleStyle = { background: "#8B5CF6", color: "#fff" };
                   }
 
                   return (
@@ -462,7 +453,7 @@ export function QuizClient() {
                       onClick={() => handleSelectOption(i)}
                       disabled={showFeedback}
                       className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left text-sm font-medium transition-all duration-150 ${borderColor} ${bgColor} ${textColor} ${
-                        !showFeedback ? "hover:border-[#00C896] hover:bg-[#00C896]/5 cursor-pointer" : "cursor-default"
+                        !showFeedback ? "hover:border-[#8B5CF6] hover:bg-[#6D5DFB]/15 cursor-pointer" : "cursor-default"
                       }`}
                     >
                       <span
@@ -472,8 +463,8 @@ export function QuizClient() {
                         {String.fromCharCode(65 + i)}
                       </span>
                       <span className="flex-1">{opt}</span>
-                      {isCorrectShown && <span className="text-xs font-bold text-green-600">✓ Correct</span>}
-                      {isWrongSelected && <span className="text-xs font-bold text-red-500">✗ Wrong</span>}
+                      {isCorrectShown && <span className="text-xs font-bold text-emerald-400">✓ Correct</span>}
+                      {isWrongSelected && <span className="text-xs font-bold text-rose-400">✗ Wrong</span>}
                     </button>
                   );
                 })}
@@ -481,12 +472,12 @@ export function QuizClient() {
 
               {/* Explanation */}
               {showFeedback && (
-                <div className="mt-5 p-4 rounded-xl" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
-                  <div className="flex items-start gap-2">
-                    <span className="text-base mt-0.5">💡</span>
+                <div className="mt-6 p-5 rounded-2xl bg-[#102A4C]/90 border border-[#8B5CF6]/30">
+                  <div className="flex items-start gap-3">
+                    <span className="text-lg mt-0.5">💡</span>
                     <div>
-                      <div className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">Explanation</div>
-                      <p className="text-sm text-green-800 leading-relaxed">{q.explanation}</p>
+                      <div className="text-xs font-bold text-[#A78BFA] uppercase tracking-wider mb-1">Explanation</div>
+                      <p className="text-sm text-slate-200 leading-relaxed">{q.explanation}</p>
                     </div>
                   </div>
                 </div>
@@ -499,7 +490,7 @@ export function QuizClient() {
                 type="button"
                 onClick={handlePrev}
                 disabled={currentIdx === 0}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-500 border border-slate-200 hover:border-slate-300 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 border border-[#8B5CF6]/30 hover:bg-[#102A4C] transition-colors disabled:opacity-40 disabled:pointer-events-none"
               >
                 ← Previous
               </button>
@@ -509,8 +500,8 @@ export function QuizClient() {
                     type="button"
                     onClick={handleSubmitAnswer}
                     disabled={selectedOption === null}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-40 disabled:pointer-events-none disabled:translate-y-0 disabled:shadow-none"
-                    style={{ background: "linear-gradient(135deg, #00C896 0%, #00A87E 100%)" }}
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)] disabled:opacity-40 disabled:pointer-events-none disabled:translate-y-0"
+                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
                   >
                     Submit Answer
                   </button>
@@ -519,8 +510,8 @@ export function QuizClient() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                    style={{ background: "linear-gradient(135deg, #00C896 0%, #00A87E 100%)" }}
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
+                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
                   >
                     {currentIdx < totalQuestions - 1 ? "Next →" : state === "review" ? "Back to Results" : "See Results →"}
                   </button>
@@ -535,14 +526,14 @@ export function QuizClient() {
           <ScrollReveal direction="up">
             <div>
               {/* Score card */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center mb-8">
+              <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/20 rounded-3xl p-10 text-center mb-8 shadow-2xl">
                 <div className="text-6xl mb-3">{grade.emoji}</div>
-                <h2 className="text-3xl font-black text-slate-900 mb-2">{grade.label}</h2>
-                <p className="text-slate-500 text-sm mb-6">You got {score} out of {totalQuestions} questions correct</p>
+                <h2 className="text-3xl font-black text-white mb-2">{grade.label}</h2>
+                <p className="text-[#94A3B8] text-sm mb-6">You got {score} out of {totalQuestions} questions correct</p>
 
                 {/* Score ring */}
                 <svg width="160" height="160" viewBox="0 0 160 160" className="mx-auto mb-6" aria-hidden="true">
-                  <circle cx="80" cy="80" r="64" fill="none" stroke="#E2E8F0" strokeWidth="10" />
+                  <circle cx="80" cy="80" r="64" fill="none" stroke="#102A4C" strokeWidth="10" />
                   <circle
                     cx="80" cy="80" r="64"
                     fill="none"
@@ -553,21 +544,21 @@ export function QuizClient() {
                     strokeDashoffset={2 * Math.PI * 64 / 4}
                     style={{ transition: "stroke-dasharray 1s ease" }}
                   />
-                  <text x="80" y="72" textAnchor="middle" className="fill-slate-900 text-[32px] font-black">{percentage}%</text>
-                  <text x="80" y="94" textAnchor="middle" className="fill-slate-400 text-[11px] font-medium">score</text>
+                  <text x="80" y="72" textAnchor="middle" className="fill-white text-[32px] font-black">{percentage}%</text>
+                  <text x="80" y="94" textAnchor="middle" className="fill-[#94A3B8] text-[11px] font-medium">score</text>
                 </svg>
 
                 <div className="flex justify-center gap-4">
                   <button
                     onClick={handleRestart}
-                    className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
-                    style={{ background: "linear-gradient(135deg, #00C896 0%, #00A87E 100%)" }}
+                    className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
+                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
                   >
                     Restart Quiz
                   </button>
                   <button
                     onClick={handleReviewAnswers}
-                    className="px-6 py-3 rounded-xl text-sm font-semibold text-slate-700 border border-slate-200 hover:border-slate-300 transition-colors"
+                    className="px-6 py-3 rounded-xl text-sm font-semibold text-slate-200 border border-[#8B5CF6]/30 hover:bg-[#102A4C] transition-colors"
                   >
                     Review Answers
                   </button>
@@ -575,21 +566,21 @@ export function QuizClient() {
               </div>
 
               {/* Category breakdown */}
-              <div className="bg-white border border-slate-200 rounded-2xl p-8 mb-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-5">Performance by Topic</h3>
+              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-3xl p-8 mb-8 shadow-xl">
+                <h3 className="text-lg font-bold text-white mb-5">Performance by Topic</h3>
                 <div className="space-y-4">
                   {categoryBreakdown.map(cat => (
                     <div key={cat.name}>
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           <span className="w-2 h-2 rounded-full" style={{ background: cat.color }} />
-                          <span className="text-sm font-medium text-slate-700">{cat.name}</span>
+                          <span className="text-sm font-medium text-slate-300">{cat.name}</span>
                         </div>
-                        <span className="text-sm font-bold" style={{ color: cat.pct >= 70 ? "#00C896" : cat.pct >= 40 ? "#F59E0B" : "#EF4444" }}>
+                        <span className="text-sm font-bold" style={{ color: cat.pct >= 70 ? "#8B5CF6" : cat.pct >= 40 ? "#F59E0B" : "#EF4444" }}>
                           {cat.correct}/{cat.total} ({cat.pct}%)
                         </span>
                       </div>
-                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full progress-fill"
                           style={{ width: `${cat.pct}%`, background: cat.color }}
@@ -602,19 +593,19 @@ export function QuizClient() {
 
               {/* CTA */}
               <div
-                className="rounded-2xl p-8 text-center relative overflow-hidden"
-                style={{ background: "linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%)" }}
+                className="rounded-3xl p-8 text-center relative overflow-hidden border border-[#8B5CF6]/30 shadow-2xl"
+                style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
               >
                 <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10"
-                     style={{ background: "radial-gradient(circle, #00C896, transparent 70%)" }} aria-hidden="true" />
+                     style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-xl font-bold text-white mb-2 relative z-10">Want to learn more?</h3>
-                <p className="text-sm mb-5 relative z-10" style={{ color: "#A8C5E8" }}>
+                <p className="text-sm mb-5 relative z-10 text-[#94A3B8]">
                   Explore our learning hub to strengthen the topics where you scored lowest.
                 </p>
                 <Link
                   href="/learn"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg relative z-10"
-                  style={{ background: "linear-gradient(135deg, #00C896 0%, #00A87E 100%)" }}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)] relative z-10"
+                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
                 >
                   Browse Lessons →
                 </Link>

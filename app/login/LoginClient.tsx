@@ -35,21 +35,21 @@ function FinWiseLogo() {
   return (
     <div className="flex items-center justify-center gap-2.5">
       <div
-        className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg"
-        style={{ background: "linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%)" }}
+        className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg border border-[#8B5CF6]/30"
+        style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
         aria-hidden="true"
       >
         <svg
           width="22" height="22" viewBox="0 0 24 24"
-          fill="none" stroke="#00C896" strokeWidth="2.2" strokeLinecap="round"
+          fill="none" stroke="#8B5CF6" strokeWidth="2.2" strokeLinecap="round"
         >
           <polyline points="2 17 9 10 13 14 22 5" />
           <line x1="16" y1="5" x2="22" y2="5" />
           <line x1="22" y1="5" x2="22" y2="11" />
         </svg>
       </div>
-      <span className="text-2xl font-bold tracking-tight text-slate-900">
-        Fin<span style={{ color: "#00C896" }}>Wise</span>
+      <span className="text-2xl font-bold tracking-tight text-white">
+        Fin<span style={{ color: "#8B5CF6" }}>Wise</span>
       </span>
     </div>
   );
@@ -77,7 +77,7 @@ function InputField({
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <label htmlFor={id} className="text-sm font-semibold text-slate-700">{label}</label>
+        <label htmlFor={id} className="text-sm font-semibold text-slate-200">{label}</label>
         {hint}
       </div>
       <div className="relative">
@@ -91,10 +91,10 @@ function InputField({
           autoComplete={autoComplete}
           aria-invalid={hasError}
           aria-describedby={hasError ? `${id}-error` : undefined}
-          className={`w-full px-4 py-3 text-sm text-slate-900 bg-white border rounded-xl outline-none transition-all duration-150 placeholder:text-slate-400 ${
+          className={`w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
             hasError
-              ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
-              : "border-slate-200 focus:border-[#00C896] focus:ring-2 focus:ring-[#00C896]/15"
+              ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
+              : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
           } ${rightSlot ? "pr-11" : ""}`}
         />
         {rightSlot && (
@@ -102,7 +102,7 @@ function InputField({
         )}
       </div>
       {hasError && (
-        <p id={`${id}-error`} role="alert" className="mt-1.5 text-xs text-red-500 font-medium flex items-center gap-1">
+        <p id={`${id}-error`} role="alert" className="mt-1.5 text-xs text-rose-400 font-medium flex items-center gap-1">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
@@ -178,7 +178,6 @@ export function LoginClient() {
     setErrors(fe);
     if (fe.email || fe.password) return;
 
-    // No real auth — backend integration is a separate task
     setIsSubmitting(true);
     setErrors({});
     setTimeout(() => { setIsSubmitting(false); setSubmitSuccess(true); }, 1400);
@@ -191,38 +190,36 @@ export function LoginClient() {
   return (
     <div
       className="min-h-[calc(100vh-68px)] flex items-center justify-center px-4 py-16 relative overflow-hidden"
-      style={{ background: "linear-gradient(160deg, #F8FAFC 0%, #EEF5FC 100%)" }}
+      style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
     >
       {/* Decorative orbs */}
       <div aria-hidden="true" className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full opacity-20 pointer-events-none"
-           style={{ background: "radial-gradient(circle, #00C896, transparent 70%)", filter: "blur(80px)" }} />
-      <div aria-hidden="true" className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full opacity-10 pointer-events-none"
-           style={{ background: "radial-gradient(circle, #1E3A5F, transparent 70%)", filter: "blur(80px)" }} />
+           style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)", filter: "blur(80px)" }} />
+      <div aria-hidden="true" className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full opacity-15 pointer-events-none"
+           style={{ background: "radial-gradient(circle, #4F46E5, transparent 70%)", filter: "blur(80px)" }} />
 
       {/* Card */}
       <div
-        className="relative w-full max-w-[440px] bg-white border border-slate-200 rounded-3xl shadow-[0_8px_40px_rgba(10,22,40,0.10)] animate-scale-in"
+        className="relative w-full max-w-[440px] bg-[#0B1F3A]/95 border border-[#8B5CF6]/25 rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl animate-scale-in"
         role="main"
         aria-label="Login form"
       >
         {/* Success overlay */}
         {submitSuccess && (
-          <div className="absolute inset-0 rounded-3xl flex flex-col items-center justify-center z-20 animate-scale-in"
-               style={{ background: "rgba(255,255,255,0.97)" }}>
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-lg"
-                 style={{ background: "linear-gradient(135deg, #00C896, #00A87E)" }}>
+          <div className="absolute inset-0 rounded-3xl flex flex-col items-center justify-center z-20 animate-scale-in bg-[#0B1F3A]/95 backdrop-blur-xl">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-[0_0_25px_rgba(109,93,251,0.5)]"
+                 style={{ background: "linear-gradient(135deg, #6D5DFB, #4F46E5)" }}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-1">You&apos;re in!</h2>
-            <p className="text-sm text-slate-500 text-center max-w-[260px] mb-6">
+            <h2 className="text-xl font-bold text-white mb-1">You&apos;re in!</h2>
+            <p className="text-sm text-[#94A3B8] text-center max-w-[260px] mb-6">
               Auth backend integration is pending. This confirms the form flow works correctly end-to-end.
             </p>
             <button
               onClick={() => { setSubmitSuccess(false); setForm({ email: "", password: "", rememberMe: false }); setTouched({}); setErrors({}); }}
-              className="text-sm font-semibold transition-colors hover:underline"
-              style={{ color: "#00A87E" }}
+              className="text-sm font-semibold transition-colors hover:underline text-[#A78BFA]"
             >
               ← Back to login
             </button>
@@ -233,15 +230,15 @@ export function LoginClient() {
           {/* Branding */}
           <div className="text-center mb-8">
             <FinWiseLogo />
-            <h1 className="mt-5 text-2xl font-bold tracking-tight text-slate-900">Welcome back</h1>
-            <p className="mt-1 text-sm text-slate-500">Sign in to your FinWise account</p>
+            <h1 className="mt-5 text-2xl font-bold tracking-tight text-white">Welcome back</h1>
+            <p className="mt-1 text-sm text-[#94A3B8]">Sign in to your FinWise account</p>
           </div>
 
-          {/* Google SSO — UI only */}
+          {/* Google SSO */}
           <button
             type="button"
             id="google-login-btn"
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 mb-5"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[#8B5CF6]/25 rounded-xl text-sm font-semibold text-slate-200 bg-[#102A4C]/80 hover:bg-[#102A4C] hover:border-[#8B5CF6]/50 transition-all duration-150 mb-5"
             onClick={() => setErrors({ general: "Google sign-in will be available once auth is configured." })}
           >
             <GoogleIcon />
@@ -250,17 +247,17 @@ export function LoginClient() {
 
           {/* OR divider */}
           <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">or</span>
-            <div className="flex-1 h-px bg-slate-200" />
+            <div className="flex-1 h-px bg-[#8B5CF6]/20" />
+            <span className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">or</span>
+            <div className="flex-1 h-px bg-[#8B5CF6]/20" />
           </div>
 
-          {/* General error / info banner */}
+          {/* General error banner */}
           {errors.general && (
             <div
               className="flex items-start gap-2.5 px-4 py-3 rounded-xl mb-5 text-sm"
               role="alert" aria-live="assertive"
-              style={{ background: "#FEF3C7", border: "1px solid #FCD34D", color: "#92400E" }}
+              style={{ background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.3)", color: "#FCD34D" }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="flex-shrink-0 mt-0.5" aria-hidden="true">
                 <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
@@ -298,8 +295,7 @@ export function LoginClient() {
                 hint={
                   <button
                     type="button"
-                    className="text-xs font-semibold transition-colors hover:underline"
-                    style={{ color: "#00A87E" }}
+                    className="text-xs font-semibold transition-colors hover:underline text-[#A78BFA]"
                     onClick={() => setErrors((prev) => ({ ...prev, general: "Password reset will be available once auth is configured." }))}
                   >
                     Forgot password?
@@ -309,7 +305,7 @@ export function LoginClient() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="text-slate-400 hover:text-slate-600 transition-colors"
+                    className="text-[#94A3B8] hover:text-white transition-colors"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     <EyeIcon open={showPassword} />
@@ -326,10 +322,9 @@ export function LoginClient() {
                 aria-checked={form.rememberMe}
                 id="remember-me"
                 onClick={() => handleChange("rememberMe", !form.rememberMe)}
-                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all duration-150 ${
-                  form.rememberMe ? "border-transparent" : "border-slate-300 bg-white hover:border-slate-400"
+                className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-150 ${
+                  form.rememberMe ? "border-transparent bg-[#6D5DFB]" : "border-[#8B5CF6]/40 bg-[#102A4C] hover:border-[#8B5CF6]"
                 }`}
-                style={form.rememberMe ? { background: "#00C896", borderColor: "#00C896" } : {}}
               >
                 {form.rememberMe && (
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -339,7 +334,7 @@ export function LoginClient() {
               </button>
               <label
                 htmlFor="remember-me"
-                className="text-sm text-slate-600 cursor-pointer select-none"
+                className="text-sm text-slate-300 cursor-pointer select-none"
                 onClick={() => handleChange("rememberMe", !form.rememberMe)}
               >
                 Remember me for 30 days
@@ -351,8 +346,8 @@ export function LoginClient() {
               type="submit"
               disabled={isSubmitting || hasValidationErrors}
               id="login-submit-btn"
-              className="w-full mt-6 py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,200,150,0.32)] active:translate-y-0"
-              style={{ background: "linear-gradient(135deg, #00C896 0%, #00A87E 100%)" }}
+              className="w-full mt-6 py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[0_6px_25px_rgba(109,93,251,0.45)] active:translate-y-0"
+              style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -368,12 +363,11 @@ export function LoginClient() {
           </form>
 
           {/* Sign-up link */}
-          <p className="mt-6 text-center text-sm text-slate-500">
+          <p className="mt-6 text-center text-sm text-[#94A3B8]">
             Don&apos;t have an account?{" "}
             <Link
               href="/login"
-              className="font-semibold transition-colors hover:underline"
-              style={{ color: "#00A87E" }}
+              className="font-semibold transition-colors hover:underline text-[#A78BFA]"
               aria-label="Create a free FinWise account"
             >
               Create account — it&apos;s free
@@ -382,14 +376,13 @@ export function LoginClient() {
         </div>
 
         {/* Trust strip */}
-        <div className="px-8 py-4 rounded-b-3xl border-t border-slate-100 flex items-center justify-center gap-6 flex-wrap"
-             style={{ background: "#F8FAFC" }}>
+        <div className="px-8 py-4 rounded-b-3xl border-t border-[#8B5CF6]/15 flex items-center justify-center gap-6 flex-wrap bg-[#07111F]/70">
           {[
             { icon: "🔒", label: "Secure & encrypted" },
             { icon: "🚫", label: "No spam, ever" },
             { icon: "✨", label: "Free forever" },
           ].map((item) => (
-            <div key={item.label} className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+            <div key={item.label} className="flex items-center gap-1.5 text-xs text-[#94A3B8] font-medium">
               <span aria-hidden="true">{item.icon}</span>
               {item.label}
             </div>

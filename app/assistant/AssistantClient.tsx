@@ -203,11 +203,11 @@ export function AssistantClient() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-10 flex flex-col">
+    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF] pb-10 flex flex-col">
       {/* Header */}
       <div
         className="pt-24 pb-12 px-6 relative shrink-0"
-        style={{ background: "linear-gradient(160deg, #0A1628 0%, #1E3A5F 100%)" }}
+        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
       >
         <AmbientBackground variant="dark" />
         <div className="max-w-4xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
@@ -216,14 +216,14 @@ export function AssistantClient() {
             <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-white mb-2">
               Your Personal <span className="gradient-text">Finance Guide</span>
             </h1>
-            <p className="text-sm text-[#A8C5E8] max-w-lg">
+            <p className="text-sm text-[#94A3B8] max-w-lg">
               Ask questions about budgeting, investing, or your own spending habits. 
               Always educational, never financial advice.
             </p>
           </div>
           <button 
             onClick={() => setMessages(messages.slice(0, 1))}
-            className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl backdrop-blur-md transition-colors border border-white/10"
+            className="px-4 py-2 bg-[#102A4C] hover:bg-[#1A365D] text-[#C4B5FD] text-xs font-bold rounded-xl backdrop-blur-md transition-colors border border-[#8B5CF6]/30"
           >
             Clear Chat
           </button>
@@ -232,7 +232,7 @@ export function AssistantClient() {
 
       {/* Chat Area */}
       <div className="max-w-4xl mx-auto w-full px-4 -mt-6 relative z-20 flex-1 flex flex-col">
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl flex flex-col overflow-hidden" style={{ minHeight: "500px", height: "calc(100vh - 280px)" }}>
+        <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/25 rounded-3xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl" style={{ minHeight: "500px", height: "calc(100vh - 280px)" }}>
           
           {/* Messages container */}
           <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
@@ -241,8 +241,8 @@ export function AssistantClient() {
                 <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}>
                   
                   {/* Avatar */}
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                    msg.role === "user" ? "bg-slate-100 text-slate-500" : "bg-gradient-to-br from-[#00C896] to-[#00A87E] text-white shadow-md"
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border ${
+                    msg.role === "user" ? "bg-[#102A4C] border-[#8B5CF6]/30 text-white" : "bg-gradient-to-br from-[#6D5DFB] to-[#4F46E5] border-white/20 text-white shadow-md"
                   }`}>
                     {msg.role === "user" ? "👤" : "✨"}
                   </div>
@@ -250,8 +250,8 @@ export function AssistantClient() {
                   {/* Bubble */}
                   <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
                     msg.role === "user" 
-                      ? "bg-[#0F172A] text-white rounded-tr-none" 
-                      : "bg-slate-50 border border-slate-100 text-slate-700 rounded-tl-none shadow-sm"
+                      ? "bg-gradient-to-r from-[#6D5DFB] to-[#4F46E5] text-white rounded-tr-none shadow-md" 
+                      : "bg-[#102A4C]/80 border border-[#8B5CF6]/20 text-slate-200 rounded-tl-none shadow-sm"
                   }`}>
                     {msg.content}
                   </div>
@@ -261,11 +261,11 @@ export function AssistantClient() {
 
             {isTyping && (
               <div className="flex gap-3 max-w-[85%] mr-auto">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00C896] to-[#00A87E] text-white shadow-md flex items-center justify-center shrink-0">✨</div>
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 rounded-tl-none shadow-sm flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-slate-300 animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-2 h-2 rounded-full bg-slate-300 animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-2 h-2 rounded-full bg-slate-300 animate-bounce" style={{ animationDelay: "300ms" }} />
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6D5DFB] to-[#4F46E5] text-white shadow-md flex items-center justify-center shrink-0">✨</div>
+                <div className="p-4 rounded-2xl bg-[#102A4C]/80 border border-[#8B5CF6]/20 rounded-tl-none shadow-sm flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               </div>
             )}
@@ -273,7 +273,7 @@ export function AssistantClient() {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 bg-white border-t border-slate-100">
+          <div className="p-4 bg-[#0B1F3A] border-t border-[#8B5CF6]/15">
             {/* Suggestions */}
             {messages.length < 3 && (
               <div className="flex flex-wrap gap-2 mb-4 pb-2 overflow-x-auto no-scrollbar">
@@ -281,7 +281,7 @@ export function AssistantClient() {
                   <button
                     key={q}
                     onClick={() => handleSend(q)}
-                    className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full text-xs font-semibold text-slate-600 transition-colors whitespace-nowrap shrink-0"
+                    className="px-3 py-1.5 bg-[#102A4C]/80 hover:bg-[#102A4C] border border-[#8B5CF6]/25 rounded-full text-xs font-semibold text-slate-200 transition-colors whitespace-nowrap shrink-0 hover:border-[#8B5CF6]"
                   >
                     {q}
                   </button>
@@ -298,13 +298,13 @@ export function AssistantClient() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about budgeting, investing, or your spending..."
-                className="w-full pl-5 pr-14 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none transition-all duration-200 focus:border-[#00C896] focus:ring-2 focus:ring-[#00C896]/15 focus:bg-white text-sm"
+                className="w-full pl-5 pr-14 py-4 bg-[#102A4C]/80 border border-[#8B5CF6]/25 rounded-2xl outline-none transition-all duration-200 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20 text-white placeholder:text-[#94A3B8] text-sm"
                 disabled={isTyping}
               />
               <button
                 onClick={() => handleSend(input)}
                 disabled={!input.trim() || isTyping}
-                className="absolute right-2 w-10 h-10 rounded-xl bg-[#00C896] hover:bg-[#00A87E] text-white flex items-center justify-center disabled:opacity-50 disabled:hover:bg-[#00C896] transition-colors"
+                className="absolute right-2 w-10 h-10 rounded-xl bg-[#6D5DFB] hover:bg-[#8B5CF6] text-white flex items-center justify-center disabled:opacity-40 transition-colors shadow-md"
                 aria-label="Send message"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -313,7 +313,7 @@ export function AssistantClient() {
                 </svg>
               </button>
             </div>
-            <p className="text-[10px] text-slate-400 text-center mt-3">
+            <p className="text-[10px] text-[#94A3B8] text-center mt-3">
               The AI Finance Assistant provides educational information, not licensed financial advice.
             </p>
           </div>

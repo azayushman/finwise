@@ -7,7 +7,7 @@ import { AmbientBackground } from "@/components/ui/AmbientBackground";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 
 export function HeroSection() {
-  /* Animated trust stats — hooks at top level, rendered in map below */
+  /* Animated trust stats */
   const learnerCount = useAnimatedCounter({ target: 50, suffix: "K+", duration: 2200 });
   const topicCount = useAnimatedCounter({ target: 120, suffix: "+", duration: 1800 });
   const ratingCount = useAnimatedCounter({ target: 4.9, suffix: "★", decimals: 1, duration: 1600 });
@@ -21,7 +21,7 @@ export function HeroSection() {
   return (
     <section
       className="relative min-h-[calc(100vh-68px)] flex items-center overflow-hidden"
-      style={{ background: "linear-gradient(160deg, #040D1A 0%, #0A1628 45%, #122040 100%)" }}
+      style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 45%, #102A4C 100%)" }}
       aria-labelledby="hero-title"
     >
       {/* Ambient orbs + grid */}
@@ -34,7 +34,7 @@ export function HeroSection() {
           style={{
             top: "14%", right: "11%",
             width: "72px", height: "72px",
-            border: "1px solid rgba(0, 200, 150, 0.07)",
+            border: "1px solid rgba(139, 92, 246, 0.12)",
             borderRadius: "50%",
             animationDelay: "0.8s",
           }}
@@ -44,7 +44,7 @@ export function HeroSection() {
           style={{
             bottom: "22%", left: "7%",
             width: "18px", height: "18px",
-            border: "1px solid rgba(94, 236, 197, 0.10)",
+            border: "1px solid rgba(196, 181, 253, 0.15)",
             transform: "rotate(45deg)",
             animationDelay: "1.6s",
           }}
@@ -53,9 +53,9 @@ export function HeroSection() {
           className="absolute animate-float"
           style={{
             top: "62%", right: "24%",
-            width: "5px", height: "5px",
+            width: "6px", height: "6px",
             borderRadius: "50%",
-            background: "rgba(0, 200, 150, 0.15)",
+            background: "rgba(139, 92, 246, 0.3)",
             animationDelay: "2.2s",
           }}
         />
@@ -68,15 +68,15 @@ export function HeroSection() {
           {/* Kicker pill */}
           <div
             className="inline-flex items-center gap-2 px-1 pr-4 py-1 rounded-full mb-8 animate-slide-up"
-            style={{ background: "rgba(0,200,150,0.10)", border: "1px solid rgba(0,200,150,0.20)" }}
+            style={{ background: "rgba(109,93,251,0.12)", border: "1px solid rgba(139,92,246,0.30)" }}
           >
             <span
-              className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest"
-              style={{ background: "#00C896", color: "#040D1A" }}
+              className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest text-white"
+              style={{ background: "linear-gradient(135deg, #6D5DFB, #4F46E5)" }}
             >
               New
             </span>
-            <span className="text-sm font-medium" style={{ color: "#5EECC5" }}>
+            <span className="text-sm font-medium" style={{ color: "#C4B5FD" }}>
               Financial literacy, reimagined for Gen Z
             </span>
           </div>
@@ -91,7 +91,7 @@ export function HeroSection() {
           </h1>
 
           <p className="text-lg leading-relaxed mb-10 max-w-[480px] animate-slide-up delay-200"
-             style={{ color: "#A8C5E8" }}>
+             style={{ color: "#94A3B8" }}>
             FinWise makes personal finance simple and practical — no jargon, no spreadsheets.
             Learn saving, budgeting, investing, and more at your own pace.
           </p>
@@ -111,7 +111,7 @@ export function HeroSection() {
             </Button>
           </div>
 
-          {/* Trust stats — animated counters */}
+          {/* Trust stats */}
           <div className="flex flex-wrap items-center gap-6 animate-slide-up delay-400" aria-label="Platform statistics">
             {trustStats.map((stat, i) => (
               <div key={i} className="flex items-center gap-5">
@@ -123,7 +123,7 @@ export function HeroSection() {
                   >
                     {stat.display}
                   </div>
-                  <div className="text-xs mt-0.5 uppercase tracking-wider" style={{ color: "#A8C5E8" }}>
+                  <div className="text-xs mt-0.5 uppercase tracking-wider" style={{ color: "#94A3B8" }}>
                     {stat.label}
                   </div>
                 </div>
@@ -136,23 +136,23 @@ export function HeroSection() {
         <div className="flex justify-center lg:justify-end animate-slide-up delay-200" aria-hidden="true">
           <TiltCard className="w-full max-w-[460px]">
             <div
-              className="w-full rounded-2xl p-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)]"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", backdropFilter: "blur(20px)" }}
+              className="w-full rounded-2xl p-6 shadow-[0_25px_60px_rgba(0,0,0,0.45)]"
+              style={{ background: "rgba(11, 31, 58, 0.85)", border: "1px solid rgba(139, 92, 246, 0.22)", backdropFilter: "blur(20px)" }}
             >
               {/* Dashboard header */}
               <div className="flex items-center justify-between mb-6">
                 <span className="text-sm font-semibold text-white">My Financial Overview</span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
-                      style={{ color: "#00C896", background: "rgba(0,200,150,0.12)", border: "1px solid rgba(0,200,150,0.2)" }}>
+                      style={{ color: "#C4B5FD", background: "rgba(109,93,251,0.15)", border: "1px solid rgba(139,92,246,0.3)" }}>
                   Live Preview
                 </span>
               </div>
 
               {/* Balance */}
               <div className="mb-6">
-                <div className="text-xs uppercase tracking-widest mb-1" style={{ color: "#A8C5E8" }}>Net Worth</div>
+                <div className="text-xs uppercase tracking-widest mb-1 text-[#94A3B8]">Net Worth</div>
                 <div className="text-4xl font-bold text-white tracking-tight leading-none">$24,830</div>
-                <div className="flex items-center gap-1 mt-2 text-sm font-semibold" style={{ color: "#00C896" }}>
+                <div className="flex items-center gap-1 mt-2 text-sm font-semibold text-[#8B5CF6]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                     <polyline points="18 15 12 9 6 15" />
                   </svg>
@@ -160,23 +160,23 @@ export function HeroSection() {
                 </div>
               </div>
 
-              {/* Sparkline — animated draw */}
+              {/* Sparkline */}
               <div className="h-16 mb-6 rounded-lg overflow-hidden">
                 <svg viewBox="0 0 380 70" preserveAspectRatio="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%"   stopColor="#00C896" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#00C896" stopOpacity="0" />
+                      <stop offset="0%"   stopColor="#8B5CF6" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
                     </linearGradient>
                   </defs>
                   <path d="M0,55 C30,50 50,45 80,38 C110,31 130,35 160,28 C190,21 210,30 240,18 C270,6 300,12 330,8 C355,4 370,10 380,5"
-                        fill="none" stroke="#00C896" strokeWidth="2" strokeLinecap="round"
+                        fill="none" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round"
                         className="sparkline-animate" />
                   <path d="M0,55 C30,50 50,45 80,38 C110,31 130,35 160,28 C190,21 210,30 240,18 C270,6 300,12 330,8 C355,4 370,10 380,5 L380,70 L0,70 Z"
                         fill="url(#sparkGrad)"
                         className="sparkline-fill-animate" />
-                  <circle cx="240" cy="18" r="3" fill="#00C896" className="sparkline-fill-animate" />
-                  <circle cx="380" cy="5"  r="4" fill="#00C896" className="sparkline-fill-animate" />
+                  <circle cx="240" cy="18" r="3" fill="#8B5CF6" className="sparkline-fill-animate" />
+                  <circle cx="380" cy="5"  r="4" fill="#C4B5FD" className="sparkline-fill-animate" />
                 </svg>
               </div>
 
@@ -188,10 +188,10 @@ export function HeroSection() {
                   { label: "Monthly",     value: "$4,330",  change: "↓ 1.3%",  up: false },
                 ].map((s) => (
                   <div key={s.label} className="rounded-xl p-3 transition-colors duration-200"
-                       style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#A8C5E8" }}>{s.label}</div>
+                       style={{ background: "rgba(16,42,76,0.6)", border: "1px solid rgba(139,92,246,0.18)" }}>
+                    <div className="text-[10px] uppercase tracking-wider mb-1 text-[#94A3B8]">{s.label}</div>
                     <div className="text-sm font-bold text-white">{s.value}</div>
-                    <div className={`text-[10px] mt-0.5 font-semibold ${s.up ? "text-[#00C896]" : "text-red-400"}`}>{s.change}</div>
+                    <div className={`text-[10px] mt-0.5 font-semibold ${s.up ? "text-[#8B5CF6]" : "text-rose-400"}`}>{s.change}</div>
                   </div>
                 ))}
               </div>
@@ -199,15 +199,15 @@ export function HeroSection() {
               {/* Goals */}
               <div className="space-y-3">
                 {[
-                  { name: "Emergency Fund",  pct: 76, color: "#00C896" },
-                  { name: "Vacation Fund",   pct: 45, color: "#F59E0B" },
+                  { name: "Emergency Fund",  pct: 76, color: "#8B5CF6" },
+                  { name: "Vacation Fund",   pct: 45, color: "#60A5FA" },
                 ].map((goal) => (
                   <div key={goal.name}>
                     <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs" style={{ color: "#A8C5E8" }}>{goal.name}</span>
+                      <span className="text-xs text-[#94A3B8]">{goal.name}</span>
                       <span className="text-xs font-bold" style={{ color: goal.color }}>{goal.pct}%</span>
                     </div>
-                    <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+                    <div className="h-1.5 rounded-full bg-[#102A4C]">
                       <div className="h-full rounded-full progress-fill" style={{ width: `${goal.pct}%`, background: goal.color }} />
                     </div>
                   </div>

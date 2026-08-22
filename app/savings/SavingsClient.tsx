@@ -40,7 +40,7 @@ function CircularProgress({ percentage, color, size = 180 }: {
   return (
     <svg width={size} height={size} viewBox="0 0 180 180" className="mx-auto" aria-hidden="true">
       {/* Background track */}
-      <circle cx="90" cy="90" r={radius} fill="none" stroke="#E2E8F0" strokeWidth="12" />
+      <circle cx="90" cy="90" r={radius} fill="none" stroke="#102A4C" strokeWidth="12" />
       {/* Progress arc */}
       <circle
         cx="90" cy="90" r={radius}
@@ -53,10 +53,10 @@ function CircularProgress({ percentage, color, size = 180 }: {
         style={{ transition: "stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1)" }}
       />
       {/* Center text */}
-      <text x="90" y="82" textAnchor="middle" className="fill-slate-900 text-[28px] font-black">
+      <text x="90" y="82" textAnchor="middle" className="fill-white text-[28px] font-black">
         {clampedPct.toFixed(0)}%
       </text>
-      <text x="90" y="102" textAnchor="middle" className="fill-slate-400 text-[11px] font-medium">
+      <text x="90" y="102" textAnchor="middle" className="fill-[#94A3B8] text-[11px] font-medium">
         complete
       </text>
     </svg>
@@ -68,8 +68,6 @@ function CircularProgress({ percentage, color, size = 180 }: {
    ══════════════════════════════════════════════════════════════════════════ */
 
 function compoundGrowth(principal: number, monthlyAdd: number, annualRate: number, months: number): number {
-  // FV = P(1+r)^n + PMT * [((1+r)^n - 1) / r]
-  // where r = monthly rate, n = months
   if (months <= 0) return principal;
   const r = annualRate / 100 / 12;
   if (r === 0) return principal + monthlyAdd * months;
@@ -116,9 +114,6 @@ export function SavingsClient() {
     if (monthlyNum <= 0) return Infinity;
     const r = rateNum / 100 / 12;
     if (r <= 0) return Math.ceil(remaining / monthlyNum);
-    // Solve: current*(1+r)^n + monthly*((1+r)^n - 1)/r = target
-    // => (1+r)^n * (current + monthly/r) = target + monthly/r
-    // => n = log((target + monthly/r) / (current + monthly/r)) / log(1+r)
     const monthlyOverR = monthlyNum / r;
     const numerator = targetNum + monthlyOverR;
     const denominator = currentNum + monthlyOverR;
@@ -203,10 +198,10 @@ export function SavingsClient() {
   }) {
     return (
       <div>
-        <label htmlFor={id} className="text-sm font-semibold text-slate-700 mb-1.5 block">{label}</label>
+        <label htmlFor={id} className="text-sm font-semibold text-slate-200 mb-1.5 block">{label}</label>
         <div className="relative">
           {prefix && (
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">{prefix}</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{prefix}</span>
           )}
           <input
             id={id}
@@ -217,29 +212,29 @@ export function SavingsClient() {
             onBlur={() => setErrors(prev => ({ ...prev, [field]: validate(field, value) }))}
             placeholder={placeholder}
             aria-invalid={Boolean(errors[field])}
-            className={`w-full py-3 text-sm text-slate-900 bg-white border rounded-xl outline-none transition-all duration-150 placeholder:text-slate-400 ${
+            className={`w-full py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
               prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-8" : "px-4"
             } ${
               errors[field]
-                ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100"
-                : "border-slate-200 focus:border-[#00C896] focus:ring-2 focus:ring-[#00C896]/15"
+                ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
+                : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
             }`}
           />
           {suffix && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">{suffix}</span>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{suffix}</span>
           )}
         </div>
-        {errors[field] && <p className="mt-1.5 text-xs text-red-500 font-medium">{errors[field]}</p>}
+        {errors[field] && <p className="mt-1.5 text-xs text-rose-400 font-medium">{errors[field]}</p>}
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
       {/* Hero */}
       <div
         className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #0A1628 0%, #1E3A5F 100%)" }}
+        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
       >
         <AmbientBackground variant="dark" />
         <div className="max-w-7xl mx-auto relative z-10">
@@ -248,7 +243,7 @@ export function SavingsClient() {
             Watch Your<br />
             <span className="gradient-text">Savings Grow.</span>
           </h1>
-          <p className="text-lg max-w-2xl leading-relaxed" style={{ color: "#A8C5E8" }}>
+          <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
             Set goals, calculate timelines, and visualise the power of compound interest.
             Every dollar saved today is worth more tomorrow.
           </p>
@@ -261,27 +256,27 @@ export function SavingsClient() {
           <div className="lg:col-span-2 space-y-8">
             {/* Goal setup */}
             <ScrollReveal direction="up">
-              <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
                 <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-lg font-bold text-slate-900">Savings Goal</h2>
+                  <h2 className="text-lg font-bold text-white">Savings Goal</h2>
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="text-xs font-semibold text-slate-400 hover:text-slate-600 transition-colors"
+                    className="text-xs font-semibold text-[#94A3B8] hover:text-white transition-colors"
                   >
                     Reset
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="sm:col-span-2">
-                    <label htmlFor={goalId} className="text-sm font-semibold text-slate-700 mb-1.5 block">Goal Name</label>
+                    <label htmlFor={goalId} className="text-sm font-semibold text-slate-200 mb-1.5 block">Goal Name</label>
                     <input
                       id={goalId}
                       type="text"
                       value={goalName}
                       onChange={e => setGoalName(e.target.value)}
                       placeholder="e.g. Emergency Fund"
-                      className="w-full px-4 py-3 text-sm text-slate-900 bg-white border border-slate-200 rounded-xl outline-none transition-all duration-150 placeholder:text-slate-400 focus:border-[#00C896] focus:ring-2 focus:ring-[#00C896]/15"
+                      className="w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border border-[#8B5CF6]/25 rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
                     />
                   </div>
                   <InputBlock id={targetId} label="Target Amount" value={targetAmount} setter={setTargetAmount}
@@ -293,14 +288,14 @@ export function SavingsClient() {
                   <InputBlock id={rateId} label="Expected Annual Return" value={annualRate} setter={setAnnualRate}
                     field="annualRate" placeholder="e.g. 5" min="0" max="50" step="0.1" suffix="%" />
                   <div>
-                    <label htmlFor={dateId} className="text-sm font-semibold text-slate-700 mb-1.5 block">Target Date (optional)</label>
+                    <label htmlFor={dateId} className="text-sm font-semibold text-slate-200 mb-1.5 block">Target Date (optional)</label>
                     <input
                       id={dateId}
                       type="date"
                       value={targetDate}
                       onChange={e => setTargetDate(e.target.value)}
                       min={new Date().toISOString().split("T")[0]}
-                      className="w-full px-4 py-3 text-sm text-slate-900 bg-white border border-slate-200 rounded-xl outline-none transition-all duration-150 focus:border-[#00C896] focus:ring-2 focus:ring-[#00C896]/15"
+                      className="w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border border-[#8B5CF6]/25 rounded-xl outline-none transition-all duration-150 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
                     />
                   </div>
                 </div>
@@ -311,9 +306,9 @@ export function SavingsClient() {
             {statusMessage && (
               <ScrollReveal direction="up" delay={50}>
                 <div className={`flex items-start gap-3 rounded-2xl px-5 py-4 text-sm font-medium ${
-                  statusMessage.type === "success" ? "bg-green-50 border border-green-200 text-green-800" :
-                  statusMessage.type === "warning" ? "bg-amber-50 border border-amber-200 text-amber-800" :
-                  "bg-blue-50 border border-blue-200 text-blue-800"
+                  statusMessage.type === "success" ? "bg-emerald-950/40 border border-emerald-500/30 text-emerald-300" :
+                  statusMessage.type === "warning" ? "bg-amber-950/40 border border-amber-500/30 text-amber-300" :
+                  "bg-[#102A4C]/80 border border-[#8B5CF6]/30 text-[#C4B5FD]"
                 }`}>
                   <span className="text-lg">{statusMessage.type === "success" ? "✅" : statusMessage.type === "warning" ? "⚠️" : "ℹ️"}</span>
                   <span>{statusMessage.text}</span>
@@ -323,17 +318,17 @@ export function SavingsClient() {
 
             {/* Projection table */}
             <ScrollReveal direction="up" delay={100}>
-              <div className="bg-white border border-slate-200 rounded-2xl p-6">
-                <h2 className="text-lg font-bold text-slate-900 mb-5">Growth Projection</h2>
+              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
+                <h2 className="text-lg font-bold text-white mb-5">Growth Projection</h2>
                 {monthlyNum > 0 || currentNum > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-slate-100">
-                          <th className="text-left py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Period</th>
-                          <th className="text-right py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Contributions</th>
-                          <th className="text-right py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Interest</th>
-                          <th className="text-right py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Total Value</th>
+                        <tr className="border-b border-[#8B5CF6]/15">
+                          <th className="text-left py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Period</th>
+                          <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Contributions</th>
+                          <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Interest</th>
+                          <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Total Value</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -341,11 +336,11 @@ export function SavingsClient() {
                           const totalContrib = currentNum + monthlyNum * p.months;
                           const interest = p.value - totalContrib;
                           return (
-                            <tr key={p.months} className="border-b border-slate-50">
-                              <td className="py-3 font-semibold text-slate-700">{p.label}</td>
-                              <td className="py-3 text-right text-slate-500">${fmtInt(totalContrib)}</td>
-                              <td className="py-3 text-right" style={{ color: "#00C896" }}>+${fmtInt(Math.max(0, interest))}</td>
-                              <td className="py-3 text-right font-bold text-slate-900">${fmtInt(p.value)}</td>
+                            <tr key={p.months} className="border-b border-[#8B5CF6]/10">
+                              <td className="py-3 font-semibold text-slate-200">{p.label}</td>
+                              <td className="py-3 text-right text-[#94A3B8]">${fmtInt(totalContrib)}</td>
+                              <td className="py-3 text-right text-[#8B5CF6] font-semibold">+${fmtInt(Math.max(0, interest))}</td>
+                              <td className="py-3 text-right font-bold text-white">${fmtInt(p.value)}</td>
                             </tr>
                           );
                         })}
@@ -353,9 +348,9 @@ export function SavingsClient() {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400 text-center py-8">Enter your savings details to see projections.</p>
+                  <p className="text-sm text-[#94A3B8] text-center py-8">Enter your savings details to see projections.</p>
                 )}
-                <p className="text-xs text-slate-400 mt-4 text-center">
+                <p className="text-xs text-[#94A3B8] mt-4 text-center">
                   Projections assume constant contributions and returns. Not financial advice.
                 </p>
               </div>
@@ -366,31 +361,31 @@ export function SavingsClient() {
           <div className="space-y-8">
             {/* Circular progress */}
             <ScrollReveal direction="up" delay={50}>
-              <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center">
-                <h2 className="text-lg font-bold text-slate-900 mb-4">
+              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 text-center shadow-md">
+                <h2 className="text-lg font-bold text-white mb-4">
                   {goalName || "Savings Progress"}
                 </h2>
                 <CircularProgress
                   percentage={progressPct}
-                  color={progressPct >= 100 ? "#00C896" : progressPct >= 50 ? "#00A87E" : "#4A80BF"}
+                  color={progressPct >= 100 ? "#8B5CF6" : progressPct >= 50 ? "#6D5DFB" : "#4F46E5"}
                 />
                 <div className="mt-4 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Saved</span>
-                    <span className="font-bold" style={{ color: "#00C896" }}>${fmt(currentNum)}</span>
+                    <span className="text-[#94A3B8]">Saved</span>
+                    <span className="font-bold text-[#8B5CF6]">${fmt(currentNum)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Remaining</span>
-                    <span className="font-bold text-slate-900">${fmt(remaining)}</span>
+                    <span className="text-[#94A3B8]">Remaining</span>
+                    <span className="font-bold text-white">${fmt(remaining)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Target</span>
-                    <span className="font-bold text-slate-900">${fmt(targetNum)}</span>
+                    <span className="text-[#94A3B8]">Target</span>
+                    <span className="font-bold text-white">${fmt(targetNum)}</span>
                   </div>
                   {targetDate && monthsLeft > 0 && (
-                    <div className="flex justify-between text-sm border-t border-slate-100 pt-3">
-                      <span className="text-slate-500">Required/mo</span>
-                      <span className="font-bold" style={{ color: monthlyNum >= requiredMonthly ? "#00C896" : "#F59E0B" }}>
+                    <div className="flex justify-between text-sm border-t border-[#8B5CF6]/15 pt-3">
+                      <span className="text-[#94A3B8]">Required/mo</span>
+                      <span className="font-bold" style={{ color: monthlyNum >= requiredMonthly ? "#8B5CF6" : "#F59E0B" }}>
                         ${fmt(requiredMonthly)}
                       </span>
                     </div>
@@ -401,23 +396,23 @@ export function SavingsClient() {
 
             {/* Timeline summary */}
             <ScrollReveal direction="up" delay={100}>
-              <div className="bg-white border border-slate-200 rounded-2xl p-6">
-                <h2 className="text-lg font-bold text-slate-900 mb-4">Timeline</h2>
+              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
+                <h2 className="text-lg font-bold text-white mb-4">Timeline</h2>
                 <div className="space-y-4">
                   <div>
-                    <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Estimated Completion</div>
-                    <div className="text-xl font-bold text-slate-900">{estimatedDate}</div>
+                    <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Estimated Completion</div>
+                    <div className="text-xl font-bold text-white">{estimatedDate}</div>
                   </div>
                   {monthsToGoal > 0 && monthsToGoal < Infinity && (
                     <div>
-                      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Months Remaining</div>
-                      <div className="text-xl font-bold" style={{ color: "#00C896" }}>{monthsToGoal}</div>
+                      <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Months Remaining</div>
+                      <div className="text-xl font-bold text-[#8B5CF6]">{monthsToGoal}</div>
                     </div>
                   )}
                   {monthlyNum > 0 && targetNum > 0 && remaining > 0 && (
                     <div>
-                      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Monthly Contribution</div>
-                      <div className="text-xl font-bold text-slate-900">${fmt(monthlyNum)}</div>
+                      <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Monthly Contribution</div>
+                      <div className="text-xl font-bold text-white">${fmt(monthlyNum)}</div>
                     </div>
                   )}
                 </div>
@@ -427,20 +422,20 @@ export function SavingsClient() {
             {/* Compound interest snapshot */}
             <ScrollReveal direction="up" delay={150}>
               <div
-                className="rounded-2xl p-6 text-white relative overflow-hidden"
-                style={{ background: "linear-gradient(135deg, #0A1628 0%, #1E3A5F 100%)" }}
+                className="rounded-2xl p-6 text-white relative overflow-hidden border border-[#8B5CF6]/25 shadow-lg"
+                style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
               >
                 <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10"
-                     style={{ background: "radial-gradient(circle, #00C896, transparent 70%)" }} aria-hidden="true" />
+                     style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-base font-bold mb-3 relative z-10">The Power of Compound Interest</h3>
-                <p className="text-xs leading-relaxed mb-3 relative z-10" style={{ color: "#A8C5E8" }}>
+                <p className="text-xs leading-relaxed mb-3 relative z-10 text-[#94A3B8]">
                   ${fmt(monthlyNum)}/mo at {rateNum}% annual return:
                 </p>
                 <div className="space-y-2 relative z-10">
                   {projections.slice(2).map(p => (
                     <div key={p.months} className="flex justify-between items-center">
-                      <span className="text-sm" style={{ color: "#A8C5E8" }}>After {p.label}</span>
-                      <span className="text-sm font-bold" style={{ color: "#00C896" }}>${fmtInt(p.value)}</span>
+                      <span className="text-sm text-[#94A3B8]">After {p.label}</span>
+                      <span className="text-sm font-bold text-[#8B5CF6]">${fmtInt(p.value)}</span>
                     </div>
                   ))}
                 </div>

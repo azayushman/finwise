@@ -9,10 +9,10 @@ interface BadgeProps {
 }
 
 const styles: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
-  green:  { bg: "#E8FFF8", color: "#007A5C", border: "#CFFAEE" },
-  navy:   { bg: "#EEF5FC", color: "#1E3A5F", border: "#D6E8F7" },
-  amber:  { bg: "#FEF3C7", color: "#92400E", border: "#FCD34D" },
-  purple: { bg: "#EDE9FE", color: "#5B21B6", border: "#DDD6FE" },
+  green:  { bg: "rgba(109, 93, 251, 0.15)", color: "#C4B5FD", border: "rgba(139, 92, 246, 0.3)" },
+  navy:   { bg: "rgba(16, 42, 76, 0.6)", color: "#93C5FD", border: "rgba(59, 130, 246, 0.3)" },
+  amber:  { bg: "rgba(245, 158, 11, 0.15)", color: "#FCD34D", border: "rgba(245, 158, 11, 0.3)" },
+  purple: { bg: "rgba(139, 92, 246, 0.2)", color: "#DDD6FE", border: "rgba(139, 92, 246, 0.4)" },
 };
 
 export function Badge({ children, variant = "green", className = "" }: BadgeProps) {
