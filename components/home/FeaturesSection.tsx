@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 const features = [
   {
     icon: "📚",
-    iconBg: "#EEF5FC",
+    iconBg: "linear-gradient(135deg, #EEF5FC 0%, #D6E8F7 100%)",
     title: "Learn",
     description:
       "Bite-sized lessons on every financial topic — from compound interest to credit scores — written in plain English for real people.",
@@ -13,7 +15,7 @@ const features = [
   },
   {
     icon: "💰",
-    iconBg: "#E8FFF8",
+    iconBg: "linear-gradient(135deg, #E8FFF8 0%, #CFFAEE 100%)",
     title: "Budget",
     description:
       "Build a personalised budget with our visual planner. Track income, expenses, and savings goals with an intuitive interface.",
@@ -22,7 +24,7 @@ const features = [
   },
   {
     icon: "🏦",
-    iconBg: "#FEF3C7",
+    iconBg: "linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)",
     title: "Save",
     description:
       "Set savings goals, calculate how long it takes to reach them, and visualise the power of compound interest over time.",
@@ -31,7 +33,7 @@ const features = [
   },
   {
     icon: "📈",
-    iconBg: "#EDE9FE",
+    iconBg: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)",
     title: "Invest",
     description:
       "Demystify the stock market, ETFs, and index funds. Learn what risk tolerance means and how to start investing with any amount.",
@@ -44,7 +46,7 @@ export function FeaturesSection() {
   return (
     <section className="py-24 bg-white" aria-labelledby="features-title">
       <div className="max-w-7xl mx-auto px-6">
-        <header className="text-center max-w-2xl mx-auto mb-16">
+        <ScrollReveal as="header" className="text-center max-w-2xl mx-auto mb-16" direction="up">
           <SectionLabel>Core Features</SectionLabel>
           <h2
             id="features-title"
@@ -55,33 +57,35 @@ export function FeaturesSection() {
           <p className="text-lg text-slate-500 leading-relaxed">
             Four powerful pillars designed to take you from financial beginner to confident money manager.
           </p>
-        </header>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" role="list">
           {features.map((feature, i) => (
-            <article
-              key={feature.title}
-              role="listitem"
-              className="group bg-white border border-slate-200 rounded-2xl p-8 transition-all duration-250 hover:-translate-y-2 hover:shadow-xl hover:border-slate-300 cursor-default"
-              style={{ animationDelay: `${i * 0.07}s` }}
-            >
-              <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-5 flex-shrink-0"
-                style={{ background: feature.iconBg }}
-                aria-hidden="true"
-              >
-                {feature.icon}
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed mb-5">{feature.description}</p>
-              <Link
-                href={feature.href}
-                className="inline-flex items-center text-sm font-semibold transition-all duration-150 group-hover:gap-2"
-                style={{ color: "#00A87E" }}
-              >
-                {feature.cta}
-              </Link>
-            </article>
+            <ScrollReveal key={feature.title} delay={i * 100} as="article" className="h-full">
+              <TiltCard maxTilt={5} scale={1.01} className="h-full">
+                <div
+                  role="listitem"
+                  className="feature-card bg-white border border-slate-200 rounded-2xl p-8 h-full transition-all duration-250 hover:shadow-xl hover:border-slate-300 cursor-default"
+                >
+                  <div
+                    className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-5 flex-shrink-0"
+                    style={{ background: feature.iconBg }}
+                    aria-hidden="true"
+                  >
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed mb-5">{feature.description}</p>
+                  <Link
+                    href={feature.href}
+                    className="inline-flex items-center text-sm font-semibold transition-all duration-150 hover:gap-2 group"
+                    style={{ color: "#00A87E" }}
+                  >
+                    <span>{feature.cta}</span>
+                  </Link>
+                </div>
+              </TiltCard>
+            </ScrollReveal>
           ))}
         </div>
       </div>

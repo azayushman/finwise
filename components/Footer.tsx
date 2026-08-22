@@ -28,24 +28,6 @@ const footerLinks = {
 };
 
 export function Footer() {
-  // #region agent log
-  fetch("http://127.0.0.1:7287/ingest/235debc3-dfb5-419c-8c31-04bdddfeb136", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Debug-Session-Id": "d7bbd1",
-    },
-    body: JSON.stringify({
-      sessionId: "d7bbd1",
-      runId: "post-fix",
-      hypothesisId: "C",
-      location: "components/Footer.tsx:render",
-      message: "Footer render without event handlers",
-      data: { usesCssHover: true },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion
   return (
     <footer className="text-slate-300" style={{ background: "#040D1A" }} role="contentinfo">
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">

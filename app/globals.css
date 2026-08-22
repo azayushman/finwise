@@ -125,3 +125,144 @@ body {
 .progress-fill {
   transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FinWise Premium Animation System
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Cursor-following ambient spotlight ── */
+.fw-cursor-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  --fw-glow-x: -9999px;
+  --fw-glow-y: -9999px;
+  background: radial-gradient(
+    600px circle at var(--fw-glow-x) var(--fw-glow-y),
+    rgba(0, 200, 150, 0.06),
+    transparent 60%
+  );
+  transition: opacity 0.3s ease;
+  will-change: background;
+}
+
+/* ── Magnetic button wrapper ── */
+.magnetic-btn {
+  display: inline-flex;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* ── 3D tilt card wrapper ── */
+.tilt-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ── Scroll reveal system ── */
+.reveal-hidden {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: none !important;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Direction-specific hidden transforms */
+.reveal-from-up    { transform: translateY(28px); }
+.reveal-from-down  { transform: translateY(-28px); }
+.reveal-from-left  { transform: translateX(-28px); }
+.reveal-from-right { transform: translateX(28px); }
+.reveal-from-none  { transform: none; }
+
+/* ── Sparkline draw animation ── */
+@keyframes sparkline-draw {
+  from { stroke-dashoffset: 420; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.sparkline-animate {
+  stroke-dasharray: 420;
+  stroke-dashoffset: 420;
+  animation: sparkline-draw 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.8s;
+}
+
+.sparkline-fill-animate {
+  opacity: 0;
+  animation: fade-in 1.2s ease forwards 2.2s;
+}
+
+/* ── Feature card accent line ── */
+.feature-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 0;
+  background: linear-gradient(180deg, #00C896, #5EECC5);
+  border-radius: 0 0 2px 0;
+  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feature-card:hover::before {
+  height: 100%;
+}
+
+/* ── Step circle glow ── */
+.step-glow {
+  box-shadow: 0 0 0 0 rgba(0, 200, 150, 0);
+  transition: box-shadow 0.4s ease;
+}
+
+.step-glow:hover {
+  box-shadow: 0 0 20px rgba(0, 200, 150, 0.25);
+}
+
+/* ── Reduced motion: respect user preference ── */
+@media (prefers-reduced-motion: reduce) {
+  .fw-cursor-glow,
+  .animate-float {
+    display: none !important;
+  }
+
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-slide-down,
+  .animate-scale-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .magnetic-btn,
+  .tilt-card {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .reveal-hidden {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .reveal-visible {
+    transition: none !important;
+  }
+
+  .progress-fill {
+    transition: none !important;
+  }
+}
