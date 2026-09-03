@@ -37,92 +37,6 @@ const SUGGESTED_QUESTIONS = [
   "How does a credit score work?",
 ];
 
-function generateLocalResponse(query: string, data: UserData | null): string {
-  const q = query.toLowerCase();
-
-  // 1. Personalized Context
-  if (data && (q.includes("spending too much") || q.includes("reduce expenses") || q.includes("reduce my expenses"))) {
-    const expenses = data.transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-    const income = data.transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    
-    if (income === 0 && expenses === 0) {
-      return "I can see you haven't logged any income or expenses yet. Start tracking your spending in the Budget tool so I can give you personalized advice!";
-    }
-    if (income === 0) {
-      return `You have logged $${expenses.toFixed(2)} in expenses, but no income yet. Tracking your income will help me calculate your spending ratio!`;
-    }
-    
-    const ratio = (expenses / income) * 100;
-    const categoryTotals: Record<string, number> = {};
-    data.transactions.filter(t => t.type === 'expense').forEach(t => {
-      categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
-    });
-    const topCategory = Object.entries(categoryTotals).sort((a,b) => b[1]-a[1])[0];
-
-    if (ratio > 80) {
-      return `You are spending ${ratio.toFixed(0)}% of your income, which is on the higher side. Your top expense category is ${topCategory[0]} at $${topCategory[1].toFixed(2)}. I recommend reviewing the 50/30/20 rule to see where you can cut back.`;
-    } else {
-      return `You are spending ${ratio.toFixed(0)}% of your income, which is a healthy ratio! Your highest expense is ${topCategory[0]} at $${topCategory[1].toFixed(2)}. Keep up the good work and consider directing any surplus to your savings goals.`;
-    }
-  }
-  
-  if (data && (q.includes("my net worth") || q.includes("my balance"))) {
-    const expenses = data.transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-    const income = data.transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-    return `Based on your tracked transactions, your current net worth is $${(income - expenses).toFixed(2)}.`;
-  }
-
-  if (!data && (q.includes("my ") || q.includes("am i "))) {
-    return "I would love to give you personalized advice, but it seems you aren't logged in, or you haven't added any data yet. Log in and add some transactions to get personalized insights!";
-  }
-
-  // 2. Educational Knowledge Base
-  if (q.includes("50/30/20")) {
-    return "The 50/30/20 rule is a simple budgeting framework. It suggests spending 50% of your after-tax income on Needs (rent, groceries, bills), 30% on Wants (entertainment, dining out), and 20% on Savings or Debt repayment.";
-  }
-  if (q.includes("compound interest") || q.includes("compound growth")) {
-    return "Compound interest is the interest you earn on both your original money and on the interest you keep accumulating. It's often called 'interest on interest' and helps your wealth grow exponentially over time!";
-  }
-  if (q.includes("emergency fund")) {
-    return "An emergency fund is a bank account with money set aside to cover large, unexpected expenses (like medical bills or car repairs). Financial experts usually recommend saving 3 to 6 months' worth of living expenses.";
-  }
-  if (q.includes("sip") || q.includes("systematic investment plan")) {
-    return "SIP stands for Systematic Investment Plan. It's a method where you invest a fixed amount of money at regular intervals (like monthly) into a mutual fund. It helps in averaging the cost of investment over time and reduces market timing risks.";
-  }
-  if (q.includes("mutual fund") || q.includes("stock")) {
-    return "A stock represents a single share of ownership in a specific company. A mutual fund is a pool of money collected from many investors to invest in a diversified portfolio of stocks, bonds, or other assets, which lowers your individual risk.";
-  }
-  if (q.includes("credit score")) {
-    return "A credit score is a number (usually between 300 and 850) that represents your creditworthiness. It's based on your history of borrowing and repaying debt. A higher score helps you get better interest rates on loans and mortgages.";
-  }
-  if (q.includes("save") || q.includes("saving") || q.includes("reduce expenses")) {
-    return "To save more money, start by tracking your expenses to identify unnecessary 'Wants'. Consider the 'pay yourself first' method—automatically transferring a set amount to savings as soon as you get paid, before paying any bills.";
-  }
-  if (q.includes("budget") || q.includes("budgeting")) {
-    return "Budgeting is the process of creating a plan to spend your money. It ensures you have enough for things you need and things important to you. A good budget keeps you out of debt and helps you build wealth.";
-  }
-  if (q.includes("debt") || q.includes("loan")) {
-    return "Not all debt is equal. High-interest debt (like credit cards) should be paid off as quickly as possible. Low-interest debt (like a manageable mortgage) can sometimes be balanced with investing. Always aim to minimize high-interest liabilities.";
-  }
-  if (q.includes("inflation")) {
-    return "Inflation is the rate at which the general level of prices for goods and services is rising, and subsequently, purchasing power is falling. Investing is a key strategy to ensure your money grows faster than inflation.";
-  }
-  if (q.includes("tax")) {
-    return "Taxes are mandatory contributions levied by a government. Understanding tax brackets and utilizing tax-advantaged accounts (like a 401(k) or IRA) is crucial for keeping more of your hard-earned money. (Note: I am not a tax professional).";
-  }
-  if (q.includes("invest") || q.includes("investing")) {
-    return "Investing is the act of allocating resources, usually money, with the expectation of generating an income or profit. Beginners often start with broad market index funds or ETFs because they offer instant diversification.";
-  }
-  if (q.includes("goal")) {
-    return "Setting financial goals is the first step to building wealth. Use the SMART framework: Specific, Measurable, Achievable, Relevant, and Time-bound. Use our Savings tool to track them!";
-  }
-  if (q.includes("hi") || q.includes("hello") || q.includes("hey")) {
-    return "Hello! I am your FinWise AI Assistant. How can I help you with your financial journey today?";
-  }
-  
-  return "I am an educational personal finance assistant. I can help explain concepts like budgeting, compound interest, emergency funds, stocks, and the 50/30/20 rule. What would you like to learn about today? (Note: I cannot provide professional financial or legal advice).";
-}
-
 // ── Components ─────────────────────────────────────────────────────────────
 
 export function AssistantClient() {
@@ -131,68 +45,139 @@ export function AssistantClient() {
   const [isTyping, setIsTyping] = useState(false);
   
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [userName, setUserName] = useState<string | null>(null);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputId = useId();
 
-  // Load User Data Context
+  // Load User Data Context and Local Storage Messages
   useEffect(() => {
     async function loadContext() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
+        let name = "User";
+        let txsData = null;
+        
         if (user) {
-          setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || "User");
+          name = user.user_metadata?.full_name || user.email?.split('@')[0] || "User";
           const { data: txs } = await supabase.from("transactions").select("amount, type, category").eq("user_id", user.id);
           if (txs) {
+            txsData = txs;
             setUserData({ transactions: txs });
           }
         }
+        
+        const savedMessages = localStorage.getItem("finwise_chat_messages");
+        if (savedMessages) {
+          try {
+            const parsed = JSON.parse(savedMessages);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setMessages(parsed);
+              return;
+            }
+          } catch (e) {
+            console.error("Failed to parse saved messages", e);
+          }
+        }
+
+        setMessages([
+          {
+            id: "welcome",
+            role: "assistant",
+            content: `Hi ${name !== "User" ? name : 'there'}! I'm your FinWise AI Assistant. I can help you understand personal finance, budgeting, and investing. ${txsData && txsData.length > 0 ? "I can also provide insights based on your recent spending." : ""} How can I help you today?`
+          }
+        ]);
       } catch (e) {
         console.error("Could not fetch user context", e);
-      } finally {
-        setIsLoaded(true);
+        const savedMessages = localStorage.getItem("finwise_chat_messages");
+        if (savedMessages) {
+          try {
+            const parsed = JSON.parse(savedMessages);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setMessages(parsed);
+              return;
+            }
+          } catch {}
+        }
+
+        setMessages([
+          {
+            id: "welcome",
+            role: "assistant",
+            content: `Hi there! I'm your FinWise AI Assistant. I can help you understand personal finance, budgeting, and investing. How can I help you today?`
+          }
+        ]);
       }
     }
     loadContext();
   }, []);
 
-  // Initial Welcome Message
+  // Save messages to local storage whenever they change
   useEffect(() => {
-    if (isLoaded && messages.length === 0) {
-      setMessages([
-        {
-          id: "welcome",
-          role: "assistant",
-          content: `Hi ${userName ? userName : 'there'}! I'm your FinWise AI Assistant. I can help you understand personal finance, budgeting, and investing. ${userData && userData.transactions.length > 0 ? "I can also provide insights based on your recent spending." : ""} How can I help you today?`
-        }
-      ]);
+    if (messages.length > 0) {
+      localStorage.setItem("finwise_chat_messages", JSON.stringify(messages));
     }
-  }, [isLoaded, messages.length, userName, userData]);
+  }, [messages]);
 
   // Scroll to bottom when messages change
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, isTyping]);
+  // Scroll only inside the chat messages container
+useEffect(() => {
+  const container = messagesContainerRef.current;
+
+  if (container) {
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: "smooth",
+    });
+  }
+}, [messages, isTyping]);
 
   async function handleSend(text: string) {
     if (!text.trim()) return;
     
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content: text };
-    setMessages(prev => [...prev, userMsg]);
+    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setInput("");
     setIsTyping(true);
 
-    // Simulate network delay for premium feel
-    setTimeout(() => {
-      const responseContent = generateLocalResponse(text, userData);
-      const assistantMsg: Message = { id: (Date.now() + 1).toString(), role: "assistant", content: responseContent };
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: newMessages,
+          userData: userData,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.message) {
+        throw new Error(data.error || "AI request failed");
+      }
+
+      const assistantMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: data.message,
+      };
+
       setMessages(prev => [...prev, assistantMsg]);
+    } catch (error) {
+      console.error("Gemini request failed:", error);
+
+      const errorMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: "Sorry, I'm having trouble connecting right now. Please check your internet connection or try again later.",
+      };
+
+      setMessages(prev => [...prev, errorMsg]);
+    } finally {
       setIsTyping(false);
-    }, 800 + Math.random() * 600);
+    }
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -222,7 +207,15 @@ export function AssistantClient() {
             </p>
           </div>
           <button 
-            onClick={() => setMessages(messages.slice(0, 1))}
+            onClick={() => {
+              const defaultWelcome = {
+                id: "welcome",
+                role: "assistant",
+                content: `Hi there! I'm your FinWise AI Assistant. I can help you understand personal finance, budgeting, and investing. How can I help you today?`
+              } as Message;
+              setMessages([defaultWelcome]);
+              localStorage.removeItem("finwise_chat_messages");
+            }}
             className="px-4 py-2 bg-[#102A4C] hover:bg-[#1A365D] text-[#C4B5FD] text-xs font-bold rounded-xl backdrop-blur-md transition-colors border border-[#8B5CF6]/30"
           >
             Clear Chat
@@ -235,7 +228,10 @@ export function AssistantClient() {
         <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/25 rounded-3xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl" style={{ minHeight: "500px", height: "calc(100vh - 280px)" }}>
           
           {/* Messages container */}
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+          <div
+  ref={messagesContainerRef}
+  className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 space-y-6"
+>
             {messages.map((msg) => (
               <ScrollReveal key={msg.id} direction="up" delay={0}>
                 <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}>
@@ -269,7 +265,6 @@ export function AssistantClient() {
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
           </div>
 
           {/* Input Area */}

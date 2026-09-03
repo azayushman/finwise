@@ -76,6 +76,50 @@ function compoundGrowth(principal: number, monthlyAdd: number, annualRate: numbe
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   Input Field Helper
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function InputBlock({
+  id, label, value, onChange, onBlur, error, type = "number", placeholder, min, max, step, prefix, suffix
+}: {
+  id: string; label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: () => void; error?: string; type?: string; placeholder: string;
+  min?: string; max?: string; step?: string; prefix?: string; suffix?: string;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="text-sm font-semibold text-slate-200 mb-1.5 block">{label}</label>
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{prefix}</span>
+        )}
+        <input
+          id={id}
+          type={type}
+          min={min} max={max} step={step}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          aria-invalid={Boolean(error)}
+          className={`w-full py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
+            prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-8" : "px-4"
+          } ${
+            error
+              ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
+              : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
+          }`}
+        />
+        {suffix && (
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{suffix}</span>
+        )}
+      </div>
+      {error && <p className="mt-1.5 text-xs text-rose-400 font-medium">{error}</p>}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    Main Component
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -190,44 +234,6 @@ export function SavingsClient() {
     return null;
   }, [targetNum, remaining, monthlyNum, monthsLeft, requiredMonthly, monthsToGoal, estimatedDate, targetDate]);
 
-  /* ── Input field helper ── */
-  function InputBlock({ id, label, value, setter, field, type = "number", placeholder, min, max, step, prefix, suffix }: {
-    id: string; label: string; value: string; setter: (v: string) => void;
-    field: string; type?: string; placeholder: string;
-    min?: string; max?: string; step?: string; prefix?: string; suffix?: string;
-  }) {
-    return (
-      <div>
-        <label htmlFor={id} className="text-sm font-semibold text-slate-200 mb-1.5 block">{label}</label>
-        <div className="relative">
-          {prefix && (
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{prefix}</span>
-          )}
-          <input
-            id={id}
-            type={type}
-            min={min} max={max} step={step}
-            value={value}
-            onChange={e => setField(field, e.target.value, setter)}
-            onBlur={() => setErrors(prev => ({ ...prev, [field]: validate(field, value) }))}
-            placeholder={placeholder}
-            aria-invalid={Boolean(errors[field])}
-            className={`w-full py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
-              prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-8" : "px-4"
-            } ${
-              errors[field]
-                ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
-                : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
-            }`}
-          />
-          {suffix && (
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{suffix}</span>
-          )}
-        </div>
-        {errors[field] && <p className="mt-1.5 text-xs text-rose-400 font-medium">{errors[field]}</p>}
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
@@ -279,14 +285,26 @@ export function SavingsClient() {
                       className="w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border border-[#8B5CF6]/25 rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
                     />
                   </div>
-                  <InputBlock id={targetId} label="Target Amount" value={targetAmount} setter={setTargetAmount}
-                    field="targetAmount" placeholder="e.g. 10000" min="0" step="0.01" prefix="$" />
-                  <InputBlock id={currentId} label="Current Savings" value={currentSavings} setter={setCurrentSavings}
-                    field="currentSavings" placeholder="e.g. 2500" min="0" step="0.01" prefix="$" />
-                  <InputBlock id={monthlyId} label="Monthly Contribution" value={monthlyContrib} setter={setMonthlyContrib}
-                    field="monthlyContrib" placeholder="e.g. 500" min="0" step="0.01" prefix="$" />
-                  <InputBlock id={rateId} label="Expected Annual Return" value={annualRate} setter={setAnnualRate}
-                    field="annualRate" placeholder="e.g. 5" min="0" max="50" step="0.1" suffix="%" />
+                  <InputBlock id={targetId} label="Target Amount" value={targetAmount} 
+                    onChange={e => setField("targetAmount", e.target.value, setTargetAmount)}
+                    onBlur={() => setErrors(prev => ({ ...prev, targetAmount: validate("targetAmount", targetAmount) }))}
+                    error={errors.targetAmount}
+                    placeholder="e.g. 10000" min="0" step="0.01" prefix="$" />
+                  <InputBlock id={currentId} label="Current Savings" value={currentSavings}
+                    onChange={e => setField("currentSavings", e.target.value, setCurrentSavings)}
+                    onBlur={() => setErrors(prev => ({ ...prev, currentSavings: validate("currentSavings", currentSavings) }))}
+                    error={errors.currentSavings}
+                    placeholder="e.g. 2500" min="0" step="0.01" prefix="$" />
+                  <InputBlock id={monthlyId} label="Monthly Contribution" value={monthlyContrib}
+                    onChange={e => setField("monthlyContrib", e.target.value, setMonthlyContrib)}
+                    onBlur={() => setErrors(prev => ({ ...prev, monthlyContrib: validate("monthlyContrib", monthlyContrib) }))}
+                    error={errors.monthlyContrib}
+                    placeholder="e.g. 500" min="0" step="0.01" prefix="$" />
+                  <InputBlock id={rateId} label="Expected Annual Return" value={annualRate}
+                    onChange={e => setField("annualRate", e.target.value, setAnnualRate)}
+                    onBlur={() => setErrors(prev => ({ ...prev, annualRate: validate("annualRate", annualRate) }))}
+                    error={errors.annualRate}
+                    placeholder="e.g. 5" min="0" max="50" step="0.1" suffix="%" />
                   <div>
                     <label htmlFor={dateId} className="text-sm font-semibold text-slate-200 mb-1.5 block">Target Date (optional)</label>
                     <input

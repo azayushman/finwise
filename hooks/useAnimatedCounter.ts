@@ -51,7 +51,7 @@ export function useAnimatedCounter({
 
     // Respect reduced-motion: skip animation, show final value immediately.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplay(fmt(target));
+      requestAnimationFrame(() => setDisplay(fmt(target)));
       return;
     }
 

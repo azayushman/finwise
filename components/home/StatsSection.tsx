@@ -36,7 +36,7 @@ export function StatsSection() {
     if (!el) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setProgressVisible(true);
+      requestAnimationFrame(() => setProgressVisible(true));
       return;
     }
 

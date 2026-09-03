@@ -165,7 +165,6 @@ function SpendingChart({ transactions }: { transactions: Transaction[] }) {
 export function DashboardClient() {
   const [loading, setLoading] = useState(true);
   const [demoMode, setDemoMode] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState<string>("User");
 
   // Data state
@@ -183,7 +182,6 @@ export function DashboardClient() {
           throw new Error("No active session");
         }
 
-        setIsAuthenticated(true);
         setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || "User");
 
         // Fetch real data simultaneously

@@ -79,29 +79,30 @@ function DonutChart({ slices, centerLabel, centerValue }: {
 
   const radius = 42;
   const circumference = 2 * Math.PI * radius;
-  let cumulative = 0;
+  const slicesFiltered = slices.filter(s => s.value > 0);
+  const slicesWithOffsets = slicesFiltered.map((slice, index, arr) => {
+    const fraction = slice.value / total;
+    const dashLen = fraction * circumference;
+    const cumulative = arr.slice(0, index).reduce((sum, s) => sum + (s.value / total), 0);
+    const dashOff = -cumulative * circumference;
+    return { ...slice, dashLen, dashOff };
+  });
 
   return (
     <svg viewBox="0 0 120 120" className="w-full max-w-[220px] mx-auto" aria-hidden="true">
-      {slices.filter(s => s.value > 0).map((slice) => {
-        const fraction = slice.value / total;
-        const dashLen = fraction * circumference;
-        const dashOff = -cumulative * circumference;
-        cumulative += fraction;
-        return (
-          <circle
-            key={slice.label}
-            cx="60" cy="60" r={radius}
-            fill="none"
-            stroke={slice.color}
-            strokeWidth="14"
-            strokeDasharray={`${dashLen} ${circumference - dashLen}`}
-            strokeDashoffset={dashOff}
-            strokeLinecap="butt"
-            style={{ transition: "stroke-dasharray 0.6s ease, stroke-dashoffset 0.6s ease" }}
-          />
-        );
-      })}
+      {slicesWithOffsets.map((slice) => (
+        <circle
+          key={slice.label}
+          cx="60" cy="60" r={radius}
+          fill="none"
+          stroke={slice.color}
+          strokeWidth="14"
+          strokeDasharray={`${slice.dashLen} ${circumference - slice.dashLen}`}
+          strokeDashoffset={slice.dashOff}
+          strokeLinecap="butt"
+          style={{ transition: "stroke-dasharray 0.6s ease, stroke-dashoffset 0.6s ease" }}
+        />
+      ))}
       <text x="60" y="55" textAnchor="middle" className="fill-white text-[10px] font-bold">{centerValue}</text>
       <text x="60" y="67" textAnchor="middle" className="fill-[#94A3B8] text-[6px]">{centerLabel}</text>
     </svg>

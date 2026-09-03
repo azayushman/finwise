@@ -17,15 +17,18 @@ export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  if (pathname !== prevPathname) {
+    setMenuOpen(false);
+    setPrevPathname(pathname);
+  }
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
-
-  // Close mobile menu on route change
-  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   return (
     <>
