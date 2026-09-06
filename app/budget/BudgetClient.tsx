@@ -472,9 +472,12 @@ export function BudgetClient() {
                 </div>
 
                 {expenses.length === 0 ? (
-                  <div className="text-center py-10 text-[#94A3B8]">
-                    <span className="text-3xl block mb-2">📋</span>
-                    <p className="text-sm">No expenses yet. Add your first expense above.</p>
+                  <div className="text-center py-12 px-6">
+                    <div className="text-5xl mb-4 opacity-80">🌱</div>
+                    <h3 className="text-lg font-bold text-white mb-2">Start Your Budget</h3>
+                    <p className="text-sm text-[#94A3B8] max-w-[280px] mx-auto leading-relaxed">
+                      You haven&apos;t added any expenses yet. Use the form above to add your fixed and variable costs, and see how they fit into your monthly income.
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-3">

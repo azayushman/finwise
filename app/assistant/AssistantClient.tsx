@@ -140,28 +140,56 @@ useEffect(() => {
     setInput("");
     setIsTyping(true);
 
+    const history = messages
+      .slice(-6)
+      .map(m => ({ role: m.role, content: m.content }));
+
+    let userContext = null;
+    if (userData && Array.isArray(userData.transactions)) {
+      let totalIncome = 0;
+      let totalExpense = 0;
+      const categoryTotals: Record<string, number> = {};
+
+      userData.transactions.forEach((tx) => {
+        if (tx.type === "income") {
+          totalIncome += tx.amount;
+        } else if (tx.type === "expense") {
+          totalExpense += tx.amount;
+          categoryTotals[tx.category] = (categoryTotals[tx.category] || 0) + tx.amount;
+        }
+      });
+
+      userContext = {
+        totalIncome,
+        totalExpense,
+        balance: totalIncome - totalExpense,
+        spendingByCategory: categoryTotals,
+      };
+    }
+
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/api/assistant", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: newMessages,
-          userData: userData,
+          message: text,
+          history: history,
+          userContext: userContext,
         }),
       });
 
       const data = await response.json();
 
-      if (!response.ok || !data.message) {
+      if (!response.ok || !data.response || data.response.trim() === "") {
         throw new Error(data.error || "AI request failed");
       }
 
       const assistantMsg: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: data.message,
+        content: data.response,
       };
 
       setMessages(prev => [...prev, assistantMsg]);
@@ -229,9 +257,9 @@ useEffect(() => {
           
           {/* Messages container */}
           <div
-  ref={messagesContainerRef}
-  className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 space-y-6"
->
+            ref={messagesContainerRef}
+            className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 md:p-6 space-y-6"
+          >
             {messages.map((msg) => (
               <ScrollReveal key={msg.id} direction="up" delay={0}>
                 <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}>

@@ -2,6 +2,8 @@
 
 import { useState, useId } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/src/lib/supabase";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -24,7 +26,7 @@ function validateEmail(value: string): string | undefined {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Enter a valid email address.";
 }
 
-function validatePassword(value: string): string | undefined {
+function validatePassword(value: string, isSignup?: boolean): string | undefined {
   if (!value) return "Password is required.";
   if (value.length < 6) return "Password must be at least 6 characters.";
 }
@@ -140,12 +142,15 @@ function GoogleIcon() {
 // ── Main client component ──────────────────────────────────────────────────
 
 export function LoginClient() {
+  const router = useRouter();
+  const [mode, setMode] = useState<"login" | "signup">("login");
   const [form, setForm] = useState<FormState>({ email: "", password: "", rememberMe: false });
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const emailId    = useId();
   const passwordId = useId();
@@ -153,7 +158,7 @@ export function LoginClient() {
   function getFieldErrors(state: FormState): FormErrors {
     return {
       email:    validateEmail(state.email),
-      password: validatePassword(state.password),
+      password: validatePassword(state.password, mode === "signup"),
     };
   }
 
@@ -171,7 +176,7 @@ export function LoginClient() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setTouched({ email: true, password: true });
     const fe = getFieldErrors(form);
@@ -180,12 +185,45 @@ export function LoginClient() {
 
     setIsSubmitting(true);
     setErrors({});
-    setTimeout(() => { setIsSubmitting(false); setSubmitSuccess(true); }, 1400);
+    
+    try {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: form.email,
+          password: form.password,
+        });
+        if (error) throw error;
+        router.push("/dashboard");
+      } else {
+        const { error, data } = await supabase.auth.signUp({
+          email: form.email,
+          password: form.password,
+        });
+        if (error) throw error;
+        if (data?.user?.identities?.length === 0) {
+          throw new Error("This email is already registered.");
+        }
+        setSuccessMessage("Account created successfully. You can now sign in.");
+        setSubmitSuccess(true);
+      }
+    } catch (err: any) {
+      setErrors({ general: err.message || "An unexpected error occurred. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const hasValidationErrors =
     (touched.email && Boolean(errors.email)) ||
     (touched.password && Boolean(errors.password));
+
+  const toggleMode = () => {
+    setMode(mode === "login" ? "signup" : "login");
+    setErrors({});
+    setTouched({});
+    setForm({ email: "", password: "", rememberMe: false });
+    setSubmitSuccess(false);
+  };
 
   return (
     <div
@@ -202,10 +240,10 @@ export function LoginClient() {
       <div
         className="relative w-full max-w-[440px] bg-[#0B1F3A]/95 border border-[#8B5CF6]/25 rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl animate-scale-in"
         role="main"
-        aria-label="Login form"
+        aria-label={mode === "login" ? "Login form" : "Signup form"}
       >
         {/* Success overlay */}
-        {submitSuccess && (
+        {submitSuccess && mode === "signup" && (
           <div className="absolute inset-0 rounded-3xl flex flex-col items-center justify-center z-20 animate-scale-in bg-[#0B1F3A]/95 backdrop-blur-xl">
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-[0_0_25px_rgba(109,93,251,0.5)]"
                  style={{ background: "linear-gradient(135deg, #6D5DFB, #4F46E5)" }}>
@@ -213,15 +251,18 @@ export function LoginClient() {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white mb-1">You&apos;re in!</h2>
+            <h2 className="text-xl font-bold text-white mb-1">Welcome!</h2>
             <p className="text-sm text-[#94A3B8] text-center max-w-[260px] mb-6">
-              Auth backend integration is pending. This confirms the form flow works correctly end-to-end.
+              {successMessage}
             </p>
             <button
-              onClick={() => { setSubmitSuccess(false); setForm({ email: "", password: "", rememberMe: false }); setTouched({}); setErrors({}); }}
+              onClick={() => {
+                setSubmitSuccess(false);
+                setMode("login");
+              }}
               className="text-sm font-semibold transition-colors hover:underline text-[#A78BFA]"
             >
-              ← Back to login
+              ← Proceed to login
             </button>
           </div>
         )}
@@ -230,8 +271,12 @@ export function LoginClient() {
           {/* Branding */}
           <div className="text-center mb-8">
             <FinWiseLogo />
-            <h1 className="mt-5 text-2xl font-bold tracking-tight text-white">Welcome back</h1>
-            <p className="mt-1 text-sm text-[#94A3B8]">Sign in to your FinWise account</p>
+            <h1 className="mt-5 text-2xl font-bold tracking-tight text-white">
+              {mode === "login" ? "Welcome back" : "Create an account"}
+            </h1>
+            <p className="mt-1 text-sm text-[#94A3B8]">
+              {mode === "login" ? "Sign in to your FinWise account" : "Start your financial journey today"}
+            </p>
           </div>
 
           {/* Google SSO */}
@@ -239,7 +284,7 @@ export function LoginClient() {
             type="button"
             id="google-login-btn"
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-[#8B5CF6]/25 rounded-xl text-sm font-semibold text-slate-200 bg-[#102A4C]/80 hover:bg-[#102A4C] hover:border-[#8B5CF6]/50 transition-all duration-150 mb-5"
-            onClick={() => setErrors({ general: "Google sign-in will be available once auth is configured." })}
+            onClick={() => setErrors({ general: "Google sign-in will be available soon." })}
           >
             <GoogleIcon />
             Continue with Google
@@ -268,7 +313,7 @@ export function LoginClient() {
           )}
 
           {/* Email / password form */}
-          <form onSubmit={handleSubmit} noValidate aria-label="Email sign-in form">
+          <form onSubmit={handleSubmit} noValidate aria-label={mode === "login" ? "Email sign-in form" : "Email sign-up form"}>
             <div className="space-y-4">
               <InputField
                 id={emailId}
@@ -290,16 +335,18 @@ export function LoginClient() {
                 onChange={(v) => handleChange("password", v)}
                 onBlur={() => handleBlur("password")}
                 error={touched.password ? errors.password : undefined}
-                placeholder="Enter your password"
-                autoComplete="current-password"
+                placeholder={mode === "login" ? "Enter your password" : "Create a password"}
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
                 hint={
-                  <button
-                    type="button"
-                    className="text-xs font-semibold transition-colors hover:underline text-[#A78BFA]"
-                    onClick={() => setErrors((prev) => ({ ...prev, general: "Password reset will be available once auth is configured." }))}
-                  >
-                    Forgot password?
-                  </button>
+                  mode === "login" ? (
+                    <button
+                      type="button"
+                      className="text-xs font-semibold transition-colors hover:underline text-[#A78BFA]"
+                      onClick={() => setErrors((prev) => ({ ...prev, general: "Password reset will be available soon." }))}
+                    >
+                      Forgot password?
+                    </button>
+                  ) : null
                 }
                 rightSlot={
                   <button
@@ -315,31 +362,33 @@ export function LoginClient() {
             </div>
 
             {/* Remember me */}
-            <div className="flex items-center gap-2.5 mt-5">
-              <button
-                type="button"
-                role="checkbox"
-                aria-checked={form.rememberMe}
-                id="remember-me"
-                onClick={() => handleChange("rememberMe", !form.rememberMe)}
-                className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-150 ${
-                  form.rememberMe ? "border-transparent bg-[#6D5DFB]" : "border-[#8B5CF6]/40 bg-[#102A4C] hover:border-[#8B5CF6]"
-                }`}
-              >
-                {form.rememberMe && (
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                )}
-              </button>
-              <label
-                htmlFor="remember-me"
-                className="text-sm text-slate-300 cursor-pointer select-none"
-                onClick={() => handleChange("rememberMe", !form.rememberMe)}
-              >
-                Remember me for 30 days
-              </label>
-            </div>
+            {mode === "login" && (
+              <div className="flex items-center gap-2.5 mt-5">
+                <button
+                  type="button"
+                  role="checkbox"
+                  aria-checked={form.rememberMe}
+                  id="remember-me"
+                  onClick={() => handleChange("rememberMe", !form.rememberMe)}
+                  className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-150 ${
+                    form.rememberMe ? "border-transparent bg-[#6D5DFB]" : "border-[#8B5CF6]/40 bg-[#102A4C] hover:border-[#8B5CF6]"
+                  }`}
+                >
+                  {form.rememberMe && (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </button>
+                <label
+                  htmlFor="remember-me"
+                  className="text-sm text-slate-300 cursor-pointer select-none"
+                  onClick={() => handleChange("rememberMe", !form.rememberMe)}
+                >
+                  Remember me for 30 days
+                </label>
+              </div>
+            )}
 
             {/* Submit button */}
             <button
@@ -354,24 +403,23 @@ export function LoginClient() {
                   <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                   </svg>
-                  Signing in…
+                  {mode === "login" ? "Signing in…" : "Creating account…"}
                 </span>
               ) : (
-                "Sign in to FinWise"
+                mode === "login" ? "Sign in to FinWise" : "Create account"
               )}
             </button>
           </form>
 
-          {/* Sign-up link */}
+          {/* Sign-up/Sign-in link */}
           <p className="mt-6 text-center text-sm text-[#94A3B8]">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/login"
+            {mode === "login" ? "Don't have an account? " : "Already have an account? "}
+            <button
+              onClick={toggleMode}
               className="font-semibold transition-colors hover:underline text-[#A78BFA]"
-              aria-label="Create a free FinWise account"
             >
-              Create account — it&apos;s free
-            </Link>
+              {mode === "login" ? "Create account — it's free" : "Sign in instead"}
+            </button>
           </p>
         </div>
 
@@ -392,3 +440,4 @@ export function LoginClient() {
     </div>
   );
 }
+

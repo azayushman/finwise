@@ -165,6 +165,7 @@ function SpendingChart({ transactions }: { transactions: Transaction[] }) {
 export function DashboardClient() {
   const [loading, setLoading] = useState(true);
   const [demoMode, setDemoMode] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>("User");
 
   // Data state
@@ -192,8 +193,9 @@ export function DashboardClient() {
           supabase.from("quiz_progress").select("*").eq("user_id", user.id),
         ]);
 
-        if (txRes.error || budgetRes.error) {
+        if (txRes.error || budgetRes.error || savingsRes.error || quizRes.error) {
           console.error("Data fetch error", txRes.error || budgetRes.error);
+          setFetchError("We encountered a problem loading your dashboard data.");
         }
 
         setTransactions(txRes.data || []);
@@ -229,6 +231,20 @@ export function DashboardClient() {
       </div>
     );
   }
+
+  if (fetchError && !demoMode) {
+    return (
+      <div className="min-h-screen bg-[#07111F] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="text-4xl">⚠️</div>
+          <p className="text-sm font-semibold text-rose-400">Oops, something went wrong</p>
+          <p className="text-xs text-[#94A3B8] max-w-sm">{fetchError}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const isCompletelyEmpty = !demoMode && transactions.length === 0 && budgets.length === 0 && savingsGoals.length === 0;
 
   // ── Derived Stats ────────────────────────────────────────────────────────
   
@@ -278,282 +294,298 @@ export function DashboardClient() {
 
       <div className="max-w-7xl mx-auto px-6 -mt-8 relative z-20">
         
-        {/* 2, 3, 4. Total Balance / Income / Expense / Savings Summaries */}
-        <ScrollReveal direction="up">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-            <StatCard 
-              title="Net Worth" 
-              amount={netWorth} 
-              icon="💎" 
-              color="#F5F7FF"
-            />
-            <StatCard 
-              title="Total Income" 
-              amount={totalIncome} 
-              color="#8B5CF6" 
-              icon="📥" 
-            />
-            <StatCard 
-              title="Total Expenses" 
-              amount={totalExpenses} 
-              color="#60A5FA" 
-              icon="📤" 
-            />
-            <StatCard 
-              title="Total Saved" 
-              amount={totalSavings} 
-              color="#C4B5FD" 
-              icon="⚡" 
-              trend={savingsRate > 20 ? { value: "Great rate", positive: true } : undefined}
-            />
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          
-          {/* 6. Monthly spending overview (Chart) */}
-          <div className="lg:col-span-2">
-            <ScrollReveal direction="up" delay={100}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full flex flex-col justify-between shadow-md">
-                <div>
-                  <h3 className="text-lg font-bold text-white mb-1">Spending Overview</h3>
-                  <p className="text-sm text-[#94A3B8] mb-6">Your expenses over the last 6 months</p>
-                </div>
-                <SpendingChart transactions={transactions} />
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* 9. Financial health/score section */}
-          <div className="lg:col-span-1">
-            <ScrollReveal direction="up" delay={150}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full text-center flex flex-col items-center justify-center shadow-md">
-                <h3 className="text-lg font-bold text-white mb-6">Financial Health Score</h3>
-                
-                {/* Score Ring */}
-                <div className="relative mb-6">
-                  <svg width="140" height="140" viewBox="0 0 140 140" className="-rotate-90">
-                    <circle cx="70" cy="70" r="60" fill="none" stroke="#102A4C" strokeWidth="12" />
-                    <circle 
-                      cx="70" cy="70" r="60" 
-                      fill="none" 
-                      stroke="#8B5CF6" 
-                      strokeWidth="12" 
-                      strokeLinecap="round"
-                      strokeDasharray={`${(healthScore / 100) * 2 * Math.PI * 60} ${2 * Math.PI * 60}`}
-                      style={{ transition: "stroke-dasharray 1s ease-out" }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-3xl font-black text-white">{healthScore}</span>
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-[#94A3B8]">/ 100</span>
-                  </div>
-                </div>
-                
-                <p className="text-sm font-semibold text-slate-200 mb-1">
-                  {healthScore >= 80 ? "Excellent standing!" : healthScore >= 50 ? "Good standing" : "Needs attention"}
-                </p>
-                <p className="text-xs text-[#94A3B8]">
-                  {totalIncome === 0 ? "Log income to improve your score." : "Your score updates automatically based on spending and saving."}
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          
-          {/* 7. Recent transactions */}
-          <ScrollReveal direction="up" delay={200}>
-            <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full shadow-md">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-white">Recent Transactions</h3>
-                <span className="text-sm font-semibold text-[#94A3B8]">{transactions.length} Total</span>
-              </div>
-              
-              {transactions.length === 0 ? (
-                <div className="text-center py-10">
-                  <div className="text-3xl mb-3">📝</div>
-                  <p className="text-sm font-medium text-slate-300">No transactions yet</p>
-                  <p className="text-xs text-[#94A3B8] mt-1">They will appear here once added.</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {transactions.slice(0, 6).map(tx => (
-                    <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-[#102A4C]/50 hover:bg-[#102A4C]/80 border border-[#8B5CF6]/10 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
-                          tx.type === 'income' ? 'bg-[#6D5DFB]/20 text-[#8B5CF6]' : 'bg-[#102A4C] text-[#94A3B8]'
-                        }`}>
-                          {tx.type === 'income' ? '↓' : '↑'}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-white">{tx.description}</p>
-                          <p className="text-xs text-[#94A3B8]">{tx.category} • {formatDate(tx.date)}</p>
-                        </div>
-                      </div>
-                      <div className={`text-sm font-bold ${tx.type === 'income' ? 'text-[#8B5CF6]' : 'text-white'}`}>
-                        {tx.type === 'income' ? '+' : '-'}${fmt(tx.amount)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </ScrollReveal>
-
-          <div className="space-y-8">
-            {/* 8. Budget/progress section */}
-            <ScrollReveal direction="up" delay={250}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold text-white">Budget Progress</h3>
-                  <Link href="/budget" className="text-sm font-semibold text-[#A78BFA] hover:underline">Manage</Link>
-                </div>
-                
-                {budgets.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-sm font-medium text-slate-300 mb-3">Create your first budget</p>
-                    <Link href="/budget" className="inline-block px-4 py-2 bg-[#102A4C] hover:bg-[#1A365D] border border-[#8B5CF6]/30 text-white text-xs font-bold rounded-lg transition-colors">
-                      Get Started
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-5">
-                    {budgets.map(b => {
-                      const pct = b.amount_limit > 0 ? Math.min((b.spent / b.amount_limit) * 100, 100) : 0;
-                      const isWarning = pct > 85;
-                      return (
-                        <div key={b.id}>
-                          <div className="flex justify-between text-sm mb-1.5">
-                            <span className="font-semibold text-slate-200">{b.category}</span>
-                            <span className="font-medium text-[#94A3B8]">
-                              <span className={isWarning ? "text-rose-400 font-bold" : "text-white"}>${fmt(b.spent)}</span> / ${fmt(b.amount_limit)}
-                            </span>
-                          </div>
-                          <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
-                            <div 
-                              className="h-full rounded-full transition-all duration-500" 
-                              style={{ 
-                                width: `${pct}%`, 
-                                background: isWarning ? "#EF4444" : "#8B5CF6" 
-                              }} 
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </ScrollReveal>
-
-            {/* Savings Goals */}
-            <ScrollReveal direction="up" delay={300}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold text-white">Savings Goals</h3>
-                  <Link href="/savings" className="text-sm font-semibold text-[#A78BFA] hover:underline">Manage</Link>
-                </div>
-
-                {savingsGoals.length === 0 ? (
-                  <div className="text-center py-6">
-                    <p className="text-sm font-medium text-slate-300 mb-3">Start a savings goal</p>
-                    <Link href="/savings" className="inline-block px-4 py-2 bg-[#102A4C] hover:bg-[#1A365D] border border-[#8B5CF6]/30 text-white text-xs font-bold rounded-lg transition-colors">
-                      Plan Savings
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-5">
-                    {savingsGoals.map(g => {
-                      const pct = g.target_amount > 0 ? Math.min((g.current_amount / g.target_amount) * 100, 100) : 0;
-                      return (
-                        <div key={g.id}>
-                          <div className="flex justify-between text-sm mb-1.5">
-                            <span className="font-semibold text-slate-200">{g.name}</span>
-                            <span className="font-medium text-[#94A3B8]">
-                              <span className="text-[#8B5CF6] font-bold">${fmt(g.current_amount)}</span> / ${fmt(g.target_amount)}
-                            </span>
-                          </div>
-                          <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
-                            <div 
-                              className="h-full rounded-full transition-all duration-500" 
-                              style={{ 
-                                width: `${pct}%`, 
-                                background: "linear-gradient(90deg, #6D5DFB, #8B5CF6)" 
-                              }} 
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-
-        {/* Learning Progress & Insights Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* 10. Learning Progress */}
-          <ScrollReveal direction="up" delay={100}>
-            <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full flex flex-col justify-between shadow-md">
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-white">Learning Progress</h3>
-                  <Link href="/learn" className="text-sm font-semibold text-[#A78BFA] hover:underline">Continue</Link>
-                </div>
-                
-                {quizProgress.length === 0 ? (
-                  <div className="text-center py-6">
-                    <div className="text-3xl mb-3">📚</div>
-                    <p className="text-sm font-medium text-slate-300">Test your financial literacy</p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-[#102A4C]/70 rounded-xl border border-[#8B5CF6]/15 text-center">
-                      <div className="text-2xl font-black text-[#8B5CF6] mb-1">{quizProgress.length}</div>
-                      <div className="text-xs font-semibold uppercase text-[#94A3B8]">Quizzes Done</div>
-                    </div>
-                    <div className="p-4 bg-[#102A4C]/70 rounded-xl border border-[#8B5CF6]/15 text-center">
-                      <div className="text-2xl font-black text-[#60A5FA] mb-1">{avgQuizScore.toFixed(0)}%</div>
-                      <div className="text-xs font-semibold uppercase text-[#94A3B8]">Avg Score</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </ScrollReveal>
-
-          {/* Useful financial insights */}
-          <ScrollReveal direction="up" delay={150}>
-            <div 
-              className="rounded-2xl p-6 text-white relative overflow-hidden shadow-lg h-full border border-[#8B5CF6]/25"
-              style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 translate-x-8 -translate-y-8"
-                   style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} />
-              
-              <div className="flex items-center gap-2 mb-3 relative z-10">
-                <span className="text-xl">💡</span>
-                <h3 className="text-sm font-bold tracking-wider uppercase text-[#8B5CF6]">FinWise Insight</h3>
-              </div>
-              
-              <p className="text-sm leading-relaxed mb-4 relative z-10 text-[#94A3B8]">
-                {totalSavings > 0 
-                  ? "Great job on your savings! Remember, every dollar saved today benefits from the power of compound interest."
-                  : "Track your income and expenses to unlock personalized insights and recommendations for your financial journey."}
+        {isCompletelyEmpty ? (
+          <ScrollReveal direction="up">
+            <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/30 rounded-3xl p-10 md:p-16 text-center max-w-3xl mx-auto shadow-2xl backdrop-blur-md">
+              <div className="text-5xl mb-6">🌱</div>
+              <h2 className="text-2xl font-bold text-white mb-3">Your financial journey starts here</h2>
+              <p className="text-[#94A3B8] mb-8 max-w-md mx-auto leading-relaxed">
+                Welcome to FinWise! It looks like you haven&apos;t added any transactions or budgets yet. Start tracking your income and expenses to unlock personalized insights and a financial health score.
               </p>
-              
-              <Link href="/learn" className="text-xs font-bold text-white hover:underline decoration-[#8B5CF6] underline-offset-4 relative z-10">
-                Learn more about Financial Health →
+              <Link href="/budget" className="inline-block px-6 py-3 bg-gradient-to-r from-[#6D5DFB] to-[#4F46E5] hover:opacity-90 text-white font-bold rounded-xl shadow-lg transition-opacity">
+                Set up your Budget
               </Link>
             </div>
           </ScrollReveal>
-        </div>
+        ) : (
+          <>
+            {/* 2, 3, 4. Total Balance / Income / Expense / Savings Summaries */}
+            <ScrollReveal direction="up">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                <StatCard 
+                  title="Net Worth" 
+                  amount={netWorth} 
+                  icon="💎" 
+                  color="#F5F7FF"
+                />
+                <StatCard 
+                  title="Total Income" 
+                  amount={totalIncome} 
+                  color="#8B5CF6" 
+                  icon="📥" 
+                />
+                <StatCard 
+                  title="Total Expenses" 
+                  amount={totalExpenses} 
+                  color="#60A5FA" 
+                  icon="📤" 
+                />
+                <StatCard 
+                  title="Total Saved" 
+                  amount={totalSavings} 
+                  color="#C4B5FD" 
+                  icon="⚡" 
+                  trend={savingsRate > 20 ? { value: "Great rate", positive: true } : undefined}
+                />
+              </div>
+            </ScrollReveal>
 
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+              
+              {/* 6. Monthly spending overview (Chart) */}
+              <div className="lg:col-span-2">
+                <ScrollReveal direction="up" delay={100}>
+                  <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full flex flex-col justify-between shadow-md">
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-1">Spending Overview</h3>
+                      <p className="text-sm text-[#94A3B8] mb-6">Your expenses over the last 6 months</p>
+                    </div>
+                    <SpendingChart transactions={transactions} />
+                  </div>
+                </ScrollReveal>
+              </div>
+
+              {/* 9. Financial health/score section */}
+              <div className="lg:col-span-1">
+                <ScrollReveal direction="up" delay={150}>
+                  <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full text-center flex flex-col items-center justify-center shadow-md">
+                    <h3 className="text-lg font-bold text-white mb-6">Financial Health Score</h3>
+                    
+                    {/* Score Ring */}
+                    <div className="relative mb-6">
+                      <svg width="140" height="140" viewBox="0 0 140 140" className="-rotate-90">
+                        <circle cx="70" cy="70" r="60" fill="none" stroke="#102A4C" strokeWidth="12" />
+                        <circle 
+                          cx="70" cy="70" r="60" 
+                          fill="none" 
+                          stroke="#8B5CF6" 
+                          strokeWidth="12" 
+                          strokeLinecap="round"
+                          strokeDasharray={`${(healthScore / 100) * 2 * Math.PI * 60} ${2 * Math.PI * 60}`}
+                          style={{ transition: "stroke-dasharray 1s ease-out" }}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center flex-col">
+                        <span className="text-3xl font-black text-white">{healthScore}</span>
+                        <span className="text-[10px] uppercase tracking-widest font-bold text-[#94A3B8]">/ 100</span>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm font-semibold text-slate-200 mb-1">
+                      {healthScore >= 80 ? "Excellent standing!" : healthScore >= 50 ? "Good standing" : "Needs attention"}
+                    </p>
+                    <p className="text-xs text-[#94A3B8]">
+                      {totalIncome === 0 ? "Log income to improve your score." : "Your score updates automatically based on spending and saving."}
+                    </p>
+                  </div>
+                </ScrollReveal>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              
+              {/* 7. Recent transactions */}
+              <ScrollReveal direction="up" delay={200}>
+                <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full shadow-md">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-bold text-white">Recent Transactions</h3>
+                    <span className="text-sm font-semibold text-[#94A3B8]">{transactions.length} Total</span>
+                  </div>
+                  
+                  {transactions.length === 0 ? (
+                    <div className="text-center py-10">
+                      <div className="text-3xl mb-3">📝</div>
+                      <p className="text-sm font-medium text-slate-300">No transactions yet</p>
+                      <p className="text-xs text-[#94A3B8] mt-1">They will appear here once added.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {transactions.slice(0, 6).map(tx => (
+                        <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-[#102A4C]/50 hover:bg-[#102A4C]/80 border border-[#8B5CF6]/10 transition-colors">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                              tx.type === 'income' ? 'bg-[#6D5DFB]/20 text-[#8B5CF6]' : 'bg-[#102A4C] text-[#94A3B8]'
+                            }`}>
+                              {tx.type === 'income' ? '↓' : '↑'}
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-white">{tx.description}</p>
+                              <p className="text-xs text-[#94A3B8]">{tx.category} • {formatDate(tx.date)}</p>
+                            </div>
+                          </div>
+                          <div className={`text-sm font-bold ${tx.type === 'income' ? 'text-[#8B5CF6]' : 'text-white'}`}>
+                            {tx.type === 'income' ? '+' : '-'}${fmt(tx.amount)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </ScrollReveal>
+
+              <div className="space-y-8">
+                {/* 8. Budget/progress section */}
+                <ScrollReveal direction="up" delay={250}>
+                  <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-bold text-white">Budget Progress</h3>
+                      <Link href="/budget" className="text-sm font-semibold text-[#A78BFA] hover:underline">Manage</Link>
+                    </div>
+                    
+                    {budgets.length === 0 ? (
+                      <div className="text-center py-8">
+                        <p className="text-sm font-medium text-slate-300 mb-3">Create your first budget</p>
+                        <Link href="/budget" className="inline-block px-4 py-2 bg-[#102A4C] hover:bg-[#1A365D] border border-[#8B5CF6]/30 text-white text-xs font-bold rounded-lg transition-colors">
+                          Get Started
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-5">
+                        {budgets.map(b => {
+                          const pct = b.amount_limit > 0 ? Math.min((b.spent / b.amount_limit) * 100, 100) : 0;
+                          const isWarning = pct > 85;
+                          return (
+                            <div key={b.id}>
+                              <div className="flex justify-between text-sm mb-1.5">
+                                <span className="font-semibold text-slate-200">{b.category}</span>
+                                <span className="font-medium text-[#94A3B8]">
+                                  <span className={isWarning ? "text-rose-400 font-bold" : "text-white"}>${fmt(b.spent)}</span> / ${fmt(b.amount_limit)}
+                                </span>
+                              </div>
+                              <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full rounded-full transition-all duration-500" 
+                                  style={{ 
+                                    width: `${pct}%`, 
+                                    background: isWarning ? "#EF4444" : "#8B5CF6" 
+                                  }} 
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </ScrollReveal>
+
+                {/* Savings Goals */}
+                <ScrollReveal direction="up" delay={300}>
+                  <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-bold text-white">Savings Goals</h3>
+                      <Link href="/savings" className="text-sm font-semibold text-[#A78BFA] hover:underline">Manage</Link>
+                    </div>
+
+                    {savingsGoals.length === 0 ? (
+                      <div className="text-center py-6">
+                        <p className="text-sm font-medium text-slate-300 mb-3">Start a savings goal</p>
+                        <Link href="/savings" className="inline-block px-4 py-2 bg-[#102A4C] hover:bg-[#1A365D] border border-[#8B5CF6]/30 text-white text-xs font-bold rounded-lg transition-colors">
+                          Plan Savings
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-5">
+                        {savingsGoals.map(g => {
+                          const pct = g.target_amount > 0 ? Math.min((g.current_amount / g.target_amount) * 100, 100) : 0;
+                          return (
+                            <div key={g.id}>
+                              <div className="flex justify-between text-sm mb-1.5">
+                                <span className="font-semibold text-slate-200">{g.name}</span>
+                                <span className="font-medium text-[#94A3B8]">
+                                  <span className="text-[#8B5CF6] font-bold">${fmt(g.current_amount)}</span> / ${fmt(g.target_amount)}
+                                </span>
+                              </div>
+                              <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full rounded-full transition-all duration-500" 
+                                  style={{ 
+                                    width: `${pct}%`, 
+                                    background: "linear-gradient(90deg, #6D5DFB, #8B5CF6)" 
+                                  }} 
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </ScrollReveal>
+              </div>
+            </div>
+
+            {/* Learning Progress & Insights Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* 10. Learning Progress */}
+              <ScrollReveal direction="up" delay={100}>
+                <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 h-full flex flex-col justify-between shadow-md">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-white">Learning Progress</h3>
+                      <Link href="/learn" className="text-sm font-semibold text-[#A78BFA] hover:underline">Continue</Link>
+                    </div>
+                    
+                    {quizProgress.length === 0 ? (
+                      <div className="text-center py-6">
+                        <div className="text-3xl mb-3">📚</div>
+                        <p className="text-sm font-medium text-slate-300">Test your financial literacy</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 bg-[#102A4C]/70 rounded-xl border border-[#8B5CF6]/15 text-center">
+                          <div className="text-2xl font-black text-[#8B5CF6] mb-1">{quizProgress.length}</div>
+                          <div className="text-xs font-semibold uppercase text-[#94A3B8]">Quizzes Done</div>
+                        </div>
+                        <div className="p-4 bg-[#102A4C]/70 rounded-xl border border-[#8B5CF6]/15 text-center">
+                          <div className="text-2xl font-black text-[#60A5FA] mb-1">{avgQuizScore.toFixed(0)}%</div>
+                          <div className="text-xs font-semibold uppercase text-[#94A3B8]">Avg Score</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* Useful financial insights */}
+              <ScrollReveal direction="up" delay={150}>
+                <div 
+                  className="rounded-2xl p-6 text-white relative overflow-hidden shadow-lg h-full border border-[#8B5CF6]/25"
+                  style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 translate-x-8 -translate-y-8"
+                       style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} />
+                  
+                  <div className="flex items-center gap-2 mb-3 relative z-10">
+                    <span className="text-xl">💡</span>
+                    <h3 className="text-sm font-bold tracking-wider uppercase text-[#8B5CF6]">FinWise Insight</h3>
+                  </div>
+                  
+                  <p className="text-sm leading-relaxed mb-4 relative z-10 text-[#94A3B8]">
+                    {totalSavings > 0 
+                      ? "Great job on your savings! Remember, every dollar saved today benefits from the power of compound interest."
+                      : "Track your income and expenses to unlock personalized insights and recommendations for your financial journey."}
+                  </p>
+                  
+                  <Link href="/learn" className="text-xs font-bold text-white hover:underline decoration-[#8B5CF6] underline-offset-4 relative z-10">
+                    Learn more about Financial Health →
+                  </Link>
+                </div>
+              </ScrollReveal>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

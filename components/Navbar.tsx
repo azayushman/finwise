@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { supabase } from "@/src/lib/supabase";
+import type { Session } from "@supabase/supabase-js";
 
 const navLinks = [
   { href: "/",          label: "Home" },
@@ -15,9 +17,11 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
+  const [session, setSession] = useState<Session | null>(null);
 
   if (pathname !== prevPathname) {
     setMenuOpen(false);
@@ -29,6 +33,23 @@ export function Navbar() {
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
     <>
@@ -86,14 +107,25 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
-              style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
-              id="navbar-login-btn"
-            >
-              Login
-            </Link>
+            {session ? (
+              <button
+                onClick={handleLogout}
+                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
+                style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                id="navbar-logout-btn"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
+                style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                id="navbar-login-btn"
+              >
+                Login
+              </Link>
+            )}
 
             {/* Hamburger */}
             <button
@@ -139,13 +171,23 @@ export function Navbar() {
               );
             })}
             <div className="border-t border-[#8B5CF6]/15 mt-2 pt-2">
-              <Link
-                href="/login"
-                className="flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl shadow-[0_0_20px_rgba(109,93,251,0.3)]"
-                style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
-              >
-                Login →
-              </Link>
+              {session ? (
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl shadow-[0_0_20px_rgba(109,93,251,0.3)]"
+                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl shadow-[0_0_20px_rgba(109,93,251,0.3)]"
+                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                >
+                  Login →
+                </Link>
+              )}
             </div>
           </div>
         )}
