@@ -56,8 +56,8 @@ export function Navbar() {
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-[#07111F]/90 backdrop-blur-md shadow-[0_4px_25px_rgba(7,17,31,0.8)] border-b border-[#8B5CF6]/20"
-            : "bg-[#07111F]/70 backdrop-blur-sm border-b border-[#8B5CF6]/10"
+            ? "glass-surface border-b border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.1)] backdrop-blur-md"
+            : "bg-transparent border-b border-transparent"
         }`}
       >
         <nav
@@ -94,8 +94,8 @@ export function Navbar() {
                   role="listitem"
                   className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-150 ${
                     isActive
-                      ? "text-white bg-[#102A4C] border border-[#8B5CF6]/30 font-semibold shadow-[0_0_12px_rgba(109,93,251,0.2)]"
-                      : "text-[#94A3B8] hover:text-white hover:bg-[#102A4C]/60"
+                      ? "text-white glass-surface font-semibold shadow-sm"
+                      : "text-[#94A3B8] hover:text-white hover:bg-white/5"
                   }`}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -110,8 +110,7 @@ export function Navbar() {
             {session ? (
               <button
                 onClick={handleLogout}
-                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
-                style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 border border-[#8B5CF6]/30 bg-[#6D5DFB]/15 hover:bg-[#6D5DFB]/25 hover:border-[#8B5CF6]/50 hover:shadow-[0_4px_16px_rgba(109,93,251,0.2)]"
                 id="navbar-logout-btn"
               >
                 Logout
@@ -119,8 +118,7 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
-                style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 border border-[#8B5CF6]/30 bg-[#6D5DFB]/15 hover:bg-[#6D5DFB]/25 hover:border-[#8B5CF6]/50 hover:shadow-[0_4px_16px_rgba(109,93,251,0.2)]"
                 id="navbar-login-btn"
               >
                 Login
@@ -129,7 +127,7 @@ export function Navbar() {
 
             {/* Hamburger */}
             <button
-              className="md:hidden w-9 h-9 flex flex-col items-center justify-center gap-[5px] rounded-lg hover:bg-[#102A4C] transition-colors"
+              className="md:hidden w-9 h-9 flex flex-col items-center justify-center gap-[5px] rounded-lg hover:bg-white/5 transition-colors"
               onClick={() => setMenuOpen((o) => !o)}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
@@ -162,8 +160,8 @@ export function Navbar() {
                   href={link.href}
                   className={`flex items-center px-4 py-3 text-base font-medium rounded-xl mb-1 transition-colors ${
                     isActive
-                      ? "bg-[#102A4C] text-white font-semibold border border-[#8B5CF6]/30"
-                      : "text-[#94A3B8] hover:bg-[#102A4C]/50 hover:text-white"
+                      ? "glass-surface text-white font-semibold"
+                      : "text-[#94A3B8] hover:bg-white/5 hover:text-white"
                   }`}
                 >
                   {link.label}
@@ -174,16 +172,14 @@ export function Navbar() {
               {session ? (
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl shadow-[0_0_20px_rgba(109,93,251,0.3)]"
-                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                  className="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl border border-[#8B5CF6]/30 bg-[#6D5DFB]/15"
                 >
                   Logout
                 </button>
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl shadow-[0_0_20px_rgba(109,93,251,0.3)]"
-                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                  className="flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl border border-[#8B5CF6]/30 bg-[#6D5DFB]/15"
                 >
                   Login →
                 </Link>
