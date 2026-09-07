@@ -3,9 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { AmbientBackground } from "@/components/ui/AmbientBackground";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { Badge } from "@/components/ui/Badge";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Topics Data
@@ -210,15 +207,15 @@ const TOPICS: Topic[] = [
   },
 ];
 
-const tagVariant: Record<string, "green" | "navy" | "amber" | "purple"> = {
-  Foundations: "navy",
-  Credit:      "amber",
-  Budgeting:   "green",
-  Investing:   "purple",
-  Savings:     "green",
-  Protection:  "navy",
-  Taxes:       "amber",
-  Goals:       "purple",
+const TAG_COLORS: Record<string, string> = {
+  Foundations: "#8B5CF6",
+  Budgeting:   "#60A5FA",
+  Savings:     "#34D399",
+  Investing:   "#A78BFA",
+  Credit:      "#F59E0B",
+  Taxes:       "#FB923C",
+  Goals:       "#C084FC",
+  Protection:  "#38BDF8",
 };
 
 const CATEGORIES = ["All", "Foundations", "Budgeting", "Savings", "Investing", "Credit", "Taxes"];
@@ -234,45 +231,50 @@ export function LearnClient() {
   const activeTopic = activeTopicId ? TOPICS.find(t => t.id === activeTopicId) : null;
 
   return (
-    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
-      {/* ════════════════ HERO ════════════════ */}
-      <div
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
-      >
-        <AmbientBackground variant="dark" />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <SectionLabel>Learning Hub</SectionLabel>
-          <h1 className="text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
-            Financial Literacy<br />
-            <span className="gradient-text">Made Simple.</span>
-          </h1>
-          <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
-            Explore structured lessons across every financial topic. No prior knowledge needed —
-            we start from the very basics and build up from there.
-          </p>
+    <div className="min-h-screen text-[#F5F7FF] relative">
+      {/* ── Page ambient depth ── */}
+      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-[#6D5DFB]/8 rounded-full blur-[120px] -z-10 pointer-events-none" aria-hidden="true" />
+      <div className="absolute top-[50%] left-0 w-[500px] h-[500px] bg-[#4F46E5]/6 rounded-full blur-[100px] -z-10 pointer-events-none" aria-hidden="true" />
 
-          {/* Stats row */}
-          {!activeTopicId && (
-            <ScrollReveal direction="up" delay={100}>
+      {/* ════════════════ HERO ════════════════ */}
+      <div className="pt-16 pb-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          <ScrollReveal direction="up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 glass-surface">
+              <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C4B5FD]">
+                Financial Education
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+              Learn money without<br />
+              <span className="gradient-text">the jargon.</span>
+            </h1>
+            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+              Explore structured lessons across every financial topic. No prior knowledge needed —
+              we start from the very basics and build up from there.
+            </p>
+
+            {/* Stats row */}
+            {!activeTopicId && (
               <div className="flex flex-wrap gap-8 mt-10">
                 {[
-                  { value: TOPICS.length.toString(),  label: "Core Topics" },
+                  { value: TOPICS.length.toString(), label: "Core Topics" },
                   { value: TOPICS.reduce((acc, t) => acc + t.lessons.length, 0).toString(), label: "Lessons" },
-                  { value: "Free",  label: "Always" },
+                  { value: "Free", label: "Always" },
                 ].map((s, i) => (
-                  <div key={i}>
-                    <div className="text-2xl font-bold text-white">{s.value}</div>
+                  <div key={i} className="glass-surface rounded-xl px-4 py-3 text-center min-w-[80px]">
+                    <div className="text-2xl font-black text-white">{s.value}</div>
                     <div className="text-xs uppercase tracking-wider mt-0.5 text-[#94A3B8]">{s.label}</div>
                   </div>
                 ))}
               </div>
-            </ScrollReveal>
-          )}
+            )}
+          </ScrollReveal>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-6 pb-16">
 
         {/* ════════════════ TOPIC DETAIL VIEW ════════════════ */}
         {activeTopic ? (
@@ -281,51 +283,59 @@ export function LearnClient() {
               {/* Back button */}
               <button
                 onClick={() => setActiveTopicId(null)}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#A78BFA] hover:text-[#C4B5FD] transition-colors mb-6"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#A78BFA] hover:text-[#C4B5FD] transition-colors mb-8"
               >
                 ← Back to all topics
               </button>
 
               {/* Topic header */}
-              <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/20 rounded-3xl p-10 mb-8 shadow-xl">
+              <div className="glass-panel rounded-3xl p-8 lg:p-10 mb-8">
                 <div className="flex items-start justify-between mb-6">
                   <div className="text-6xl" aria-hidden="true">{activeTopic.icon}</div>
-                  <Badge variant={tagVariant[activeTopic.tag]}>{activeTopic.tag}</Badge>
+                  <span
+                    className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider glass-surface"
+                    style={{ color: TAG_COLORS[activeTopic.tag] ?? "#C4B5FD" }}
+                  >
+                    {activeTopic.tag}
+                  </span>
                 </div>
                 <h2 className="text-3xl font-black text-white mb-4">{activeTopic.title}</h2>
-                <p className="text-lg text-[#94A3B8] leading-relaxed">{activeTopic.desc}</p>
-                <div className="mt-6 flex items-center gap-4 text-sm font-semibold text-[#A78BFA]">
+                <p className="text-lg text-[#94A3B8] leading-relaxed mb-6">{activeTopic.desc}</p>
+                <div className="flex items-center gap-4 text-sm font-semibold text-[#A78BFA]">
                   <span>⏱ {activeTopic.duration}</span>
-                  <span>📚 {activeTopic.lessons.length} lessons</span>
+                  <span>📚 {activeTopic.lessons.length} {activeTopic.lessons.length === 1 ? "lesson" : "lessons"}</span>
                 </div>
               </div>
 
               {/* Lessons */}
               <div className="space-y-8 mb-10">
                 {activeTopic.lessons.map((lesson, idx) => (
-                  <div key={idx} className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-3xl p-8 lg:p-10 shadow-lg">
+                  <div key={idx} className="glass-panel rounded-3xl p-8 lg:p-10">
                     <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-[#102A4C] text-[#C4B5FD] border border-[#8B5CF6]/30">
+                      <span
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 glass-surface"
+                        style={{ color: "#C4B5FD", border: "1px solid rgba(139,92,246,0.3)" }}
+                      >
                         {idx + 1}
                       </span>
                       {lesson.title}
                     </h3>
-                    
-                    <div className="space-y-4 mb-8">
+
+                    <div className="space-y-5 mb-8">
                       {lesson.content.map((p, pIdx) => (
-                        <p key={pIdx} className="text-[15px] leading-loose text-slate-200">
+                        <p key={pIdx} className="text-[15px] leading-loose text-slate-200/90 max-w-prose">
                           {p}
                         </p>
                       ))}
                     </div>
 
                     {/* Key takeaways */}
-                    <div className="rounded-2xl p-6 bg-[#102A4C]/70 border border-[#8B5CF6]/20">
+                    <div className="glass-surface rounded-2xl p-6 border-[#8B5CF6]/20">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-[#A78BFA] mb-4">Key Takeaways</h4>
                       <ul className="space-y-3">
                         {lesson.takeaways.map((takeaway, tIdx) => (
                           <li key={tIdx} className="flex items-start gap-3">
-                            <span className="text-[#8B5CF6] mt-0.5 font-bold">✓</span>
+                            <span className="text-[#8B5CF6] mt-0.5 font-bold flex-shrink-0" aria-hidden="true">✓</span>
                             <span className="text-sm font-semibold text-slate-200 leading-relaxed">{takeaway}</span>
                           </li>
                         ))}
@@ -336,11 +346,8 @@ export function LearnClient() {
               </div>
 
               {/* End of topic CTA */}
-              <div
-                className="rounded-3xl p-10 text-center relative overflow-hidden border border-[#8B5CF6]/30 shadow-2xl"
-                style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
-              >
-                <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10"
+              <div className="glass-panel rounded-3xl p-10 text-center relative overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-2xl font-bold text-white mb-3 relative z-10">Topic Completed!</h3>
                 <p className="text-base mb-8 max-w-lg mx-auto relative z-10 text-[#94A3B8]">
@@ -349,14 +356,13 @@ export function LearnClient() {
                 <div className="flex flex-wrap justify-center gap-4 relative z-10">
                   <Link
                     href="/quiz"
-                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(109,93,251,0.4)]"
-                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
                   >
                     Test Your Knowledge →
                   </Link>
                   <button
                     onClick={() => setActiveTopicId(null)}
-                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold text-slate-200 transition-all border border-[#8B5CF6]/30 hover:bg-[#102A4C]"
+                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold text-slate-200 transition-all duration-300 glass-surface border-white/10 hover:text-white hover:-translate-y-0.5"
                   >
                     Next Topic
                   </button>
@@ -369,19 +375,19 @@ export function LearnClient() {
           <div>
             {/* Filter pills */}
             <ScrollReveal direction="up">
-              <div className="flex flex-wrap gap-2 mb-10" role="list" aria-label="Topic filters">
+              <div className="flex flex-wrap gap-2 mb-10" role="group" aria-label="Filter topics by category">
                 {CATEGORIES.map((cat) => {
                   const isActive = activeCategory === cat;
                   return (
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
-                      className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-150 border ${
+                      aria-pressed={isActive}
+                      className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 border ${
                         isActive
-                          ? "text-white border-[#8B5CF6] shadow-[0_0_15px_rgba(109,93,251,0.35)]"
-                          : "bg-[#0B1F3A]/90 text-[#94A3B8] border-[#8B5CF6]/20 hover:border-[#8B5CF6]/40 hover:text-white"
+                          ? "text-white border-[#8B5CF6]/60 bg-[#6D5DFB] shadow-[0_0_15px_rgba(109,93,251,0.3)]"
+                          : "glass-surface text-[#94A3B8] border-white/10 hover:border-white/20 hover:text-white"
                       }`}
-                      style={isActive ? { background: "linear-gradient(135deg, #6D5DFB, #4F46E5)" } : undefined}
                     >
                       {cat}
                     </button>
@@ -397,16 +403,31 @@ export function LearnClient() {
                   <button
                     role="listitem"
                     onClick={() => setActiveTopicId(topic.id)}
-                    className="w-full text-left group bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-3xl p-7 transition-all duration-250 hover:-translate-y-1.5 hover:shadow-[0_10px_30px_rgba(109,93,251,0.2)] hover:border-[#8B5CF6]/50 flex flex-col h-full cursor-pointer"
+                    aria-label={`Read lesson: ${topic.title}`}
+                    className="w-full text-left group glass-panel rounded-3xl p-7 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_16px_40px_-12px_rgba(109,93,251,0.3)] flex flex-col h-full cursor-pointer"
                   >
-                    <div className="text-4xl mb-5" aria-hidden="true">{topic.icon}</div>
-                    <Badge variant={tagVariant[topic.tag]} className="mb-4">{topic.tag}</Badge>
-                    <h2 className="text-lg font-bold text-white mb-2 leading-snug group-hover:text-[#C4B5FD] transition-colors">{topic.title}</h2>
+                    <div className="text-4xl mb-4" aria-hidden="true">{topic.icon}</div>
+
+                    {/* Tag */}
+                    <span
+                      className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4 glass-surface"
+                      style={{ color: TAG_COLORS[topic.tag] ?? "#C4B5FD" }}
+                    >
+                      {topic.tag}
+                    </span>
+
+                    <h2 className="text-base font-bold text-white mb-2 leading-snug group-hover:text-[#C4B5FD] transition-colors duration-300">
+                      {topic.title}
+                    </h2>
                     <p className="text-sm text-[#94A3B8] leading-relaxed mb-6 flex-1">{topic.desc}</p>
-                    <div className="flex items-center justify-between w-full pt-4 border-t border-[#8B5CF6]/15">
+
+                    <div className="flex items-center justify-between w-full pt-4 border-t border-white/5">
                       <span className="text-xs text-[#94A3B8] font-semibold">{topic.duration}</span>
-                      <span className="text-sm font-bold transition-all duration-200 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 text-[#A78BFA]">
-                        Read Lesson →
+                      <span
+                        className="text-sm font-bold text-[#A78BFA] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                        aria-hidden="true"
+                      >
+                        Read →
                       </span>
                     </div>
                   </button>
@@ -416,7 +437,7 @@ export function LearnClient() {
 
             {filteredTopics.length === 0 && (
               <div className="text-center py-20">
-                <div className="text-4xl mb-4">🔍</div>
+                <div className="text-4xl mb-4" aria-hidden="true">🔍</div>
                 <h3 className="text-lg font-bold text-white mb-2">No topics found</h3>
                 <p className="text-sm text-[#94A3B8]">Try selecting a different category.</p>
               </div>

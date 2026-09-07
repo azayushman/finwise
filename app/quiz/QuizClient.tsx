@@ -3,9 +3,6 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { AmbientBackground } from "@/components/ui/AmbientBackground";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { Badge } from "@/components/ui/Badge";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Question Bank
@@ -271,75 +268,85 @@ export function QuizClient() {
     handleStartQuiz();
   }
 
+  const catColor = CATEGORY_COLORS[q?.category] ?? "#8B5CF6";
+
   return (
-    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
-      {/* Hero */}
-      <div
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
-      >
-        <AmbientBackground variant="dark" />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <SectionLabel>Knowledge Quiz</SectionLabel>
-          <h1 className="text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
-            Test Your<br />
-            <span className="gradient-text">Financial IQ.</span>
-          </h1>
-          <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
-            {totalQuestions} questions across {categoryBreakdown.length} topics. Find your gaps,
-            reinforce your knowledge, and level up your financial literacy.
-          </p>
+    <div className="min-h-screen text-[#F5F7FF] relative">
+      {/* ── Page ambient depth ── */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#6D5DFB]/8 rounded-full blur-[120px] -z-10 pointer-events-none" aria-hidden="true" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#4F46E5]/6 rounded-full blur-[100px] -z-10 pointer-events-none" aria-hidden="true" />
+
+      {/* ════════════════ HERO ════════════════ */}
+      <div className="pt-16 pb-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <ScrollReveal direction="up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 glass-surface">
+              <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C4B5FD]">
+                FinWise Quiz
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+              Test what you know<br />
+              <span className="gradient-text">about money.</span>
+            </h1>
+            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+              {totalQuestions} questions across {categoryBreakdown.length} topics. Find your gaps,
+              reinforce your knowledge, and level up your financial literacy.
+            </p>
+          </ScrollReveal>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="max-w-4xl mx-auto px-6 pb-16">
 
         {/* ════════════════ INTRO SCREEN ════════════════ */}
         {state === "intro" && (
           <ScrollReveal direction="up">
-            <div className="text-center">
-              {/* Quiz info card */}
-              <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/20 rounded-3xl p-10 mb-8 shadow-2xl">
-                <div className="text-6xl mb-4">🧠</div>
-                <h2 className="text-2xl font-bold text-white mb-3">Financial Literacy Quiz</h2>
-                <p className="text-sm text-[#94A3B8] max-w-md mx-auto mb-8">
-                  Test your knowledge of budgeting, saving, investing, credit, and more.
-                  Each question includes a beginner-friendly explanation.
-                </p>
-                <div className="flex flex-wrap justify-center gap-6 mb-8">
-                  {[
-                    { value: totalQuestions.toString(), label: "Questions" },
-                    { value: categoryBreakdown.length.toString(), label: "Topics" },
-                    { value: "~8 min", label: "Duration" },
-                  ].map(s => (
-                    <div key={s.label}>
-                      <div className="text-2xl font-black text-[#8B5CF6]">{s.value}</div>
-                      <div className="text-xs text-[#94A3B8] uppercase tracking-wider mt-0.5">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
+            <div className="glass-panel rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden">
+              <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full opacity-10 pointer-events-none"
+                   style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
 
-                {/* Topic coverage */}
-                <div className="flex flex-wrap justify-center gap-2 mb-8">
-                  {categoryBreakdown.map(c => (
-                    <span
-                      key={c.name}
-                      className="px-3 py-1 rounded-full text-xs font-semibold border"
-                      style={{ color: c.color, borderColor: c.color + "40", background: c.color + "15" }}
-                    >
-                      {c.name}
-                    </span>
-                  ))}
-                </div>
+              <div className="text-6xl mb-5 relative z-10" aria-hidden="true">🧠</div>
+              <h2 className="text-2xl font-bold text-white mb-3 relative z-10">Financial Literacy Quiz</h2>
+              <p className="text-sm text-[#94A3B8] max-w-md mx-auto mb-8 leading-relaxed relative z-10">
+                Test your knowledge of budgeting, saving, investing, credit, and more.
+                Each question includes a beginner-friendly explanation.
+              </p>
 
-                <button
-                  onClick={handleStartQuiz}
-                  className="px-10 py-4 rounded-full text-lg font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(109,93,251,0.5)]"
-                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
-                >
-                  Start Quiz →
-                </button>
+              {/* Stats */}
+              <div className="flex flex-wrap justify-center gap-4 mb-8 relative z-10">
+                {[
+                  { value: totalQuestions.toString(), label: "Questions" },
+                  { value: categoryBreakdown.length.toString(), label: "Topics" },
+                  { value: "~8 min", label: "Duration" },
+                ].map(s => (
+                  <div key={s.label} className="glass-surface rounded-xl px-5 py-3 min-w-[80px]">
+                    <div className="text-2xl font-black text-[#8B5CF6]">{s.value}</div>
+                    <div className="text-xs text-[#94A3B8] uppercase tracking-wider mt-0.5">{s.label}</div>
+                  </div>
+                ))}
               </div>
+
+              {/* Topic coverage pills */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8 relative z-10">
+                {categoryBreakdown.map(c => (
+                  <span
+                    key={c.name}
+                    className="px-3 py-1 rounded-full text-xs font-semibold glass-surface"
+                    style={{ color: c.color, borderColor: c.color + "40" }}
+                  >
+                    {c.name}
+                  </span>
+                ))}
+              </div>
+
+              <button
+                onClick={handleStartQuiz}
+                className="px-10 py-4 rounded-xl text-base font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,93,251,0.5)] bg-[#6D5DFB] border border-white/10 relative z-10"
+              >
+                Start Quiz →
+              </button>
             </div>
           </ScrollReveal>
         )}
@@ -353,23 +360,31 @@ export function QuizClient() {
                 <span className="text-sm font-semibold text-slate-300">
                   {state === "review" ? "Reviewing" : "Question"} {currentIdx + 1} of {totalQuestions}
                 </span>
-                <span className="text-sm font-semibold text-[#8B5CF6]">
+                <span className="text-sm font-bold text-[#8B5CF6]">
                   {Math.round(((currentIdx + 1) / totalQuestions) * 100)}%
                 </span>
               </div>
-              <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
+              <div
+                className="h-1.5 rounded-full overflow-hidden glass-surface"
+                role="progressbar"
+                aria-valuenow={currentIdx + 1}
+                aria-valuemin={1}
+                aria-valuemax={totalQuestions}
+                aria-label={`Question ${currentIdx + 1} of ${totalQuestions}`}
+              >
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${((currentIdx + 1) / totalQuestions) * 100}%`,
                     background: "linear-gradient(90deg, #6D5DFB, #8B5CF6)",
+                    boxShadow: "0 0 8px rgba(109,93,251,0.5)",
                   }}
                 />
               </div>
             </div>
 
-            {/* Question dots */}
-            <div className="flex flex-wrap gap-1.5 mb-6">
+            {/* Question dots navigator */}
+            <div className="flex flex-wrap gap-1.5 mb-6" role="group" aria-label="Question navigation">
               {QUESTIONS.map((_, i) => {
                 const answered = answers[i] !== null;
                 const isCorrect = answered && answers[i] === QUESTIONS[i].correct;
@@ -378,17 +393,18 @@ export function QuizClient() {
                   <button
                     key={i}
                     onClick={() => handleJumpTo(i)}
-                    className={`w-7 h-7 rounded-full text-[10px] font-bold transition-all duration-150 border ${
+                    className={`w-7 h-7 rounded-full text-[10px] font-bold transition-all duration-200 border ${
                       isCurrent
                         ? "border-[#8B5CF6] scale-110 shadow-[0_0_12px_rgba(139,92,246,0.6)]"
                         : answered
                           ? isCorrect
                             ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300"
                             : "border-rose-500/50 bg-rose-500/20 text-rose-300"
-                          : "border-[#8B5CF6]/20 bg-[#102A4C]/50 text-[#94A3B8] hover:border-[#8B5CF6]/50"
+                          : "glass-surface border-white/10 text-[#94A3B8] hover:border-white/20"
                     }`}
                     style={isCurrent ? { background: "#8B5CF6", color: "#fff", borderColor: "#8B5CF6" } : undefined}
-                    aria-label={`Go to question ${i + 1}`}
+                    aria-label={`Go to question ${i + 1}${answered ? (isCorrect ? " (correct)" : " (incorrect)") : ""}`}
+                    aria-current={isCurrent ? "true" : undefined}
                   >
                     {i + 1}
                   </button>
@@ -397,20 +413,19 @@ export function QuizClient() {
             </div>
 
             {/* Question card */}
-            <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/20 rounded-3xl p-8 mb-6 shadow-xl">
-              <div className="flex items-center gap-2 mb-4">
-                <Badge
-                  variant={
-                    q.category === "Budgeting" ? "green"
-                    : q.category === "Investing" ? "purple"
-                    : q.category === "Credit Scores" ? "amber"
-                    : "navy"
-                  }
+            <div className="glass-panel rounded-3xl p-7 sm:p-9 mb-6">
+              {/* Category tag */}
+              <div className="flex items-center gap-2 mb-5">
+                <span
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider glass-surface"
+                  style={{ color: catColor }}
                 >
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: catColor }} aria-hidden="true" />
                   {q.category}
-                </Badge>
+                </span>
               </div>
-              <h2 className="text-xl font-bold text-white leading-relaxed mb-6">
+
+              <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed mb-7">
                 {q.question}
               </h2>
 
@@ -422,26 +437,20 @@ export function QuizClient() {
                   const isWrongSelected = showFeedback && isSelected && !isCorrectOpt;
                   const isCorrectShown = showFeedback && isCorrectOpt;
 
-                  let borderColor = "border-[#8B5CF6]/20";
-                  let bgColor = "bg-[#102A4C]/60";
-                  let textColor = "text-slate-200";
-                  let circleStyle: React.CSSProperties = { background: "#0B1F3A", color: "#94A3B8", border: "1px solid rgba(139,92,246,0.2)" };
+                  let wrapperCls = "glass-surface border-white/10 text-slate-200";
+                  let circleStyle: React.CSSProperties = { background: "rgba(255,255,255,0.06)", color: "#94A3B8", border: "1px solid rgba(255,255,255,0.1)" };
+                  let hoverCls = !showFeedback ? "hover:-translate-y-0.5 hover:border-[#8B5CF6]/50 hover:shadow-[0_4px_16px_rgba(109,93,251,0.2)] cursor-pointer" : "cursor-default";
 
                   if (isCorrectShown) {
-                    borderColor = "border-emerald-400";
-                    bgColor = "bg-emerald-950/40";
-                    textColor = "text-white";
-                    circleStyle = { background: "#10B981", color: "#fff" };
+                    wrapperCls = "bg-emerald-950/30 border-emerald-400/50 text-white";
+                    circleStyle = { background: "#10B981", color: "#fff", border: "none" };
                   } else if (isWrongSelected) {
-                    borderColor = "border-rose-400";
-                    bgColor = "bg-rose-950/40";
-                    textColor = "text-white";
-                    circleStyle = { background: "#EF4444", color: "#fff" };
+                    wrapperCls = "bg-rose-950/30 border-rose-400/50 text-white";
+                    circleStyle = { background: "#EF4444", color: "#fff", border: "none" };
                   } else if (isSelected) {
-                    borderColor = "border-[#8B5CF6]";
-                    bgColor = "bg-[#6D5DFB]/20";
-                    textColor = "text-white";
-                    circleStyle = { background: "#8B5CF6", color: "#fff" };
+                    wrapperCls = "bg-[#6D5DFB]/15 border-[#8B5CF6]/60 text-white shadow-[0_0_16px_rgba(109,93,251,0.2)]";
+                    circleStyle = { background: "#8B5CF6", color: "#fff", border: "none" };
+                    hoverCls = "cursor-pointer";
                   }
 
                   return (
@@ -452,19 +461,21 @@ export function QuizClient() {
                       aria-checked={isSelected}
                       onClick={() => handleSelectOption(i)}
                       disabled={showFeedback}
-                      className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left text-sm font-medium transition-all duration-150 ${borderColor} ${bgColor} ${textColor} ${
-                        !showFeedback ? "hover:border-[#8B5CF6] hover:bg-[#6D5DFB]/15 cursor-pointer" : "cursor-default"
-                      }`}
+                      className={`w-full flex items-center gap-4 p-4 rounded-2xl border text-left text-sm font-medium transition-all duration-200 ${wrapperCls} ${hoverCls}`}
                     >
                       <span
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all duration-150"
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all duration-200"
                         style={circleStyle}
                       >
                         {String.fromCharCode(65 + i)}
                       </span>
                       <span className="flex-1">{opt}</span>
-                      {isCorrectShown && <span className="text-xs font-bold text-emerald-400">✓ Correct</span>}
-                      {isWrongSelected && <span className="text-xs font-bold text-rose-400">✗ Wrong</span>}
+                      {isCorrectShown && (
+                        <span className="text-xs font-bold text-emerald-400 flex-shrink-0" aria-label="Correct answer">✓ Correct</span>
+                      )}
+                      {isWrongSelected && (
+                        <span className="text-xs font-bold text-rose-400 flex-shrink-0" aria-label="Wrong answer">✗ Wrong</span>
+                      )}
                     </button>
                   );
                 })}
@@ -472,11 +483,11 @@ export function QuizClient() {
 
               {/* Explanation */}
               {showFeedback && (
-                <div className="mt-6 p-5 rounded-2xl bg-[#102A4C]/90 border border-[#8B5CF6]/30">
+                <div className="mt-6 p-5 rounded-2xl glass-surface border-[#8B5CF6]/20" role="status" aria-live="polite">
                   <div className="flex items-start gap-3">
-                    <span className="text-lg mt-0.5">💡</span>
+                    <span className="text-lg mt-0.5 flex-shrink-0" aria-hidden="true">💡</span>
                     <div>
-                      <div className="text-xs font-bold text-[#A78BFA] uppercase tracking-wider mb-1">Explanation</div>
+                      <div className="text-xs font-bold text-[#A78BFA] uppercase tracking-wider mb-1.5">Explanation</div>
                       <p className="text-sm text-slate-200 leading-relaxed">{q.explanation}</p>
                     </div>
                   </div>
@@ -490,7 +501,7 @@ export function QuizClient() {
                 type="button"
                 onClick={handlePrev}
                 disabled={currentIdx === 0}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 border border-[#8B5CF6]/30 hover:bg-[#102A4C] transition-colors disabled:opacity-40 disabled:pointer-events-none"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 glass-surface border-white/10 hover:text-white hover:border-white/20 transition-all duration-200 disabled:opacity-40 disabled:pointer-events-none"
               >
                 ← Previous
               </button>
@@ -500,8 +511,7 @@ export function QuizClient() {
                     type="button"
                     onClick={handleSubmitAnswer}
                     disabled={selectedOption === null}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)] disabled:opacity-40 disabled:pointer-events-none disabled:translate-y-0"
-                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] disabled:opacity-40 disabled:pointer-events-none disabled:translate-y-0 bg-[#6D5DFB] border border-white/10"
                   >
                     Submit Answer
                   </button>
@@ -510,8 +520,7 @@ export function QuizClient() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
-                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
                   >
                     {currentIdx < totalQuestions - 1 ? "Next →" : state === "review" ? "Back to Results" : "See Results →"}
                   </button>
@@ -526,14 +535,18 @@ export function QuizClient() {
           <ScrollReveal direction="up">
             <div>
               {/* Score card */}
-              <div className="bg-[#0B1F3A]/90 border border-[#8B5CF6]/20 rounded-3xl p-10 text-center mb-8 shadow-2xl">
-                <div className="text-6xl mb-3">{grade.emoji}</div>
-                <h2 className="text-3xl font-black text-white mb-2">{grade.label}</h2>
-                <p className="text-[#94A3B8] text-sm mb-6">You got {score} out of {totalQuestions} questions correct</p>
+              <div className="glass-panel rounded-3xl p-8 sm:p-10 text-center mb-8 relative overflow-hidden">
+                <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full opacity-10 pointer-events-none"
+                     style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
+                <div className="text-6xl mb-4 relative z-10" aria-hidden="true">{grade.emoji}</div>
+                <h2 className="text-3xl font-black text-white mb-2 relative z-10">{grade.label}</h2>
+                <p className="text-[#94A3B8] text-sm mb-8 relative z-10">
+                  You got <strong className="text-white">{score}</strong> out of <strong className="text-white">{totalQuestions}</strong> questions correct
+                </p>
 
                 {/* Score ring */}
-                <svg width="160" height="160" viewBox="0 0 160 160" className="mx-auto mb-6" aria-hidden="true">
-                  <circle cx="80" cy="80" r="64" fill="none" stroke="#102A4C" strokeWidth="10" />
+                <svg width="160" height="160" viewBox="0 0 160 160" className="mx-auto mb-8 relative z-10" aria-hidden="true">
+                  <circle cx="80" cy="80" r="64" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
                   <circle
                     cx="80" cy="80" r="64"
                     fill="none"
@@ -542,23 +555,22 @@ export function QuizClient() {
                     strokeLinecap="round"
                     strokeDasharray={`${(percentage / 100) * 2 * Math.PI * 64} ${2 * Math.PI * 64}`}
                     strokeDashoffset={2 * Math.PI * 64 / 4}
-                    style={{ transition: "stroke-dasharray 1s ease" }}
+                    style={{ transition: "stroke-dasharray 1s ease", filter: `drop-shadow(0 0 8px ${grade.color}88)` }}
                   />
                   <text x="80" y="72" textAnchor="middle" className="fill-white text-[32px] font-black">{percentage}%</text>
                   <text x="80" y="94" textAnchor="middle" className="fill-[#94A3B8] text-[11px] font-medium">score</text>
                 </svg>
 
-                <div className="flex justify-center gap-4">
+                <div className="flex flex-wrap justify-center gap-4 relative z-10">
                   <button
                     onClick={handleRestart}
-                    className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
-                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                    className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
                   >
                     Restart Quiz
                   </button>
                   <button
                     onClick={handleReviewAnswers}
-                    className="px-6 py-3 rounded-xl text-sm font-semibold text-slate-200 border border-[#8B5CF6]/30 hover:bg-[#102A4C] transition-colors"
+                    className="px-6 py-3 rounded-xl text-sm font-semibold text-slate-200 glass-surface border-white/10 hover:text-white hover:border-white/20 transition-all duration-300"
                   >
                     Review Answers
                   </button>
@@ -566,23 +578,30 @@ export function QuizClient() {
               </div>
 
               {/* Category breakdown */}
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-3xl p-8 mb-8 shadow-xl">
-                <h3 className="text-lg font-bold text-white mb-5">Performance by Topic</h3>
-                <div className="space-y-4">
+              <div className="glass-panel rounded-3xl p-7 sm:p-8 mb-8">
+                <h3 className="text-lg font-bold text-white mb-6">Performance by Topic</h3>
+                <div className="space-y-5">
                   {categoryBreakdown.map(cat => (
                     <div key={cat.name}>
-                      <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full" style={{ background: cat.color }} />
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: cat.color }} aria-hidden="true" />
                           <span className="text-sm font-medium text-slate-300">{cat.name}</span>
                         </div>
                         <span className="text-sm font-bold" style={{ color: cat.pct >= 70 ? "#8B5CF6" : cat.pct >= 40 ? "#F59E0B" : "#EF4444" }}>
                           {cat.correct}/{cat.total} ({cat.pct}%)
                         </span>
                       </div>
-                      <div className="h-2 bg-[#102A4C] rounded-full overflow-hidden">
+                      <div
+                        className="h-1.5 rounded-full overflow-hidden glass-surface"
+                        role="progressbar"
+                        aria-valuenow={cat.pct}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`${cat.name}: ${cat.pct}%`}
+                      >
                         <div
-                          className="h-full rounded-full progress-fill"
+                          className="h-full rounded-full transition-all duration-700"
                           style={{ width: `${cat.pct}%`, background: cat.color }}
                         />
                       </div>
@@ -592,20 +611,16 @@ export function QuizClient() {
               </div>
 
               {/* CTA */}
-              <div
-                className="rounded-3xl p-8 text-center relative overflow-hidden border border-[#8B5CF6]/30 shadow-2xl"
-                style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
-              >
-                <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10"
+              <div className="glass-panel rounded-3xl p-8 text-center relative overflow-hidden">
+                <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-xl font-bold text-white mb-2 relative z-10">Want to learn more?</h3>
-                <p className="text-sm mb-5 relative z-10 text-[#94A3B8]">
+                <p className="text-sm mb-6 relative z-10 text-[#94A3B8]">
                   Explore our learning hub to strengthen the topics where you scored lowest.
                 </p>
                 <Link
                   href="/learn"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)] relative z-10"
-                  style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] relative z-10 bg-[#6D5DFB] border border-white/10"
                 >
                   Browse Lessons →
                 </Link>

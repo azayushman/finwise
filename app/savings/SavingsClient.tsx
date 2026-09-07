@@ -2,8 +2,6 @@
 
 import { useState, useCallback, useId, useMemo } from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { AmbientBackground } from "@/components/ui/AmbientBackground";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Helpers
@@ -40,7 +38,7 @@ function CircularProgress({ percentage, color, size = 180 }: {
   return (
     <svg width={size} height={size} viewBox="0 0 180 180" className="mx-auto" aria-hidden="true">
       {/* Background track */}
-      <circle cx="90" cy="90" r={radius} fill="none" stroke="#102A4C" strokeWidth="12" />
+      <circle cx="90" cy="90" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="12" />
       {/* Progress arc */}
       <circle
         cx="90" cy="90" r={radius}
@@ -50,7 +48,7 @@ function CircularProgress({ percentage, color, size = 180 }: {
         strokeLinecap="round"
         strokeDasharray={`${dashLen} ${circumference - dashLen}`}
         strokeDashoffset={circumference / 4}
-        style={{ transition: "stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1)" }}
+        style={{ transition: "stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1)", filter: `drop-shadow(0 0 8px ${color}66)` }}
       />
       {/* Center text */}
       <text x="90" y="82" textAnchor="middle" className="fill-white text-[28px] font-black">
@@ -86,6 +84,7 @@ function InputBlock({
   onBlur: () => void; error?: string; type?: string; placeholder: string;
   min?: string; max?: string; step?: string; prefix?: string; suffix?: string;
 }) {
+  const hasError = Boolean(error);
   return (
     <div>
       <label htmlFor={id} className="text-sm font-semibold text-slate-200 mb-1.5 block">{label}</label>
@@ -101,20 +100,20 @@ function InputBlock({
           onChange={onChange}
           onBlur={onBlur}
           placeholder={placeholder}
-          aria-invalid={Boolean(error)}
-          className={`w-full py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
+          aria-invalid={hasError}
+          className={`w-full py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border placeholder:text-[#94A3B8]/60 ${
             prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-8" : "px-4"
           } ${
-            error
-              ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
-              : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
+            hasError
+              ? "border-red-400/50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
+              : "border-white/10 hover:border-white/15 focus:border-[#8B5CF6]/60 focus:ring-2 focus:ring-[#8B5CF6]/20"
           }`}
         />
         {suffix && (
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{suffix}</span>
         )}
       </div>
-      {error && <p className="mt-1.5 text-xs text-rose-400 font-medium">{error}</p>}
+      {error && <p className="mt-1.5 text-xs text-rose-400 font-medium" role="alert">{error}</p>}
     </div>
   );
 }
@@ -234,46 +233,56 @@ export function SavingsClient() {
     return null;
   }, [targetNum, remaining, monthlyNum, monthsLeft, requiredMonthly, monthsToGoal, estimatedDate, targetDate]);
 
+  const progressColor = progressPct >= 100 ? "#8B5CF6" : progressPct >= 50 ? "#6D5DFB" : "#4F46E5";
 
   return (
-    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
-      {/* Hero */}
-      <div
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
-      >
-        <AmbientBackground variant="dark" />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <SectionLabel>Savings Planner</SectionLabel>
-          <h1 className="text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
-            Watch Your<br />
-            <span className="gradient-text">Savings Grow.</span>
-          </h1>
-          <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
-            Set goals, calculate timelines, and visualise the power of compound interest.
-            Every dollar saved today is worth more tomorrow.
-          </p>
+    <div className="min-h-screen text-[#F5F7FF] relative">
+      {/* ── Page-level ambient depth ── */}
+      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-[#8B5CF6]/8 rounded-full blur-[120px] -z-10 pointer-events-none" aria-hidden="true" />
+      <div className="absolute top-[40%] left-0 w-[500px] h-[500px] bg-[#4F46E5]/6 rounded-full blur-[100px] -z-10 pointer-events-none" aria-hidden="true" />
+
+      {/* ── Hero / Header ── */}
+      <div className="pt-16 pb-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          <ScrollReveal direction="up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 glass-surface">
+              <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C4B5FD]">
+                Savings Goals
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+              Turn plans into<br />
+              <span className="gradient-text">progress.</span>
+            </h1>
+            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+              Set goals, calculate timelines, and visualise the power of compound interest.
+              Every dollar saved today is worth more tomorrow.
+            </p>
+          </ScrollReveal>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-6 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ── LEFT: Inputs ── */}
           <div className="lg:col-span-2 space-y-8">
+
             {/* Goal setup */}
             <ScrollReveal direction="up">
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
-                <div className="flex items-center justify-between mb-5">
+              <div className="glass-panel rounded-3xl p-6 sm:p-8">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-bold text-white">Savings Goal</h2>
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="text-xs font-semibold text-[#94A3B8] hover:text-white transition-colors"
+                    className="text-xs font-semibold text-[#94A3B8] hover:text-rose-400 transition-colors"
                   >
                     Reset
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Goal name – full width */}
                   <div className="sm:col-span-2">
                     <label htmlFor={goalId} className="text-sm font-semibold text-slate-200 mb-1.5 block">Goal Name</label>
                     <input
@@ -282,29 +291,34 @@ export function SavingsClient() {
                       value={goalName}
                       onChange={e => setGoalName(e.target.value)}
                       placeholder="e.g. Emergency Fund"
-                      className="w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border border-[#8B5CF6]/25 rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
+                      className="w-full px-4 py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border border-white/10 hover:border-white/15 focus:border-[#8B5CF6]/60 focus:ring-2 focus:ring-[#8B5CF6]/20 placeholder:text-[#94A3B8]/60"
                     />
                   </div>
-                  <InputBlock id={targetId} label="Target Amount" value={targetAmount} 
+
+                  <InputBlock id={targetId} label="Target Amount" value={targetAmount}
                     onChange={e => setField("targetAmount", e.target.value, setTargetAmount)}
                     onBlur={() => setErrors(prev => ({ ...prev, targetAmount: validate("targetAmount", targetAmount) }))}
                     error={errors.targetAmount}
                     placeholder="e.g. 10000" min="0" step="0.01" prefix="$" />
+
                   <InputBlock id={currentId} label="Current Savings" value={currentSavings}
                     onChange={e => setField("currentSavings", e.target.value, setCurrentSavings)}
                     onBlur={() => setErrors(prev => ({ ...prev, currentSavings: validate("currentSavings", currentSavings) }))}
                     error={errors.currentSavings}
                     placeholder="e.g. 2500" min="0" step="0.01" prefix="$" />
+
                   <InputBlock id={monthlyId} label="Monthly Contribution" value={monthlyContrib}
                     onChange={e => setField("monthlyContrib", e.target.value, setMonthlyContrib)}
                     onBlur={() => setErrors(prev => ({ ...prev, monthlyContrib: validate("monthlyContrib", monthlyContrib) }))}
                     error={errors.monthlyContrib}
                     placeholder="e.g. 500" min="0" step="0.01" prefix="$" />
+
                   <InputBlock id={rateId} label="Expected Annual Return" value={annualRate}
                     onChange={e => setField("annualRate", e.target.value, setAnnualRate)}
                     onBlur={() => setErrors(prev => ({ ...prev, annualRate: validate("annualRate", annualRate) }))}
                     error={errors.annualRate}
                     placeholder="e.g. 5" min="0" max="50" step="0.1" suffix="%" />
+
                   <div>
                     <label htmlFor={dateId} className="text-sm font-semibold text-slate-200 mb-1.5 block">Target Date (optional)</label>
                     <input
@@ -313,7 +327,7 @@ export function SavingsClient() {
                       value={targetDate}
                       onChange={e => setTargetDate(e.target.value)}
                       min={new Date().toISOString().split("T")[0]}
-                      className="w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border border-[#8B5CF6]/25 rounded-xl outline-none transition-all duration-150 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
+                      className="w-full px-4 py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border border-white/10 hover:border-white/15 focus:border-[#8B5CF6]/60 focus:ring-2 focus:ring-[#8B5CF6]/20"
                     />
                   </div>
                 </div>
@@ -323,26 +337,31 @@ export function SavingsClient() {
             {/* Status message */}
             {statusMessage && (
               <ScrollReveal direction="up" delay={50}>
-                <div className={`flex items-start gap-3 rounded-2xl px-5 py-4 text-sm font-medium ${
-                  statusMessage.type === "success" ? "bg-emerald-950/40 border border-emerald-500/30 text-emerald-300" :
-                  statusMessage.type === "warning" ? "bg-amber-950/40 border border-amber-500/30 text-amber-300" :
-                  "bg-[#102A4C]/80 border border-[#8B5CF6]/30 text-[#C4B5FD]"
-                }`}>
-                  <span className="text-lg">{statusMessage.type === "success" ? "✅" : statusMessage.type === "warning" ? "⚠️" : "ℹ️"}</span>
+                <div
+                  role="status"
+                  className={`flex items-start gap-3 rounded-2xl px-5 py-4 text-sm font-medium glass-surface ${
+                    statusMessage.type === "success" ? "border-emerald-500/30 text-emerald-300" :
+                    statusMessage.type === "warning" ? "border-amber-500/30 text-amber-300" :
+                    "border-[#8B5CF6]/30 text-[#C4B5FD]"
+                  }`}
+                >
+                  <span className="text-lg flex-shrink-0" aria-hidden="true">
+                    {statusMessage.type === "success" ? "✅" : statusMessage.type === "warning" ? "⚠️" : "ℹ️"}
+                  </span>
                   <span>{statusMessage.text}</span>
                 </div>
               </ScrollReveal>
             )}
 
-            {/* Projection table */}
+            {/* Growth Projection table */}
             <ScrollReveal direction="up" delay={100}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
+              <div className="glass-panel rounded-3xl p-6 sm:p-8">
                 <h2 className="text-lg font-bold text-white mb-5">Growth Projection</h2>
                 {monthlyNum > 0 || currentNum > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-[#8B5CF6]/15">
+                        <tr className="border-b border-white/5">
                           <th className="text-left py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Period</th>
                           <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Contributions</th>
                           <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Interest</th>
@@ -354,7 +373,7 @@ export function SavingsClient() {
                           const totalContrib = currentNum + monthlyNum * p.months;
                           const interest = p.value - totalContrib;
                           return (
-                            <tr key={p.months} className="border-b border-[#8B5CF6]/10">
+                            <tr key={p.months} className="border-b border-white/5 hover:bg-white/2 transition-colors">
                               <td className="py-3 font-semibold text-slate-200">{p.label}</td>
                               <td className="py-3 text-right text-[#94A3B8]">${fmtInt(totalContrib)}</td>
                               <td className="py-3 text-right text-[#8B5CF6] font-semibold">+${fmtInt(Math.max(0, interest))}</td>
@@ -368,7 +387,7 @@ export function SavingsClient() {
                 ) : (
                   <p className="text-sm text-[#94A3B8] text-center py-8">Enter your savings details to see projections.</p>
                 )}
-                <p className="text-xs text-[#94A3B8] mt-4 text-center">
+                <p className="text-xs text-[#94A3B8]/70 mt-4 text-center">
                   Projections assume constant contributions and returns. Not financial advice.
                 </p>
               </div>
@@ -377,31 +396,45 @@ export function SavingsClient() {
 
           {/* ── RIGHT: Progress + Summary ── */}
           <div className="space-y-8">
-            {/* Circular progress */}
+
+            {/* Circular progress card */}
             <ScrollReveal direction="up" delay={50}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 text-center shadow-md">
-                <h2 className="text-lg font-bold text-white mb-4">
+              <div className="glass-panel rounded-3xl p-6 text-center">
+                <h2 className="text-lg font-bold text-white mb-5">
                   {goalName || "Savings Progress"}
                 </h2>
                 <CircularProgress
                   percentage={progressPct}
-                  color={progressPct >= 100 ? "#8B5CF6" : progressPct >= 50 ? "#6D5DFB" : "#4F46E5"}
+                  color={progressColor}
                 />
-                <div className="mt-4 space-y-3">
-                  <div className="flex justify-between text-sm">
+
+                {/* Progress bar (horizontal, supplementary) */}
+                {targetNum > 0 && (
+                  <div className="mt-4 mb-5">
+                    <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-700"
+                        style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, #4F46E5, ${progressColor})` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                     <span className="text-[#94A3B8]">Saved</span>
                     <span className="font-bold text-[#8B5CF6]">${fmt(currentNum)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                     <span className="text-[#94A3B8]">Remaining</span>
                     <span className="font-bold text-white">${fmt(remaining)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                     <span className="text-[#94A3B8]">Target</span>
                     <span className="font-bold text-white">${fmt(targetNum)}</span>
                   </div>
                   {targetDate && monthsLeft > 0 && (
-                    <div className="flex justify-between text-sm border-t border-[#8B5CF6]/15 pt-3">
+                    <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                       <span className="text-[#94A3B8]">Required/mo</span>
                       <span className="font-bold" style={{ color: monthlyNum >= requiredMonthly ? "#8B5CF6" : "#F59E0B" }}>
                         ${fmt(requiredMonthly)}
@@ -414,21 +447,21 @@ export function SavingsClient() {
 
             {/* Timeline summary */}
             <ScrollReveal direction="up" delay={100}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
-                <h2 className="text-lg font-bold text-white mb-4">Timeline</h2>
+              <div className="glass-panel rounded-3xl p-6">
+                <h2 className="text-lg font-bold text-white mb-5">Timeline</h2>
                 <div className="space-y-4">
-                  <div>
+                  <div className="glass-surface rounded-xl px-4 py-3">
                     <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Estimated Completion</div>
                     <div className="text-xl font-bold text-white">{estimatedDate}</div>
                   </div>
                   {monthsToGoal > 0 && monthsToGoal < Infinity && (
-                    <div>
+                    <div className="glass-surface rounded-xl px-4 py-3">
                       <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Months Remaining</div>
                       <div className="text-xl font-bold text-[#8B5CF6]">{monthsToGoal}</div>
                     </div>
                   )}
                   {monthlyNum > 0 && targetNum > 0 && remaining > 0 && (
-                    <div>
+                    <div className="glass-surface rounded-xl px-4 py-3">
                       <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Monthly Contribution</div>
                       <div className="text-xl font-bold text-white">${fmt(monthlyNum)}</div>
                     </div>
@@ -439,19 +472,16 @@ export function SavingsClient() {
 
             {/* Compound interest snapshot */}
             <ScrollReveal direction="up" delay={150}>
-              <div
-                className="rounded-2xl p-6 text-white relative overflow-hidden border border-[#8B5CF6]/25 shadow-lg"
-                style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
-              >
-                <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10"
+              <div className="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
-                <h3 className="text-base font-bold mb-3 relative z-10">The Power of Compound Interest</h3>
-                <p className="text-xs leading-relaxed mb-3 relative z-10 text-[#94A3B8]">
+                <h3 className="text-base font-bold mb-2 relative z-10 text-white">The Power of Compound Interest</h3>
+                <p className="text-xs leading-relaxed mb-4 relative z-10 text-[#94A3B8]">
                   ${fmt(monthlyNum)}/mo at {rateNum}% annual return:
                 </p>
-                <div className="space-y-2 relative z-10">
+                <div className="space-y-2.5 relative z-10">
                   {projections.slice(2).map(p => (
-                    <div key={p.months} className="flex justify-between items-center">
+                    <div key={p.months} className="flex justify-between items-center glass-surface rounded-lg px-3 py-2">
                       <span className="text-sm text-[#94A3B8]">After {p.label}</span>
                       <span className="text-sm font-bold text-[#8B5CF6]">${fmtInt(p.value)}</span>
                     </div>

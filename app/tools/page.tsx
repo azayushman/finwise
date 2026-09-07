@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SectionLabel } from "@/components/ui/SectionLabel";
-import { Badge } from "@/components/ui/Badge";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { TiltCard } from "@/components/ui/TiltCard";
-import { AmbientBackground } from "@/components/ui/AmbientBackground";
 
 export const metadata: Metadata = { title: "Financial Tools" };
+
+const TAG_COLORS: Record<string, string> = {
+  Budgeting:  "#8B5CF6",
+  Savings:    "#34D399",
+  Calculator: "#60A5FA",
+  Debt:       "#F59E0B",
+  Planning:   "#A78BFA",
+  Loans:      "#38BDF8",
+  Retirement: "#C084FC",
+  Comparison: "#FB923C",
+};
 
 const tools = [
   {
@@ -75,89 +82,131 @@ const tools = [
   },
 ];
 
-const tagVariant: Record<string, "green" | "navy" | "amber" | "purple"> = {
-  Budgeting:   "purple",
-  Savings:     "green",
-  Calculator:  "navy",
-  Debt:        "amber",
-  Planning:    "purple",
-  Loans:       "navy",
-  Retirement:  "green",
-  Comparison:  "amber",
-};
-
 export default function ToolsPage() {
+  const liveCount  = tools.filter(t => t.live).length;
+  const totalCount = tools.length;
+
   return (
-    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
-      {/* Hero */}
+    <div className="min-h-screen text-[#F5F7FF] relative">
+      {/* ── Page ambient depth ── */}
       <div
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
-      >
-        <AmbientBackground variant="dark" />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <SectionLabel>Interactive Tools</SectionLabel>
-          <h1 className="text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
-            Financial Tools<br />
-            <span className="gradient-text">That Work for You.</span>
-          </h1>
-          <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
-            Powerful calculators and planners that help you apply financial concepts to your real life.
-            No spreadsheets required.
-          </p>
+        className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full blur-[120px] -z-10 pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(109,93,251,0.08), transparent 70%)" }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute top-[40%] left-0 w-[500px] h-[500px] rounded-full blur-[100px] -z-10 pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(79,70,229,0.06), transparent 70%)" }}
+        aria-hidden="true"
+      />
+
+      {/* ════════════════ HERO ════════════════ */}
+      <div className="pt-16 pb-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          <ScrollReveal direction="up">
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 glass-surface">
+              <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C4B5FD]">
+                Financial Tools
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+              Make better<br />
+              <span className="gradient-text">money decisions.</span>
+            </h1>
+            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+              Powerful calculators and planners that help you apply financial concepts to your real life.
+              No spreadsheets required.
+            </p>
+
+            {/* Stats strip */}
+            <div className="flex flex-wrap gap-4 mt-10">
+              {[
+                { value: liveCount.toString(),  label: "Live Tools" },
+                { value: totalCount.toString(), label: "Total Tools" },
+                { value: "Free",                label: "Always" },
+              ].map((s, i) => (
+                <div key={i} className="glass-surface rounded-xl px-5 py-3 min-w-[80px] text-center">
+                  <div className="text-2xl font-black text-[#8B5CF6]">{s.value}</div>
+                  <div className="text-xs uppercase tracking-wider mt-0.5 text-[#94A3B8]">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      {/* ════════════════ TOOLS GRID ════════════════ */}
+      <div className="max-w-7xl mx-auto px-6 pb-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="list">
-          {tools.map((tool, i) => (
-            <ScrollReveal key={tool.title} delay={i * 80} as="article" className="h-full">
-              <TiltCard maxTilt={4} scale={1.01} className="h-full">
+          {tools.map((tool, i) => {
+            const tagColor = TAG_COLORS[tool.tag] ?? "#C4B5FD";
+            return (
+              <ScrollReveal key={tool.title} delay={i * 70} as="article" className="h-full">
                 <div
                   role="listitem"
-                  className="feature-card bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-8 h-full transition-all duration-250 hover:shadow-[0_10px_30px_rgba(109,93,251,0.15)] hover:border-[#8B5CF6]/50 cursor-default flex flex-col justify-between"
+                  className={`glass-panel rounded-3xl p-7 h-full flex flex-col justify-between transition-all duration-300 ${
+                    tool.live
+                      ? "hover:-translate-y-2 hover:shadow-[0_16px_40px_-12px_rgba(109,93,251,0.3)]"
+                      : "opacity-75"
+                  }`}
                 >
                   <div>
+                    {/* Icon row */}
                     <div className="flex items-start justify-between mb-5">
                       <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl border border-[#8B5CF6]/30 shadow-inner"
-                        style={{ background: "linear-gradient(135deg, #102A4C 0%, #1A365D 100%)" }}
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl glass-surface border-white/10 flex-shrink-0"
                         aria-hidden="true"
                       >
                         {tool.icon}
                       </div>
+
                       {tool.live && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                              style={{ background: "rgba(109,93,251,0.15)", color: "#C4B5FD", border: "1px solid rgba(139,92,246,0.35)" }}>
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-pulse" />
+                        <span
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider glass-surface"
+                          style={{ color: "#C4B5FD", borderColor: "rgba(139,92,246,0.35)" }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
                           Live
                         </span>
                       )}
                     </div>
-                    <Badge variant={tagVariant[tool.tag]} className="mb-3">{tool.tag}</Badge>
-                    <h2 className="text-lg font-bold text-white mb-2">{tool.title}</h2>
+
+                    {/* Category tag */}
+                    <span
+                      className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4 glass-surface"
+                      style={{ color: tagColor }}
+                    >
+                      {tool.tag}
+                    </span>
+
+                    <h2 className="text-lg font-bold text-white mb-2 leading-snug">{tool.title}</h2>
                     <p className="text-sm text-[#94A3B8] leading-relaxed mb-6">{tool.desc}</p>
                   </div>
+
+                  {/* CTA */}
                   {tool.live ? (
                     <Link
                       href={tool.href}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(109,93,251,0.4)]"
-                      style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
                     >
                       Open Tool →
                     </Link>
                   ) : (
                     <button
-                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 transition-all duration-150 cursor-default bg-[#102A4C]/50 border border-[#8B5CF6]/15 opacity-60"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 cursor-default glass-surface border-white/5 opacity-50"
                       disabled
+                      aria-disabled="true"
                     >
                       Coming Soon
                     </button>
                   )}
                 </div>
-              </TiltCard>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            );
+          })}
         </div>
       </div>
     </div>

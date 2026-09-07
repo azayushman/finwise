@@ -2,8 +2,6 @@
 
 import { useState, useCallback, useId } from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { AmbientBackground } from "@/components/ui/AmbientBackground";
-import { SectionLabel } from "@/components/ui/SectionLabel";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Types
@@ -127,6 +125,21 @@ function BreakdownRow({ label, amount, percentage, color }: {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   Shared input class helper
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function inputCls(hasError: boolean, extra?: string) {
+  return [
+    "w-full px-4 py-3 text-sm text-white rounded-xl outline-none transition-all duration-300",
+    "bg-white/5 border placeholder:text-[#94A3B8]/60",
+    hasError
+      ? "border-red-400/50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
+      : "border-white/10 hover:border-white/15 focus:border-[#8B5CF6]/60 focus:ring-2 focus:ring-[#8B5CF6]/20",
+    extra ?? "",
+  ].join(" ");
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    Main Component
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -247,36 +260,43 @@ export function BudgetClient() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#07111F] text-[#F5F7FF]">
-      {/* Hero */}
-      <div
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #07111F 0%, #0B1F3A 100%)" }}
-      >
-        <AmbientBackground variant="dark" />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <SectionLabel>Budget Planner</SectionLabel>
-          <h1 className="text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
-            Build Your<br />
-            <span className="gradient-text">Perfect Budget.</span>
-          </h1>
-          <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
-            Create a personalised monthly budget. Track where your money goes and
-            find areas to save more.
-          </p>
+    <div className="min-h-screen text-[#F5F7FF] relative">
+      {/* ── Page-level ambient depth ── */}
+      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-[#6D5DFB]/8 rounded-full blur-[120px] -z-10 pointer-events-none" aria-hidden="true" />
+      <div className="absolute top-[30%] left-0 w-[500px] h-[500px] bg-[#3B82F6]/6 rounded-full blur-[100px] -z-10 pointer-events-none" aria-hidden="true" />
+
+      {/* ── Hero / Header ── */}
+      <div className="pt-16 pb-12 px-6 relative">
+        <div className="max-w-7xl mx-auto">
+          <ScrollReveal direction="up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 glass-surface">
+              <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C4B5FD]">
+                Budget Planner
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+              Know where your<br />
+              <span className="gradient-text">money goes.</span>
+            </h1>
+            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+              Create a personalised monthly budget. Track where your money goes and
+              find areas to save more.
+            </p>
+          </ScrollReveal>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-6 pb-16">
         {/* ── Summary Cards ── */}
         <ScrollReveal direction="up" className="mb-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {summaryCards.map((c) => (
               <div
                 key={c.label}
-                className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-5 transition-all duration-200 hover:shadow-lg hover:border-[#8B5CF6]/40"
+                className="glass-panel rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-10px_rgba(109,93,251,0.25)]"
               >
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg" aria-hidden="true">{c.icon}</span>
                   <span className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">{c.label}</span>
                 </div>
@@ -294,9 +314,9 @@ export function BudgetClient() {
 
             {/* Income + Savings Rate */}
             <ScrollReveal direction="up" delay={50}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
-                <div className="flex items-center justify-between mb-5">
-                  <h2 className="text-lg font-bold text-white">Income & Savings</h2>
+              <div className="glass-panel rounded-3xl p-6 sm:p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-bold text-white">Income &amp; Savings</h2>
                   <button
                     type="button"
                     onClick={handleReset}
@@ -321,13 +341,9 @@ export function BudgetClient() {
                       onBlur={() => setErrors(prev => ({ ...prev, income: validateIncome(income) }))}
                       placeholder="e.g. 4500"
                       aria-invalid={Boolean(errors.income)}
-                      className={`w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
-                        errors.income
-                          ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
-                          : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
-                      }`}
+                      className={inputCls(Boolean(errors.income))}
                     />
-                    {errors.income && <p className="mt-1.5 text-xs text-rose-400 font-medium">{errors.income}</p>}
+                    {errors.income && <p className="mt-1.5 text-xs text-rose-400 font-medium" role="alert">{errors.income}</p>}
                   </div>
                   {/* Savings rate */}
                   <div>
@@ -345,31 +361,37 @@ export function BudgetClient() {
                       onBlur={() => setErrors(prev => ({ ...prev, savings: validateSavings(savingsRate) }))}
                       placeholder="20"
                       aria-invalid={Boolean(errors.savings)}
-                      className={`w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
-                        errors.savings
-                          ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
-                          : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
-                      }`}
+                      className={inputCls(Boolean(errors.savings))}
                     />
-                    {errors.savings && <p className="mt-1.5 text-xs text-rose-400 font-medium">{errors.savings}</p>}
+                    {errors.savings && <p className="mt-1.5 text-xs text-rose-400 font-medium" role="alert">{errors.savings}</p>}
                   </div>
                 </div>
+
+                {/* Savings allocation callout */}
+                {savingsAllocation > 0 && (
+                  <div className="mt-5 flex items-center gap-3 px-4 py-3 rounded-xl glass-surface border-[#8B5CF6]/20">
+                    <span className="text-[#8B5CF6]" aria-hidden="true">💎</span>
+                    <span className="text-sm text-[#C4B5FD] font-medium">
+                      Saving <strong className="text-white">${fmt(savingsAllocation)}</strong> / month at {savingsRateNum}%
+                    </span>
+                  </div>
+                )}
               </div>
             </ScrollReveal>
 
             {/* Add Expense Form */}
             <ScrollReveal direction="up" delay={100}>
               <form
-                className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md"
+                className="glass-panel rounded-3xl p-6 sm:p-8"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleAddExpense();
                 }}
               >
-                <h2 className="text-lg font-bold text-white mb-5">
+                <h2 className="text-lg font-bold text-white mb-6">
                   {editingId ? "Edit Expense" : "Add Expense"}
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
                   <div>
                     <label className="text-sm font-semibold text-slate-200 mb-1.5 block">Name</label>
                     <input
@@ -377,13 +399,9 @@ export function BudgetClient() {
                       value={newName}
                       onChange={e => setNewName(e.target.value)}
                       placeholder="e.g. Rent"
-                      className={`w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
-                        errors.expenseName
-                          ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
-                          : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
-                      }`}
+                      className={inputCls(Boolean(errors.expenseName))}
                     />
-                    {errors.expenseName && <p className="mt-1.5 text-xs text-rose-400 font-medium">{errors.expenseName}</p>}
+                    {errors.expenseName && <p className="mt-1.5 text-xs text-rose-400 font-medium" role="alert">{errors.expenseName}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-slate-200 mb-1.5 block">Amount ($)</label>
@@ -394,37 +412,34 @@ export function BudgetClient() {
                       value={newAmount}
                       onChange={e => setNewAmount(e.target.value)}
                       placeholder="e.g. 1200"
-                      className={`w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border rounded-xl outline-none transition-all duration-150 placeholder:text-[#94A3B8] ${
-                        errors.expenseAmount
-                          ? "border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-400/20"
-                          : "border-[#8B5CF6]/25 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
-                      }`}
+                      className={inputCls(Boolean(errors.expenseAmount))}
                     />
-                    {errors.expenseAmount && <p className="mt-1.5 text-xs text-rose-400 font-medium">{errors.expenseAmount}</p>}
+                    {errors.expenseAmount && <p className="mt-1.5 text-xs text-rose-400 font-medium" role="alert">{errors.expenseAmount}</p>}
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-slate-200 mb-1.5 block">Category</label>
                     <select
                       value={newCategory}
                       onChange={e => setNewCategory(e.target.value as ExpenseCategory)}
-                      className="w-full px-4 py-3 text-sm text-white bg-[#102A4C]/80 border border-[#8B5CF6]/25 rounded-xl outline-none transition-all duration-150 focus:border-[#8B5CF6] focus:ring-2 focus:ring-[#8B5CF6]/20"
+                      className="w-full px-4 py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border border-white/10 hover:border-white/15 focus:border-[#8B5CF6]/60 focus:ring-2 focus:ring-[#8B5CF6]/20"
                     >
                       {EXPENSE_CATEGORIES.map(c => <option key={c} value={c} className="bg-[#0B1F3A] text-white">{c}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-slate-200 mb-1.5 block">Type</label>
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex gap-3 pt-1">
                       {(["fixed", "variable"] as const).map(t => (
                         <button
                           key={t}
                           type="button"
                           onClick={() => setNewType(t)}
-                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-150 ${
+                          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300 ${
                             newType === t
-                              ? "border-[#8B5CF6] text-white bg-[#6D5DFB]/20"
-                              : "border-[#8B5CF6]/20 text-[#94A3B8] bg-[#102A4C]/50 hover:border-[#8B5CF6]/40"
+                              ? "border-[#8B5CF6]/50 text-white bg-[#6D5DFB]/20 shadow-[0_0_12px_rgba(109,93,251,0.2)]"
+                              : "border-white/10 text-[#94A3B8] glass-surface hover:border-white/20 hover:text-white"
                           }`}
+                          aria-pressed={newType === t}
                         >
                           {t.charAt(0).toUpperCase() + t.slice(1)}
                         </button>
@@ -432,11 +447,10 @@ export function BudgetClient() {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-3 flex-wrap">
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(109,93,251,0.4)]"
-                    style={{ background: "linear-gradient(135deg, #6D5DFB 0%, #4F46E5 100%)" }}
+                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
                   >
                     {editingId ? "Save Changes" : "Add Expense"}
                   </button>
@@ -450,7 +464,7 @@ export function BudgetClient() {
                         setNewCategory("Other");
                         setNewType("fixed");
                       }}
-                      className="px-6 py-2.5 rounded-xl text-sm font-semibold text-slate-300 border border-[#8B5CF6]/30 hover:bg-[#102A4C] transition-colors"
+                      className="px-6 py-2.5 rounded-xl text-sm font-semibold text-slate-300 glass-surface border-white/10 hover:text-white transition-all duration-300"
                     >
                       Cancel
                     </button>
@@ -461,10 +475,10 @@ export function BudgetClient() {
 
             {/* Expense list */}
             <ScrollReveal direction="up" delay={150}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
-                <div className="flex items-center justify-between mb-5">
+              <div className="glass-panel rounded-3xl p-6 sm:p-8">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-bold text-white">
-                    Expenses ({expenses.length})
+                    Expenses <span className="text-[#94A3B8] font-normal text-sm">({expenses.length})</span>
                   </h2>
                   <span className="text-xs text-[#94A3B8]">
                     Fixed ${fmt(fixedTotal)} · Variable ${fmt(variableTotal)}
@@ -473,7 +487,7 @@ export function BudgetClient() {
 
                 {expenses.length === 0 ? (
                   <div className="text-center py-12 px-6">
-                    <div className="text-5xl mb-4 opacity-80">🌱</div>
+                    <div className="text-5xl mb-4 opacity-80" aria-hidden="true">🌱</div>
                     <h3 className="text-lg font-bold text-white mb-2">Start Your Budget</h3>
                     <p className="text-sm text-[#94A3B8] max-w-[280px] mx-auto leading-relaxed">
                       You haven&apos;t added any expenses yet. Use the form above to add your fixed and variable costs, and see how they fit into your monthly income.
@@ -484,11 +498,12 @@ export function BudgetClient() {
                     {expenses.map((entry) => (
                       <div
                         key={entry.id}
-                        className="flex items-center gap-3 p-4 rounded-xl border border-[#8B5CF6]/15 bg-[#102A4C]/50 hover:border-[#8B5CF6]/40 transition-colors group"
+                        className="flex items-center gap-3 p-4 rounded-2xl glass-surface border-white/5 hover:border-white/10 transition-all duration-300 group"
                       >
                         <span
                           className="w-2 h-8 rounded-full flex-shrink-0"
                           style={{ background: CATEGORY_COLORS[entry.category] || "#94A3B8" }}
+                          aria-hidden="true"
                         />
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-semibold text-white truncate">{entry.name}</div>
@@ -497,13 +512,13 @@ export function BudgetClient() {
                           </div>
                         </div>
                         <div className="text-sm font-bold text-white">${fmt(entry.amount)}</div>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <button
                             onClick={() => handleEdit(entry)}
-                            className="p-1.5 rounded-lg hover:bg-[#1E3A5F] transition-colors text-[#94A3B8] hover:text-white"
+                            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-[#94A3B8] hover:text-white"
                             aria-label={`Edit ${entry.name}`}
                           >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                               <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
                               <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
@@ -513,7 +528,7 @@ export function BudgetClient() {
                             className="p-1.5 rounded-lg hover:bg-rose-950/50 transition-colors text-[#94A3B8] hover:text-rose-400"
                             aria-label={`Delete ${entry.name}`}
                           >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                               <polyline points="3 6 5 6 21 6" />
                               <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                             </svg>
@@ -531,7 +546,7 @@ export function BudgetClient() {
           <div className="space-y-8">
             {/* Donut chart */}
             <ScrollReveal direction="up" delay={100}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
+              <div className="glass-panel rounded-3xl p-6">
                 <h2 className="text-lg font-bold text-white mb-4">Spending Breakdown</h2>
                 <DonutChart
                   slices={donutSlices}
@@ -558,12 +573,12 @@ export function BudgetClient() {
 
             {/* Budget allocation bar */}
             <ScrollReveal direction="up" delay={150}>
-              <div className="bg-[#0B1F3A]/80 border border-[#8B5CF6]/20 rounded-2xl p-6 shadow-md">
+              <div className="glass-panel rounded-3xl p-6">
                 <h2 className="text-lg font-bold text-white mb-4">Budget Allocation</h2>
                 {incomeNum > 0 ? (
                   <>
                     {/* Stacked horizontal bar */}
-                    <div className="h-4 rounded-full overflow-hidden flex mb-4 bg-[#102A4C]">
+                    <div className="h-3 rounded-full overflow-hidden flex mb-5 bg-white/5">
                       {fixedTotal > 0 && (
                         <div
                           className="h-full transition-all duration-500"
@@ -587,27 +602,27 @@ export function BudgetClient() {
                       )}
                     </div>
 
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2.5 text-sm">
                       <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-sm" style={{ background: "#4F46E5" }} />
+                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: "#4F46E5" }} aria-hidden="true" />
                         <span className="text-slate-300 flex-1">Fixed</span>
                         <span className="font-semibold text-white">${fmt(fixedTotal)}</span>
                         <span className="text-[#94A3B8] w-12 text-right">{pct(fixedTotal, incomeNum).toFixed(0)}%</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-sm" style={{ background: "#F59E0B" }} />
+                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: "#F59E0B" }} aria-hidden="true" />
                         <span className="text-slate-300 flex-1">Variable</span>
                         <span className="font-semibold text-white">${fmt(variableTotal)}</span>
                         <span className="text-[#94A3B8] w-12 text-right">{pct(variableTotal, incomeNum).toFixed(0)}%</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-sm" style={{ background: "#8B5CF6" }} />
+                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: "#8B5CF6" }} aria-hidden="true" />
                         <span className="text-slate-300 flex-1">Savings</span>
                         <span className="font-semibold text-white">${fmt(savingsAllocation)}</span>
                         <span className="text-[#94A3B8] w-12 text-right">{pct(savingsAllocation, incomeNum).toFixed(0)}%</span>
                       </div>
-                      <div className="border-t border-[#8B5CF6]/15 pt-2 flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-sm" style={{ background: remaining >= 0 ? "#8B5CF6" : "#EF4444" }} />
+                      <div className="border-t border-white/5 pt-2.5 flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: remaining >= 0 ? "#8B5CF6" : "#EF4444" }} aria-hidden="true" />
                         <span className="text-slate-200 flex-1 font-semibold">
                           {remaining >= 0 ? "Remaining" : "Over Budget"}
                         </span>
@@ -625,15 +640,12 @@ export function BudgetClient() {
 
             {/* 50/30/20 guide */}
             <ScrollReveal direction="up" delay={200}>
-              <div
-                className="rounded-2xl p-6 text-white relative overflow-hidden border border-[#8B5CF6]/25 shadow-lg"
-                style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}
-              >
-                <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10"
+              <div className="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
-                <h3 className="text-base font-bold mb-2 relative z-10">The 50/30/20 Rule</h3>
-                <p className="text-xs leading-relaxed relative z-10 mb-4 text-[#94A3B8]">
-                  Split after-tax income: 50% needs, 30% wants, 20% savings & debt.
+                <h3 className="text-base font-bold mb-2 relative z-10 text-white">The 50/30/20 Rule</h3>
+                <p className="text-xs leading-relaxed relative z-10 mb-5 text-[#94A3B8]">
+                  Split after-tax income: 50% needs, 30% wants, 20% savings &amp; debt.
                 </p>
                 <div className="flex gap-6 relative z-10">
                   {[{ pct: "50%", label: "Needs" }, { pct: "30%", label: "Wants" }, { pct: "20%", label: "Save" }].map((b) => (
@@ -650,8 +662,11 @@ export function BudgetClient() {
 
         {/* Warning for over-budget */}
         {remaining < 0 && incomeNum > 0 && (
-          <div className="mt-8 flex items-center gap-3 bg-rose-950/40 border border-rose-500/30 rounded-2xl px-5 py-4 text-sm text-rose-300 font-medium">
-            <span className="text-lg">⚠️</span>
+          <div
+            className="mt-8 flex items-center gap-3 bg-rose-950/30 border border-rose-500/25 rounded-2xl px-5 py-4 text-sm text-rose-300 font-medium"
+            role="alert"
+          >
+            <span className="text-lg flex-shrink-0" aria-hidden="true">⚠️</span>
             <span>
               <strong>Over budget by ${fmt(Math.abs(remaining))}.</strong>{" "}
               Your expenses and savings ({savingsRateNum}%) exceed your income. Consider reducing expenses or adjusting your savings rate.
