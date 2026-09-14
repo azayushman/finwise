@@ -150,7 +150,7 @@ export function HeroSection() {
 
               {/* Balance */}
               <div className="mb-6">
-                <div className="text-xs uppercase tracking-widest mb-1 text-[#94A3B8]">Net Worth</div>
+                <div className="text-xs uppercase tracking-widest mb-1 text-slate-300">Net Worth</div>
                 <div className="text-4xl font-bold text-white tracking-tight leading-none">$24,830</div>
                 <div className="flex items-center gap-1 mt-2 text-sm font-semibold text-[#8B5CF6]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -189,7 +189,7 @@ export function HeroSection() {
                 ].map((s) => (
                   <div key={s.label} className="rounded-xl p-3 transition-colors duration-200"
                        style={{ background: "rgba(16,42,76,0.6)", border: "1px solid rgba(139,92,246,0.18)" }}>
-                    <div className="text-[10px] uppercase tracking-wider mb-1 text-[#94A3B8]">{s.label}</div>
+                    <div className="text-[10px] uppercase tracking-wider mb-1 text-slate-300">{s.label}</div>
                     <div className="text-sm font-bold text-white">{s.value}</div>
                     <div className={`text-[10px] mt-0.5 font-semibold ${s.up ? "text-[#8B5CF6]" : "text-rose-400"}`}>{s.change}</div>
                   </div>
@@ -204,7 +204,7 @@ export function HeroSection() {
                 ].map((goal) => (
                   <div key={goal.name}>
                     <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs text-[#94A3B8]">{goal.name}</span>
+                      <span className="text-xs text-slate-300">{goal.name}</span>
                       <span className="text-xs font-bold" style={{ color: goal.color }}>{goal.pct}%</span>
                     </div>
                     <div className="h-1.5 rounded-full bg-[#102A4C]">

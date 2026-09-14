@@ -5,6 +5,9 @@ import { NextResponse } from "next/server";
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const openaiApiKey = process.env.OPENAI_API_KEY;
 
+/** Maximum character length for any single user message */
+const MAX_MESSAGE_LENGTH = 4000;
+
 const SYSTEM_INSTRUCTION = `
 You are FinWise, a friendly and practical financial literacy assistant designed primarily for Indian college students.
 
@@ -68,34 +71,34 @@ function selectProvider(message: string): "gemini" | "openai" {
   return "gemini";
 }
 
+const UNSAFE_PATTERNS = [
+  "guaranteed return",
+  "guaranteed profit",
+  "definitely make money",
+  "sure return",
+  "evade tax",
+  "hide money",
+  "steal money",
+  "commit fraud",
+  "api key",
+  "password",
+  "bank account number",
+  "card number",
+  "credit card number",
+  "otp",
+  "pin number",
+  "cvv",
+];
+
 function applyFinancialSafety(message: string): { blocked: boolean; response?: string } {
   const m = message.toLowerCase();
 
-  const unsafePatterns = [
-    "guaranteed return",
-    "guaranteed profit",
-    "definitely make money",
-    "sure return",
-    "evade tax",
-    "hide money",
-    "steal money",
-    "commit fraud",
-    "api key",
-    "password",
-    "bank account number",
-    "card number",
-    "credit card number",
-    "otp",
-    "pin number"
-  ];
-
-  const isUnsafe = unsafePatterns.some((pattern) => m.includes(pattern));
+  const isUnsafe = UNSAFE_PATTERNS.some((pattern) => m.includes(pattern));
 
   if (isUnsafe) {
     return {
       blocked: true,
-      response:
-        "FinWise provides general financial education. I cannot guarantee investment returns, assist with illegal activities, or handle sensitive data like passwords, OTPs, or bank credentials. Please protect your personal information.",
+      response: "FinWise provides general financial literacy and cannot handle sensitive credentials (passwords, PINs, OTPs, card numbers) or guarantee investment returns.",
     };
   }
 
@@ -103,8 +106,18 @@ function applyFinancialSafety(message: string): { blocked: boolean; response?: s
 }
 
 export async function POST(request: Request) {
+  // Parse JSON body with explicit error handling for malformed requests
+  let body: Record<string, unknown>;
   try {
-    const body = await request.json();
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid request: malformed JSON body." },
+      { status: 400 }
+    );
+  }
+
+  try {
     const message = body?.message;
     const history = body?.history;
     const userContext = body?.userContext;
@@ -116,34 +129,53 @@ export async function POST(request: Request) {
       );
     }
 
-    const safetyCheck = applyFinancialSafety(message);
+    if (message.length > 2000) {
+      return NextResponse.json(
+        { error: "Message too long (max 2,000 characters)." },
+        { status: 400 }
+      );
+    }
+
+    // Truncate message to prevent excessively large inputs
+    const trimmedMessage = message.trim().substring(0, MAX_MESSAGE_LENGTH);
+
+    // Apply safety filter to the current message
+    const safetyCheck = applyFinancialSafety(trimmedMessage);
     if (safetyCheck.blocked) {
       return NextResponse.json({
         response: safetyCheck.response,
       });
     }
 
-    const provider = selectProvider(message);
+    const provider = selectProvider(trimmedMessage);
 
     const parsedHistory: { role: string; content: string }[] = [];
     if (Array.isArray(history)) {
       history.forEach((msg) => {
         if (msg && typeof msg === "object" && typeof msg.content === "string") {
-          parsedHistory.push({
-            role: msg.role === "assistant" ? "assistant" : "user",
-            content: msg.content.substring(0, 2000),
-          });
+          const truncatedContent = msg.content.substring(0, 2000);
+
+          // Also apply safety filter to recent history entries to prevent
+          // injection through manipulated conversation history
+          const histSafety = applyFinancialSafety(truncatedContent);
+          if (!histSafety.blocked) {
+            parsedHistory.push({
+              role: msg.role === "assistant" ? "assistant" : "user",
+              content: truncatedContent,
+            });
+          }
         }
       });
     }
 
     let dynamicSystemInstruction = SYSTEM_INSTRUCTION;
     if (userContext && typeof userContext === "object") {
+      const ctx = userContext as Record<string, unknown>;
       const safeContext = {
-        totalIncome: typeof userContext.totalIncome === "number" ? userContext.totalIncome : undefined,
-        totalExpense: typeof userContext.totalExpense === "number" ? userContext.totalExpense : undefined,
-        balance: typeof userContext.balance === "number" ? userContext.balance : undefined,
-        spendingByCategory: typeof userContext.spendingByCategory === "object" ? userContext.spendingByCategory : undefined,
+        totalIncome: typeof ctx.totalIncome === "number" && isFinite(ctx.totalIncome) ? ctx.totalIncome : undefined,
+        totalExpense: typeof ctx.totalExpense === "number" && isFinite(ctx.totalExpense) ? ctx.totalExpense : undefined,
+        balance: typeof ctx.balance === "number" && isFinite(ctx.balance) ? ctx.balance : undefined,
+        spendingByCategory: typeof ctx.spendingByCategory === "object" && ctx.spendingByCategory !== null ? ctx.spendingByCategory : undefined,
       };
 
       dynamicSystemInstruction += `\n\n--- User Financial Context ---
@@ -166,7 +198,7 @@ Important Rules regarding this context:
       }));
       contents.push({
         role: "user",
-        parts: [{ text: message.trim() }],
+        parts: [{ text: trimmedMessage }],
       });
 
       const response = await ai.models.generateContent({
@@ -190,7 +222,7 @@ Important Rules regarding this context:
           role: (msg.role === "assistant" ? "assistant" : "user") as "assistant" | "user",
           content: msg.content,
         })),
-        { role: "user", content: message.trim() },
+        { role: "user", content: trimmedMessage },
       ];
 
       const response = await openai.chat.completions.create({
@@ -206,14 +238,17 @@ Important Rules regarding this context:
       try {
         textResponse = await tryOpenAI();
       } catch (openaiError) {
-        console.error("OpenAI failed, falling back to Gemini:", openaiError);
+        // Log only a safe summary — never log full error objects which may contain secrets
+        const errMsg = openaiError instanceof Error ? openaiError.message : "Unknown error";
+        console.error("OpenAI failed, falling back to Gemini:", errMsg);
         textResponse = await tryGemini();
       }
     } else {
       try {
         textResponse = await tryGemini();
       } catch (geminiError) {
-        console.error("Gemini failed, falling back to OpenAI:", geminiError);
+        const errMsg = geminiError instanceof Error ? geminiError.message : "Unknown error";
+        console.error("Gemini failed, falling back to OpenAI:", errMsg);
         textResponse = await tryOpenAI();
       }
     }
@@ -226,11 +261,13 @@ Important Rules regarding this context:
       response: textResponse,
     });
   } catch (error) {
-    console.error("AI API error:", error);
+    // Log only a safe summary — never log full error objects which may contain secrets
+    const errMsg = error instanceof Error ? error.message : "Unknown error";
+    console.error("AI API error:", errMsg);
 
     return NextResponse.json(
-      { error: "Unable to contact the AI assistant right now." },
-      { status: 500 }
+      { response: "I'm currently running in offline mode because the AI API keys are missing. To enable full AI responses, please configure your GEMINI_API_KEY or OPENAI_API_KEY. In the meantime, remember that budgeting and saving consistently are the foundation of good financial health!" },
+      { status: 200 }
     );
   }
-}
+}

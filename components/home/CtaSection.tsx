@@ -20,7 +20,7 @@ export function CtaSection() {
               <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4">
                 Your financial future starts today.
               </h2>
-              <p className="text-lg max-w-lg mx-auto mb-10 text-[#94A3B8]">
+              <p className="text-lg max-w-lg mx-auto mb-10 text-slate-300">
                 Join over 50,000 learners building better money habits with FinWise — completely free.
               </p>
               <div className="flex flex-wrap justify-center gap-4">

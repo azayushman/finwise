@@ -30,7 +30,7 @@ export default function HomePage() {
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={100}>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.1] mb-6">
               Take control of your money.<br />
               <span className="gradient-text font-semibold">Build better financial habits.</span>
             </h1>
@@ -89,7 +89,7 @@ export default function HomePage() {
       {/* ── Trust / Value Strip ── */}
       <section className="relative z-10 max-w-6xl mx-auto px-6 mb-32">
         <ScrollReveal direction="up" delay={500}>
-          <div className="glass-surface rounded-2xl p-6 sm:p-8 flex flex-wrap justify-center md:justify-between items-center gap-6 text-sm font-semibold text-[#94A3B8] tracking-wider uppercase text-center">
+          <div className="glass-surface rounded-2xl p-6 sm:p-8 flex flex-wrap justify-center md:justify-between items-center gap-6 text-sm font-semibold text-slate-300 tracking-wider uppercase text-center">
             <span className="flex items-center gap-2"><span className="text-[#8B5CF6]" aria-hidden="true">✦</span> Smart Budgeting</span>
             <span className="hidden md:block w-1 h-1 rounded-full bg-white/20" aria-hidden="true" />
             <span className="flex items-center gap-2"><span className="text-[#8B5CF6]" aria-hidden="true">✦</span> Goal-Based Saving</span>
@@ -105,10 +105,10 @@ export default function HomePage() {
       <section className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="mb-16 text-center lg:text-left">
           <ScrollReveal direction="up">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
               Everything you need to master your finances.
             </h2>
-            <p className="text-lg text-[#94A3B8] max-w-2xl mx-auto lg:mx-0">
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0">
               Four powerful pillars designed to take you from financial beginner to confident money manager.
             </p>
           </ScrollReveal>
@@ -123,7 +123,7 @@ export default function HomePage() {
                   💰
                 </div>
                 <h3 className="text-2xl font-semibold mb-3 text-white tracking-tight">Budget</h3>
-                <p className="text-[#94A3B8] leading-relaxed mb-8 flex-1">
+                <p className="text-slate-300 leading-relaxed mb-8 flex-1">
                   Plan where your money goes. Track your income and expenses with our intuitive, visual planner.
                 </p>
                 <div className="font-semibold text-[#A78BFA] group-hover:text-[#C4B5FD] flex items-center gap-2 transition-colors">
@@ -141,7 +141,7 @@ export default function HomePage() {
                   🏦
                 </div>
                 <h3 className="text-2xl font-semibold mb-3 text-white tracking-tight">Savings</h3>
-                <p className="text-[#94A3B8] leading-relaxed mb-8 flex-1">
+                <p className="text-slate-300 leading-relaxed mb-8 flex-1">
                   Build toward meaningful goals. Set targets, visualise your progress, and see the power of compound interest.
                 </p>
                 <div className="font-semibold text-[#A78BFA] group-hover:text-[#C4B5FD] flex items-center gap-2 transition-colors">
@@ -159,7 +159,7 @@ export default function HomePage() {
                   📚
                 </div>
                 <h3 className="text-2xl font-semibold mb-3 text-white tracking-tight">Learn</h3>
-                <p className="text-[#94A3B8] leading-relaxed mb-8 flex-1">
+                <p className="text-slate-300 leading-relaxed mb-8 flex-1">
                   Understand money without the jargon. Bite-sized lessons on everything from credit scores to investing.
                 </p>
                 <div className="font-semibold text-[#A78BFA] group-hover:text-[#C4B5FD] flex items-center gap-2 transition-colors">
@@ -181,7 +181,7 @@ export default function HomePage() {
                     ✨
                   </div>
                   <h3 className="text-2xl font-semibold mb-3 text-white tracking-tight">AI Assistant</h3>
-                  <p className="text-[#94A3B8] leading-relaxed mb-8">
+                  <p className="text-slate-300 leading-relaxed mb-8">
                     Get simple financial guidance instantly. Ask questions about personal finance, safe spending, and smart saving.
                   </p>
                   <div className="font-semibold text-[#A78BFA] group-hover:text-[#C4B5FD] flex items-center gap-2 transition-colors">

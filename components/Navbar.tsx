@@ -15,40 +15,148 @@ const navLinks = [
   { href: "/dashboard", label: "Dashboard" },
 ] as const;
 
+// ── Auth button ───────────────────────────────────────────────────────────────
+// Defined at module scope so ESLint's react-hooks/static-components rule is
+// satisfied: components must not be declared inside other render functions.
+
+interface AuthButtonProps {
+  mobile?: boolean;
+  authLoading: boolean;
+  session: Session | null;
+  onLogout: () => void;
+}
+
+function AuthButton({ mobile = false, authLoading, session, onLogout }: AuthButtonProps) {
+  // While the session check is in-flight render a size-matched skeleton so
+  // there is no layout shift or Login↔Logout flicker.
+  if (authLoading) {
+    return (
+      <div
+        aria-hidden="true"
+        className={
+          mobile
+            ? "w-full h-12 rounded-xl bg-white/5 animate-pulse"
+            : "hidden sm:block w-[76px] h-9 rounded-full bg-white/5 animate-pulse"
+        }
+      />
+    );
+  }
+
+  const sharedCls = mobile
+    ? "w-full flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl border border-[#8B5CF6]/30 bg-[#6D5DFB]/15"
+    : "hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 border border-[#8B5CF6]/30 bg-[#6D5DFB]/15 hover:bg-[#6D5DFB]/25 hover:border-[#8B5CF6]/50 hover:shadow-[0_4px_16px_rgba(109,93,251,0.2)]";
+
+  return session ? (
+    <button
+      onClick={onLogout}
+      className={sharedCls}
+      id={mobile ? "mobile-logout-btn" : "navbar-logout-btn"}
+    >
+      Logout
+    </button>
+  ) : (
+    <Link
+      href="/login"
+      className={sharedCls}
+      id={mobile ? "mobile-login-btn" : "navbar-login-btn"}
+    >
+      {mobile ? "Login →" : "Login"}
+    </Link>
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled]     = useState(false);
+  const [menuOpen, setMenuOpen]     = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession]       = useState<Session | null>(null);
+  /**
+   * `authLoading` stays `true` until the initial session check resolves.
+   * While true we suppress the login/logout button so there is no flicker
+   * between the "not logged in" and "logged in" states.
+   *
+   * If supabase is null (no env vars) we skip the check entirely and resolve
+   * immediately to unauthenticated (guest mode).
+   */
+  const [authLoading, setAuthLoading] = useState<boolean>(supabase !== null);
 
+  // Close mobile menu on route change without triggering a re-render loop
   if (pathname !== prevPathname) {
     setMenuOpen(false);
     setPrevPathname(pathname);
   }
 
+  // ── Scroll listener ──────────────────────────────────────────────────────
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  // ── Auth session ─────────────────────────────────────────────────────────
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    // No Supabase client → stay as guest immediately, no network calls needed.
+    if (!supabase) return;
+
+    let cancelled = false; // guard against state updates after unmount
+
+    // Initial session fetch — wrapped in try/catch to handle:
+    //  • Offline / DNS failure
+    //  • Supabase endpoint unreachable
+    //  • Malformed JWT / key mismatch that causes SDK to throw
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!cancelled) setSession(data.session);
+      })
+      .catch((err: unknown) => {
+        // Silently degrade to guest mode; avoid red console errors for
+        // expected offline / misconfiguration scenarios.
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[Navbar] Supabase getSession failed — guest mode:", err);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAuthLoading(false);
+      });
+
+    // Subscribe to auth state changes.
+    // onAuthStateChange is synchronous and always returns a valid subscription
+    // object even when the client cannot reach the server, so no try/catch is
+    // needed here. Individual state-change failures are swallowed by the SDK.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      if (!cancelled) {
+        setSession(newSession);
+        // Ensure loading clears if somehow the listener fires before getSession
+        setAuthLoading(false);
+      }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
+  // ── Logout ───────────────────────────────────────────────────────────────
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
+    if (!supabase) return;
+    try {
+      await supabase.auth.signOut();
+    } catch (err: unknown) {
+      // Even if signOut fails (e.g. already expired), clear local session and
+      // redirect — the user's intent was to log out.
+      if (process.env.NODE_ENV === "development") {
+        console.warn("[Navbar] signOut error (ignored):", err);
+      }
+    } finally {
+      setSession(null);
+      router.push("/");
+    }
   };
 
   return (
@@ -66,8 +174,7 @@ export function Navbar() {
         >
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0" aria-label="FinWise home">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center relative overflow-hidden shadow-sm border border-[#8B5CF6]/30"
-                 style={{ background: "linear-gradient(135deg, #0B1F3A 0%, #102A4C 100%)" }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center relative overflow-hidden glass-surface">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                    stroke="#8B5CF6" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
                 <polyline points="2 17 9 10 13 14 22 5" />
@@ -95,7 +202,7 @@ export function Navbar() {
                   className={`px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-150 ${
                     isActive
                       ? "text-white glass-surface font-semibold shadow-sm"
-                      : "text-[#94A3B8] hover:text-white hover:bg-white/5"
+                      : "text-slate-300 hover:text-white hover:bg-white/5"
                   }`}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -107,23 +214,7 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            {session ? (
-              <button
-                onClick={handleLogout}
-                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 border border-[#8B5CF6]/30 bg-[#6D5DFB]/15 hover:bg-[#6D5DFB]/25 hover:border-[#8B5CF6]/50 hover:shadow-[0_4px_16px_rgba(109,93,251,0.2)]"
-                id="navbar-logout-btn"
-              >
-                Logout
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="hidden sm:inline-flex items-center px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:-translate-y-0.5 border border-[#8B5CF6]/30 bg-[#6D5DFB]/15 hover:bg-[#6D5DFB]/25 hover:border-[#8B5CF6]/50 hover:shadow-[0_4px_16px_rgba(109,93,251,0.2)]"
-                id="navbar-login-btn"
-              >
-                Login
-              </Link>
-            )}
+            <AuthButton authLoading={authLoading} session={session} onLogout={handleLogout} />
 
             {/* Hamburger */}
             <button
@@ -131,7 +222,7 @@ export function Navbar() {
               onClick={() => setMenuOpen((o) => !o)}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              aria-label="Toggle navigation menu"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
               id="hamburger-btn"
             >
               <span className={`block h-0.5 w-5 bg-slate-300 rounded transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[7px]" : ""}`} />
@@ -145,7 +236,7 @@ export function Navbar() {
         {menuOpen && (
           <div
             id="mobile-menu"
-            className="md:hidden bg-[#0B1F3A] border-t border-[#8B5CF6]/20 px-4 py-3 shadow-xl animate-slide-down"
+            className="md:hidden glass-panel border-t border-white/5 px-4 py-3 animate-slide-down"
             role="dialog"
             aria-label="Mobile navigation"
           >
@@ -161,29 +252,15 @@ export function Navbar() {
                   className={`flex items-center px-4 py-3 text-base font-medium rounded-xl mb-1 transition-colors ${
                     isActive
                       ? "glass-surface text-white font-semibold"
-                      : "text-[#94A3B8] hover:bg-white/5 hover:text-white"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   }`}
                 >
                   {link.label}
                 </Link>
               );
             })}
-            <div className="border-t border-[#8B5CF6]/15 mt-2 pt-2">
-              {session ? (
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl border border-[#8B5CF6]/30 bg-[#6D5DFB]/15"
-                >
-                  Logout
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  className="flex items-center justify-center px-4 py-3 text-sm font-semibold text-white rounded-xl border border-[#8B5CF6]/30 bg-[#6D5DFB]/15"
-                >
-                  Login →
-                </Link>
-              )}
+            <div className="border-t border-white/5 mt-2 pt-2">
+              <AuthButton mobile authLoading={authLoading} session={session} onLogout={handleLogout} />
             </div>
           </div>
         )}

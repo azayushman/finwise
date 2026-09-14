@@ -112,11 +112,11 @@ export default function ToolsPage() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-white mb-4">
               Make better<br />
               <span className="gradient-text">money decisions.</span>
             </h1>
-            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+            <p className="text-lg max-w-2xl leading-relaxed text-slate-300">
               Powerful calculators and planners that help you apply financial concepts to your real life.
               No spreadsheets required.
             </p>
@@ -129,8 +129,8 @@ export default function ToolsPage() {
                 { value: "Free",                label: "Always" },
               ].map((s, i) => (
                 <div key={i} className="glass-surface rounded-xl px-5 py-3 min-w-[80px] text-center">
-                  <div className="text-2xl font-black text-[#8B5CF6]">{s.value}</div>
-                  <div className="text-xs uppercase tracking-wider mt-0.5 text-[#94A3B8]">{s.label}</div>
+                  <div className="text-2xl font-bold text-[#8B5CF6]">{s.value}</div>
+                  <div className="text-xs uppercase tracking-wider mt-0.5 text-slate-300">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -149,7 +149,7 @@ export default function ToolsPage() {
                   role="listitem"
                   className={`glass-panel rounded-3xl p-7 h-full flex flex-col justify-between transition-all duration-300 ${
                     tool.live
-                      ? "hover:-translate-y-2 hover:shadow-[0_16px_40px_-12px_rgba(109,93,251,0.3)]"
+                      ? "hover:-translate-y-1"
                       : "opacity-75"
                   }`}
                 >
@@ -183,20 +183,20 @@ export default function ToolsPage() {
                     </span>
 
                     <h2 className="text-lg font-bold text-white mb-2 leading-snug">{tool.title}</h2>
-                    <p className="text-sm text-[#94A3B8] leading-relaxed mb-6">{tool.desc}</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-6">{tool.desc}</p>
                   </div>
 
                   {/* CTA */}
                   {tool.live ? (
                     <Link
                       href={tool.href}
-                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 glass-control"
                     >
                       Open Tool →
                     </Link>
                   ) : (
                     <button
-                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 cursor-default glass-surface border-white/5 opacity-50"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-300 cursor-default glass-surface border-white/5 opacity-50"
                       disabled
                       aria-disabled="true"
                     >

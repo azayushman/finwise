@@ -84,12 +84,12 @@ function StatCard({ title, amount, prefix = "$", color = "#FFFFFF", icon, trend 
   trend?: { value: string; positive: boolean };
 }) {
   return (
-    <div className="glass-panel rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_-8px_rgba(109,93,251,0.25)]">
+    <div className="glass-panel rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1">
       <div className="flex items-start justify-between mb-3">
-        <h3 className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">{title}</h3>
+        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">{title}</h3>
         {icon && <span className="text-xl" aria-hidden="true">{icon}</span>}
       </div>
-      <div className="text-3xl font-black mb-3 truncate" style={{ color }}>
+      <div className="text-3xl font-bold mb-3 truncate" style={{ color }}>
         {prefix}{fmt(amount)}
       </div>
       {trend && (
@@ -136,7 +136,7 @@ function SpendingChart({ transactions }: { transactions: Transaction[] }) {
   if (!hasData) {
     return (
       <div className="h-48 flex items-center justify-center pt-4">
-        <p className="text-sm text-[#94A3B8] font-medium text-center">No expenses yet. Add expenses to see your trend.</p>
+        <p className="text-sm text-slate-300 font-medium text-center">No expenses yet. Add expenses to see your trend.</p>
       </div>
     );
   }
@@ -161,7 +161,7 @@ function SpendingChart({ transactions }: { transactions: Transaction[] }) {
               }}
             />
           </div>
-          <span className="text-xs font-semibold text-[#94A3B8] uppercase">{d.month}</span>
+          <span className="text-xs font-semibold text-slate-300 uppercase">{d.month}</span>
         </div>
       ))}
     </div>
@@ -185,6 +185,9 @@ export function DashboardClient() {
   useEffect(() => {
     async function loadData() {
       try {
+        // No Supabase client (env vars missing) → fall through to demo mode.
+        if (!supabase) throw new Error("No active session");
+
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {
@@ -236,7 +239,7 @@ export function DashboardClient() {
           <svg className="animate-spin text-[#8B5CF6]" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
             <path d="M21 12a9 9 0 1 1-6.219-8.56" />
           </svg>
-          <p className="text-sm font-semibold text-[#94A3B8]">Loading your dashboard...</p>
+          <p className="text-sm font-semibold text-slate-300">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -250,7 +253,7 @@ export function DashboardClient() {
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="text-4xl" aria-hidden="true">⚠️</div>
           <p className="text-sm font-semibold text-rose-400" role="alert">Oops, something went wrong</p>
-          <p className="text-xs text-[#94A3B8] max-w-sm">{fetchError}</p>
+          <p className="text-xs text-slate-300 max-w-sm">{fetchError}</p>
         </div>
       </div>
     );
@@ -303,11 +306,11 @@ export function DashboardClient() {
                     Your Financial Overview
                   </span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-[1.1] text-white mb-2">
+                <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.1] text-white mb-2">
                   Welcome back,{" "}
                   <span className="gradient-text">{userName}</span>
                 </h1>
-                <p className="text-base text-[#94A3B8]">
+                <p className="text-base text-slate-300">
                   {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
                 </p>
               </div>
@@ -332,12 +335,12 @@ export function DashboardClient() {
             <div className="glass-panel rounded-3xl p-10 md:p-16 text-center max-w-3xl mx-auto">
               <div className="text-5xl mb-6" aria-hidden="true">🌱</div>
               <h2 className="text-2xl font-bold text-white mb-3">Your financial journey starts here</h2>
-              <p className="text-[#94A3B8] mb-8 max-w-md mx-auto leading-relaxed">
+              <p className="text-slate-300 mb-8 max-w-md mx-auto leading-relaxed">
                 Welcome to FinWise! It looks like you haven&apos;t added any transactions or budgets yet. Start tracking your income and expenses to unlock personalized insights and a financial health score.
               </p>
               <Link
                 href="/budget"
-                className="inline-block px-6 py-3 bg-[#6D5DFB] hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] hover:-translate-y-0.5 border border-white/10 text-white font-bold rounded-xl transition-all duration-300"
+                className="inline-block px-6 py-3 glass-control hover:-translate-y-0.5 text-white font-semibold rounded-xl transition-all duration-300"
               >
                 Set up your Budget
               </Link>
@@ -367,7 +370,7 @@ export function DashboardClient() {
                   <div className="glass-panel rounded-3xl p-6 h-full flex flex-col justify-between">
                     <div>
                       <h2 className="text-lg font-bold text-white mb-1">Spending Overview</h2>
-                      <p className="text-sm text-[#94A3B8] mb-4">Your expenses over the last 6 months</p>
+                      <p className="text-sm text-slate-300 mb-4">Your expenses over the last 6 months</p>
                     </div>
                     <SpendingChart transactions={transactions} />
                   </div>
@@ -395,15 +398,15 @@ export function DashboardClient() {
                         />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center flex-col">
-                        <span className="text-3xl font-black text-white" aria-label={`Health score: ${healthScore} out of 100`}>{healthScore}</span>
-                        <span className="text-[10px] uppercase tracking-widest font-bold text-[#94A3B8]">/ 100</span>
+                        <span className="text-3xl font-bold text-white" aria-label={`Health score: ${healthScore} out of 100`}>{healthScore}</span>
+                        <span className="text-[10px] uppercase tracking-widest font-bold text-slate-300">/ 100</span>
                       </div>
                     </div>
 
                     <p className="text-sm font-semibold text-slate-200 mb-1">
                       {healthScore >= 80 ? "Excellent standing!" : healthScore >= 50 ? "Good standing" : "Needs attention"}
                     </p>
-                    <p className="text-xs text-[#94A3B8]">
+                    <p className="text-xs text-slate-300">
                       {totalIncome === 0 ? "Log income to improve your score." : "Your score updates automatically based on spending and saving."}
                     </p>
                   </div>
@@ -419,14 +422,14 @@ export function DashboardClient() {
                 <div className="glass-panel rounded-3xl p-6 h-full">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-lg font-bold text-white">Recent Transactions</h2>
-                    <span className="text-sm font-semibold text-[#94A3B8]">{transactions.length} Total</span>
+                    <span className="text-sm font-semibold text-slate-300">{transactions.length} Total</span>
                   </div>
 
                   {transactions.length === 0 ? (
                     <div className="text-center py-10">
                       <div className="text-3xl mb-3" aria-hidden="true">📝</div>
                       <p className="text-sm font-medium text-slate-300">No transactions yet</p>
-                      <p className="text-xs text-[#94A3B8] mt-1">They will appear here once added.</p>
+                      <p className="text-xs text-slate-300 mt-1">They will appear here once added.</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -435,7 +438,7 @@ export function DashboardClient() {
                           <div className="flex items-center gap-3 min-w-0">
                             <div
                               className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0 ${
-                                tx.type === "income" ? "bg-[#6D5DFB]/20 text-[#8B5CF6]" : "bg-white/5 text-[#94A3B8]"
+                                tx.type === "income" ? "bg-[#6D5DFB]/20 text-[#8B5CF6]" : "bg-white/5 text-slate-300"
                               }`}
                               aria-hidden="true"
                             >
@@ -443,7 +446,7 @@ export function DashboardClient() {
                             </div>
                             <div className="min-w-0">
                               <p className="text-sm font-bold text-white truncate">{tx.description}</p>
-                              <p className="text-xs text-[#94A3B8]">{tx.category} · {formatDate(tx.date)}</p>
+                              <p className="text-xs text-slate-300">{tx.category} · {formatDate(tx.date)}</p>
                             </div>
                           </div>
                           <div className={`text-sm font-bold flex-shrink-0 ml-3 ${tx.type === "income" ? "text-[#8B5CF6]" : "text-white"}`}>
@@ -488,7 +491,7 @@ export function DashboardClient() {
                             <div key={b.id}>
                               <div className="flex justify-between text-sm mb-1.5">
                                 <span className="font-semibold text-slate-200">{b.category}</span>
-                                <span className="font-medium text-[#94A3B8]">
+                                <span className="font-medium text-slate-300">
                                   <span className={isWarning ? "text-rose-400 font-bold" : "text-white"}>
                                     ${fmt(b.spent)}
                                   </span>
@@ -543,7 +546,7 @@ export function DashboardClient() {
                             <div key={g.id}>
                               <div className="flex justify-between text-sm mb-1.5">
                                 <span className="font-semibold text-slate-200">{g.name}</span>
-                                <span className="font-medium text-[#94A3B8]">
+                                <span className="font-medium text-slate-300">
                                   <span className="text-[#8B5CF6] font-bold">${fmt(g.current_amount)}</span>
                                   {" "}/ ${fmt(g.target_amount)}
                                 </span>
@@ -591,12 +594,12 @@ export function DashboardClient() {
                     ) : (
                       <div className="grid grid-cols-2 gap-4">
                         <div className="glass-surface rounded-xl p-4 text-center">
-                          <div className="text-2xl font-black text-[#8B5CF6] mb-1">{quizProgress.length}</div>
-                          <div className="text-xs font-semibold uppercase text-[#94A3B8]">Quizzes Done</div>
+                          <div className="text-2xl font-bold text-[#8B5CF6] mb-1">{quizProgress.length}</div>
+                          <div className="text-xs font-semibold uppercase text-slate-300">Quizzes Done</div>
                         </div>
                         <div className="glass-surface rounded-xl p-4 text-center">
-                          <div className="text-2xl font-black text-[#60A5FA] mb-1">{avgQuizScore.toFixed(0)}%</div>
-                          <div className="text-xs font-semibold uppercase text-[#94A3B8]">Avg Score</div>
+                          <div className="text-2xl font-bold text-[#60A5FA] mb-1">{avgQuizScore.toFixed(0)}%</div>
+                          <div className="text-xs font-semibold uppercase text-slate-300">Avg Score</div>
                         </div>
                       </div>
                     )}
@@ -618,7 +621,7 @@ export function DashboardClient() {
                     <h2 className="text-sm font-bold tracking-wider uppercase text-[#8B5CF6]">FinWise Insight</h2>
                   </div>
 
-                  <p className="text-sm leading-relaxed mb-4 relative z-10 text-[#94A3B8]">
+                  <p className="text-sm leading-relaxed mb-4 relative z-10 text-slate-300">
                     {totalSavings > 0
                       ? "Great job on your savings! Remember, every dollar saved today benefits from the power of compound interest."
                       : "Track your income and expenses to unlock personalized insights and recommendations for your financial journey."}

@@ -54,7 +54,7 @@ export function FeaturesSection() {
           >
             Everything you need to master your finances
           </h2>
-          <p className="text-lg text-[#94A3B8] leading-relaxed">
+          <p className="text-lg text-slate-300 leading-relaxed">
             Four powerful pillars designed to take you from financial beginner to confident money manager.
           </p>
         </ScrollReveal>
@@ -76,7 +76,7 @@ export function FeaturesSection() {
                       {feature.icon}
                     </div>
                     <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-[#94A3B8] leading-relaxed mb-5">{feature.description}</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-5">{feature.description}</p>
                   </div>
                   <Link
                     href={feature.href}

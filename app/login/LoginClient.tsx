@@ -36,7 +36,7 @@ function FinWiseLogo() {
   return (
     <div className="flex items-center justify-center gap-2.5">
       <div
-        className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.2)] glass-surface"
+        className="w-11 h-11 rounded-2xl flex items-center justify-center glass-surface"
         aria-hidden="true"
       >
         <svg
@@ -91,7 +91,7 @@ function InputField({
           autoComplete={autoComplete}
           aria-invalid={hasError}
           aria-describedby={hasError ? `${id}-error` : undefined}
-          className={`w-full px-4 py-3 text-sm text-white glass-surface rounded-xl outline-none transition-all duration-300 placeholder:text-[#94A3B8]/60 ${
+          className={`w-full px-4 py-3 text-sm text-white glass-surface rounded-xl outline-none transition-all duration-300 placeholder:text-slate-300/60 ${
             hasError
               ? "border-red-400/50 focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
               : "hover:border-white/10 focus:border-[#8B5CF6]/50 focus:ring-2 focus:ring-[#8B5CF6]/20"
@@ -185,6 +185,11 @@ export function LoginClient() {
     setErrors({});
     
     try {
+      // Guard: Supabase client unavailable (env vars missing or invalid).
+      if (!supabase) {
+        throw new Error("Authentication is currently unavailable. Please try again later.");
+      }
+
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
           email: form.email,
@@ -251,7 +256,7 @@ export function LoginClient() {
               </svg>
             </div>
             <h2 className="text-xl font-bold text-white mb-1">Welcome!</h2>
-            <p className="text-sm text-[#94A3B8] text-center max-w-[260px] mb-6">
+            <p className="text-sm text-slate-300 text-center max-w-[260px] mb-6">
               {successMessage}
             </p>
             <button
@@ -270,23 +275,23 @@ export function LoginClient() {
           {/* Branding */}
           <div className="text-center mb-8">
             <FinWiseLogo />
-            <h1 className="mt-5 text-2xl font-bold tracking-tight text-white">
+            <h1 className="mt-5 text-2xl font-semibold tracking-tight text-white">
               {mode === "login" ? "Welcome back" : "Create an account"}
             </h1>
-            <p className="mt-1 text-sm text-[#94A3B8]">
+            <p className="mt-1 text-sm text-slate-300">
               {mode === "login" ? "Sign in to your FinWise account" : "Start your financial journey today"}
             </p>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex bg-[#07111F]/50 p-1 rounded-xl mb-8 border border-white/5">
+          <div className="flex glass-surface p-1 rounded-xl mb-8">
             <button
               type="button"
               onClick={() => mode !== "login" && toggleMode()}
               className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                 mode === "login"
                   ? "glass-surface text-white shadow-sm"
-                  : "text-[#94A3B8] hover:text-white"
+                  : "text-slate-300 hover:text-white"
               }`}
               aria-pressed={mode === "login"}
             >
@@ -298,7 +303,7 @@ export function LoginClient() {
               className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                 mode === "signup"
                   ? "glass-surface text-white shadow-sm"
-                  : "text-[#94A3B8] hover:text-white"
+                  : "text-slate-300 hover:text-white"
               }`}
               aria-pressed={mode === "signup"}
             >
@@ -322,7 +327,7 @@ export function LoginClient() {
           {/* OR divider */}
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider">or</span>
+            <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">or</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
@@ -380,7 +385,7 @@ export function LoginClient() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="text-[#94A3B8] hover:text-white transition-colors"
+                    className="text-slate-300 hover:text-white transition-colors"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     <EyeIcon open={showPassword} />
@@ -399,7 +404,7 @@ export function LoginClient() {
                   id="remember-me"
                   onClick={() => handleChange("rememberMe", !form.rememberMe)}
                   className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                    form.rememberMe ? "border-transparent bg-[#6D5DFB]" : "border-white/20 glass-surface hover:border-white/40"
+                    form.rememberMe ? "border-transparent bg-[#6D5DFB]/30" : "glass-surface hover:border-white/15"
                   }`}
                 >
                   {form.rememberMe && (
@@ -410,7 +415,7 @@ export function LoginClient() {
                 </button>
                 <label
                   htmlFor="remember-me"
-                  className="text-sm text-[#94A3B8] hover:text-white transition-colors cursor-pointer select-none"
+                  className="text-sm text-slate-300 hover:text-white transition-colors cursor-pointer select-none"
                   onClick={() => handleChange("rememberMe", !form.rememberMe)}
                 >
                   Remember me for 30 days
@@ -423,7 +428,7 @@ export function LoginClient() {
               type="submit"
               disabled={isSubmitting || hasValidationErrors}
               id="login-submit-btn"
-              className="w-full mt-6 py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(109,93,251,0.4)] active:translate-y-0 bg-[#6D5DFB] border border-white/10"
+              className="w-full mt-6 py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0 glass-control"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
@@ -446,7 +451,7 @@ export function LoginClient() {
             { icon: "🚫", label: "No spam, ever" },
             { icon: "✨", label: "Free forever" },
           ].map((item) => (
-            <div key={item.label} className="flex items-center gap-1.5 text-xs text-[#94A3B8] font-medium">
+            <div key={item.label} className="flex items-center gap-1.5 text-xs text-slate-300 font-medium">
               <span aria-hidden="true">{item.icon}</span>
               {item.label}
             </div>

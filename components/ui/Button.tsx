@@ -51,7 +51,7 @@ export function Button({
   ariaLabel,
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8B5CF6] disabled:opacity-50 disabled:pointer-events-none";
+    "inline-flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer select-none disabled:opacity-50 disabled:pointer-events-none";
 
   const classes = `${base} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
   const style   = getInlineStyle(variant);

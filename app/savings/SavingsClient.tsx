@@ -15,6 +15,21 @@ function fmtInt(n: number): string {
   return Math.round(n).toLocaleString("en-US");
 }
 
+/** Clamp `value` within [min, max]. */
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+/**
+ * Parse a string to a number and clamp it.
+ * Returns `fallback` (default 0) when the string is empty or results in NaN.
+ */
+function safeNum(raw: string, min: number, max: number, fallback = 0): number {
+  const n = parseFloat(raw);
+  if (!Number.isFinite(n)) return fallback;
+  return clamp(n, min, max);
+}
+
 function monthsUntil(dateStr: string): number {
   if (!dateStr) return 0;
   const target = new Date(dateStr + "T00:00:00");
@@ -48,10 +63,10 @@ function CircularProgress({ percentage, color, size = 180 }: {
         strokeLinecap="round"
         strokeDasharray={`${dashLen} ${circumference - dashLen}`}
         strokeDashoffset={circumference / 4}
-        style={{ transition: "stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1)", filter: `drop-shadow(0 0 8px ${color}66)` }}
+        style={{ transition: "stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1)", filter: `drop-shadow(0 0 6px ${color}44)` }}
       />
       {/* Center text */}
-      <text x="90" y="82" textAnchor="middle" className="fill-white text-[28px] font-black">
+      <text x="90" y="82" textAnchor="middle" className="fill-white text-[28px] font-bold">
         {clampedPct.toFixed(0)}%
       </text>
       <text x="90" y="102" textAnchor="middle" className="fill-[#94A3B8] text-[11px] font-medium">
@@ -70,7 +85,10 @@ function compoundGrowth(principal: number, monthlyAdd: number, annualRate: numbe
   const r = annualRate / 100 / 12;
   if (r === 0) return principal + monthlyAdd * months;
   const factor = Math.pow(1 + r, months);
-  return principal * factor + monthlyAdd * ((factor - 1) / r);
+  // Guard against non-finite results from extreme inputs
+  if (!Number.isFinite(factor)) return principal + monthlyAdd * months;
+  const result = principal * factor + monthlyAdd * ((factor - 1) / r);
+  return Number.isFinite(result) ? result : principal + monthlyAdd * months;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -90,7 +108,7 @@ function InputBlock({
       <label htmlFor={id} className="text-sm font-semibold text-slate-200 mb-1.5 block">{label}</label>
       <div className="relative">
         {prefix && (
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{prefix}</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-300 pointer-events-none">{prefix}</span>
         )}
         <input
           id={id}
@@ -101,7 +119,7 @@ function InputBlock({
           onBlur={onBlur}
           placeholder={placeholder}
           aria-invalid={hasError}
-          className={`w-full py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border placeholder:text-[#94A3B8]/60 ${
+          className={`w-full py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border placeholder:text-slate-300/60 ${
             prefix ? "pl-8 pr-4" : suffix ? "pl-4 pr-8" : "px-4"
           } ${
             hasError
@@ -110,7 +128,7 @@ function InputBlock({
           }`}
         />
         {suffix && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#94A3B8] pointer-events-none">{suffix}</span>
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-300 pointer-events-none">{suffix}</span>
         )}
       </div>
       {error && <p className="mt-1.5 text-xs text-rose-400 font-medium" role="alert">{error}</p>}
@@ -140,11 +158,13 @@ export function SavingsClient() {
   const rateId = useId();
 
   /* ── Parsed numbers ── */
-  const targetNum = parseFloat(targetAmount) || 0;
-  const currentNum = parseFloat(currentSavings) || 0;
-  const monthlyNum = parseFloat(monthlyContrib) || 0;
-  const rateNum = parseFloat(annualRate) || 0;
-  const remaining = Math.max(0, targetNum - currentNum);
+  // Clamp parsed inputs to safe ranges to prevent NaN / infinite-loop scenarios
+  const targetNum  = safeNum(targetAmount,  0, 100_000_000);
+  const currentNum = safeNum(currentSavings, 0, 100_000_000);
+  const monthlyNum = safeNum(monthlyContrib, 0, 100_000_000);
+  // Rate: allow 0 (no growth) up to 100%; user can type 0 but we use 0 in math safely
+  const rateNum    = safeNum(annualRate, 0, 100);
+  const remaining  = Math.max(0, targetNum - currentNum);
   const progressPct = targetNum > 0 ? Math.min((currentNum / targetNum) * 100, 100) : 0;
 
   /* ── Date-based calculations ── */
@@ -161,7 +181,11 @@ export function SavingsClient() {
     const numerator = targetNum + monthlyOverR;
     const denominator = currentNum + monthlyOverR;
     if (denominator <= 0 || numerator <= 0) return Infinity;
-    const n = Math.log(numerator / denominator) / Math.log(1 + r);
+    const ratio = numerator / denominator;
+    // Guard: log of non-positive or non-finite ratio is NaN
+    if (!Number.isFinite(ratio) || ratio <= 0) return Infinity;
+    const n = Math.log(ratio) / Math.log(1 + r);
+    if (!Number.isFinite(n)) return Infinity;
     return Math.ceil(Math.max(0, n));
   }, [remaining, monthlyNum, rateNum, targetNum, currentNum]);
 
@@ -193,7 +217,7 @@ export function SavingsClient() {
       if (value.trim() && (isNaN(n) || n < 0)) return "Enter a valid non-negative number.";
     }
     if (field === "annualRate") {
-      if (isNaN(n) || n < 0 || n > 50) return "Enter a rate between 0 and 50.";
+      if (isNaN(n) || n < 0 || n > 100) return "Enter a rate between 0 and 100.";
     }
     return undefined;
   }, []);
@@ -251,11 +275,11 @@ export function SavingsClient() {
                 Savings Goals
               </span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-white mb-4">
               Turn plans into<br />
               <span className="gradient-text">progress.</span>
             </h1>
-            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+            <p className="text-lg max-w-2xl leading-relaxed text-slate-300">
               Set goals, calculate timelines, and visualise the power of compound interest.
               Every dollar saved today is worth more tomorrow.
             </p>
@@ -276,7 +300,7 @@ export function SavingsClient() {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="text-xs font-semibold text-[#94A3B8] hover:text-rose-400 transition-colors"
+                    className="text-xs font-semibold text-slate-300 hover:text-rose-400 transition-colors"
                   >
                     Reset
                   </button>
@@ -291,7 +315,7 @@ export function SavingsClient() {
                       value={goalName}
                       onChange={e => setGoalName(e.target.value)}
                       placeholder="e.g. Emergency Fund"
-                      className="w-full px-4 py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border border-white/10 hover:border-white/15 focus:border-[#8B5CF6]/60 focus:ring-2 focus:ring-[#8B5CF6]/20 placeholder:text-[#94A3B8]/60"
+                      className="w-full px-4 py-3 text-sm text-white rounded-xl outline-none transition-all duration-300 bg-white/5 border border-white/10 hover:border-white/15 focus:border-[#8B5CF6]/60 focus:ring-2 focus:ring-[#8B5CF6]/20 placeholder:text-slate-300/60"
                     />
                   </div>
 
@@ -362,10 +386,10 @@ export function SavingsClient() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-white/5">
-                          <th className="text-left py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Period</th>
-                          <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Contributions</th>
-                          <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Interest</th>
-                          <th className="text-right py-3 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Total Value</th>
+                          <th className="text-left py-3 text-xs font-bold text-slate-300 uppercase tracking-wider">Period</th>
+                          <th className="text-right py-3 text-xs font-bold text-slate-300 uppercase tracking-wider">Contributions</th>
+                          <th className="text-right py-3 text-xs font-bold text-slate-300 uppercase tracking-wider">Interest</th>
+                          <th className="text-right py-3 text-xs font-bold text-slate-300 uppercase tracking-wider">Total Value</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -375,7 +399,7 @@ export function SavingsClient() {
                           return (
                             <tr key={p.months} className="border-b border-white/5 hover:bg-white/2 transition-colors">
                               <td className="py-3 font-semibold text-slate-200">{p.label}</td>
-                              <td className="py-3 text-right text-[#94A3B8]">${fmtInt(totalContrib)}</td>
+                              <td className="py-3 text-right text-slate-300">${fmtInt(totalContrib)}</td>
                               <td className="py-3 text-right text-[#8B5CF6] font-semibold">+${fmtInt(Math.max(0, interest))}</td>
                               <td className="py-3 text-right font-bold text-white">${fmtInt(p.value)}</td>
                             </tr>
@@ -385,9 +409,9 @@ export function SavingsClient() {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-sm text-[#94A3B8] text-center py-8">Enter your savings details to see projections.</p>
+                  <p className="text-sm text-slate-300 text-center py-8">Enter your savings details to see projections.</p>
                 )}
-                <p className="text-xs text-[#94A3B8]/70 mt-4 text-center">
+                <p className="text-xs text-slate-300/70 mt-4 text-center">
                   Projections assume constant contributions and returns. Not financial advice.
                 </p>
               </div>
@@ -422,20 +446,20 @@ export function SavingsClient() {
 
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
-                    <span className="text-[#94A3B8]">Saved</span>
+                    <span className="text-slate-300">Saved</span>
                     <span className="font-bold text-[#8B5CF6]">${fmt(currentNum)}</span>
                   </div>
                   <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
-                    <span className="text-[#94A3B8]">Remaining</span>
+                    <span className="text-slate-300">Remaining</span>
                     <span className="font-bold text-white">${fmt(remaining)}</span>
                   </div>
                   <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
-                    <span className="text-[#94A3B8]">Target</span>
+                    <span className="text-slate-300">Target</span>
                     <span className="font-bold text-white">${fmt(targetNum)}</span>
                   </div>
                   {targetDate && monthsLeft > 0 && (
                     <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
-                      <span className="text-[#94A3B8]">Required/mo</span>
+                      <span className="text-slate-300">Required/mo</span>
                       <span className="font-bold" style={{ color: monthlyNum >= requiredMonthly ? "#8B5CF6" : "#F59E0B" }}>
                         ${fmt(requiredMonthly)}
                       </span>
@@ -451,18 +475,18 @@ export function SavingsClient() {
                 <h2 className="text-lg font-bold text-white mb-5">Timeline</h2>
                 <div className="space-y-4">
                   <div className="glass-surface rounded-xl px-4 py-3">
-                    <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Estimated Completion</div>
+                    <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Estimated Completion</div>
                     <div className="text-xl font-bold text-white">{estimatedDate}</div>
                   </div>
                   {monthsToGoal > 0 && monthsToGoal < Infinity && (
                     <div className="glass-surface rounded-xl px-4 py-3">
-                      <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Months Remaining</div>
+                      <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Months Remaining</div>
                       <div className="text-xl font-bold text-[#8B5CF6]">{monthsToGoal}</div>
                     </div>
                   )}
                   {monthlyNum > 0 && targetNum > 0 && remaining > 0 && (
                     <div className="glass-surface rounded-xl px-4 py-3">
-                      <div className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1">Monthly Contribution</div>
+                      <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Monthly Contribution</div>
                       <div className="text-xl font-bold text-white">${fmt(monthlyNum)}</div>
                     </div>
                   )}
@@ -476,13 +500,13 @@ export function SavingsClient() {
                 <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-base font-bold mb-2 relative z-10 text-white">The Power of Compound Interest</h3>
-                <p className="text-xs leading-relaxed mb-4 relative z-10 text-[#94A3B8]">
+                <p className="text-xs leading-relaxed mb-4 relative z-10 text-slate-300">
                   ${fmt(monthlyNum)}/mo at {rateNum}% annual return:
                 </p>
                 <div className="space-y-2.5 relative z-10">
                   {projections.slice(2).map(p => (
                     <div key={p.months} className="flex justify-between items-center glass-surface rounded-lg px-3 py-2">
-                      <span className="text-sm text-[#94A3B8]">After {p.label}</span>
+                      <span className="text-sm text-slate-300">After {p.label}</span>
                       <span className="text-sm font-bold text-[#8B5CF6]">${fmtInt(p.value)}</span>
                     </div>
                   ))}

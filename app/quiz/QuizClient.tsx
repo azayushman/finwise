@@ -286,11 +286,11 @@ export function QuizClient() {
                 FinWise Quiz
               </span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-white mb-4">
               Test what you know<br />
               <span className="gradient-text">about money.</span>
             </h1>
-            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+            <p className="text-lg max-w-2xl leading-relaxed text-slate-300">
               {totalQuestions} questions across {categoryBreakdown.length} topics. Find your gaps,
               reinforce your knowledge, and level up your financial literacy.
             </p>
@@ -309,7 +309,7 @@ export function QuizClient() {
 
               <div className="text-6xl mb-5 relative z-10" aria-hidden="true">🧠</div>
               <h2 className="text-2xl font-bold text-white mb-3 relative z-10">Financial Literacy Quiz</h2>
-              <p className="text-sm text-[#94A3B8] max-w-md mx-auto mb-8 leading-relaxed relative z-10">
+              <p className="text-sm text-slate-300 max-w-md mx-auto mb-8 leading-relaxed relative z-10">
                 Test your knowledge of budgeting, saving, investing, credit, and more.
                 Each question includes a beginner-friendly explanation.
               </p>
@@ -322,8 +322,8 @@ export function QuizClient() {
                   { value: "~8 min", label: "Duration" },
                 ].map(s => (
                   <div key={s.label} className="glass-surface rounded-xl px-5 py-3 min-w-[80px]">
-                    <div className="text-2xl font-black text-[#8B5CF6]">{s.value}</div>
-                    <div className="text-xs text-[#94A3B8] uppercase tracking-wider mt-0.5">{s.label}</div>
+                    <div className="text-2xl font-bold text-[#8B5CF6]">{s.value}</div>
+                    <div className="text-xs text-slate-300 uppercase tracking-wider mt-0.5">{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -343,7 +343,7 @@ export function QuizClient() {
 
               <button
                 onClick={handleStartQuiz}
-                className="px-10 py-4 rounded-xl text-base font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(109,93,251,0.5)] bg-[#6D5DFB] border border-white/10 relative z-10"
+                className="px-10 py-4 rounded-xl text-base font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 glass-control relative z-10"
               >
                 Start Quiz →
               </button>
@@ -400,7 +400,7 @@ export function QuizClient() {
                           ? isCorrect
                             ? "border-emerald-500/50 bg-emerald-500/20 text-emerald-300"
                             : "border-rose-500/50 bg-rose-500/20 text-rose-300"
-                          : "glass-surface border-white/10 text-[#94A3B8] hover:border-white/20"
+                          : "glass-surface border-white/10 text-slate-300 hover:border-white/20"
                     }`}
                     style={isCurrent ? { background: "#8B5CF6", color: "#fff", borderColor: "#8B5CF6" } : undefined}
                     aria-label={`Go to question ${i + 1}${answered ? (isCorrect ? " (correct)" : " (incorrect)") : ""}`}
@@ -438,18 +438,18 @@ export function QuizClient() {
                   const isCorrectShown = showFeedback && isCorrectOpt;
 
                   let wrapperCls = "glass-surface border-white/10 text-slate-200";
-                  let circleStyle: React.CSSProperties = { background: "rgba(255,255,255,0.06)", color: "#94A3B8", border: "1px solid rgba(255,255,255,0.1)" };
-                  let hoverCls = !showFeedback ? "hover:-translate-y-0.5 hover:border-[#8B5CF6]/50 hover:shadow-[0_4px_16px_rgba(109,93,251,0.2)] cursor-pointer" : "cursor-default";
+                  let circleStyle: React.CSSProperties = { background: "rgba(255,255,255,0.04)", color: "#94A3B8", border: "1px solid rgba(255,255,255,0.08)" };
+                  let hoverCls = !showFeedback ? "hover:-translate-y-0.5 hover:border-[#8B5CF6]/40 cursor-pointer" : "cursor-default";
 
                   if (isCorrectShown) {
-                    wrapperCls = "bg-emerald-950/30 border-emerald-400/50 text-white";
-                    circleStyle = { background: "#10B981", color: "#fff", border: "none" };
+                    wrapperCls = "glass-success text-white";
+                    circleStyle = { background: "rgba(16,185,129,0.3)", color: "#34D399", border: "1px solid rgba(16,185,129,0.3)" };
                   } else if (isWrongSelected) {
-                    wrapperCls = "bg-rose-950/30 border-rose-400/50 text-white";
-                    circleStyle = { background: "#EF4444", color: "#fff", border: "none" };
+                    wrapperCls = "glass-danger text-white";
+                    circleStyle = { background: "rgba(239,68,68,0.3)", color: "#F87171", border: "1px solid rgba(239,68,68,0.3)" };
                   } else if (isSelected) {
-                    wrapperCls = "bg-[#6D5DFB]/15 border-[#8B5CF6]/60 text-white shadow-[0_0_16px_rgba(109,93,251,0.2)]";
-                    circleStyle = { background: "#8B5CF6", color: "#fff", border: "none" };
+                    wrapperCls = "bg-[#6D5DFB]/10 border-[#8B5CF6]/30 text-white";
+                    circleStyle = { background: "rgba(109,93,251,0.25)", color: "#C4B5FD", border: "1px solid rgba(139,92,246,0.3)" };
                     hoverCls = "cursor-pointer";
                   }
 
@@ -511,7 +511,7 @@ export function QuizClient() {
                     type="button"
                     onClick={handleSubmitAnswer}
                     disabled={selectedOption === null}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] disabled:opacity-40 disabled:pointer-events-none disabled:translate-y-0 bg-[#6D5DFB] border border-white/10"
+                    className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-40 disabled:pointer-events-none disabled:translate-y-0 glass-control"
                   >
                     Submit Answer
                   </button>
@@ -520,7 +520,7 @@ export function QuizClient() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
+                    className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 glass-control"
                   >
                     {currentIdx < totalQuestions - 1 ? "Next →" : state === "review" ? "Back to Results" : "See Results →"}
                   </button>
@@ -539,8 +539,8 @@ export function QuizClient() {
                 <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <div className="text-6xl mb-4 relative z-10" aria-hidden="true">{grade.emoji}</div>
-                <h2 className="text-3xl font-black text-white mb-2 relative z-10">{grade.label}</h2>
-                <p className="text-[#94A3B8] text-sm mb-8 relative z-10">
+                <h2 className="text-3xl font-bold text-white mb-2 relative z-10">{grade.label}</h2>
+                <p className="text-slate-300 text-sm mb-8 relative z-10">
                   You got <strong className="text-white">{score}</strong> out of <strong className="text-white">{totalQuestions}</strong> questions correct
                 </p>
 
@@ -557,14 +557,14 @@ export function QuizClient() {
                     strokeDashoffset={2 * Math.PI * 64 / 4}
                     style={{ transition: "stroke-dasharray 1s ease", filter: `drop-shadow(0 0 8px ${grade.color}88)` }}
                   />
-                  <text x="80" y="72" textAnchor="middle" className="fill-white text-[32px] font-black">{percentage}%</text>
+                  <text x="80" y="72" textAnchor="middle" className="fill-white text-[32px] font-bold">{percentage}%</text>
                   <text x="80" y="94" textAnchor="middle" className="fill-[#94A3B8] text-[11px] font-medium">score</text>
                 </svg>
 
                 <div className="flex flex-wrap justify-center gap-4 relative z-10">
                   <button
                     onClick={handleRestart}
-                    className="px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
+                    className="px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 glass-control"
                   >
                     Restart Quiz
                   </button>
@@ -615,12 +615,12 @@ export function QuizClient() {
                 <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-xl font-bold text-white mb-2 relative z-10">Want to learn more?</h3>
-                <p className="text-sm mb-6 relative z-10 text-[#94A3B8]">
+                <p className="text-sm mb-6 relative z-10 text-slate-300">
                   Explore our learning hub to strengthen the topics where you scored lowest.
                 </p>
                 <Link
                   href="/learn"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] relative z-10 bg-[#6D5DFB] border border-white/10"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 relative z-10 glass-control"
                 >
                   Browse Lessons →
                 </Link>

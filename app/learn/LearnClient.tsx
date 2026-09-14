@@ -246,11 +246,11 @@ export function LearnClient() {
                 Financial Education
               </span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] text-white mb-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-white mb-4">
               Learn money without<br />
               <span className="gradient-text">the jargon.</span>
             </h1>
-            <p className="text-lg max-w-2xl leading-relaxed text-[#94A3B8]">
+            <p className="text-lg max-w-2xl leading-relaxed text-slate-300">
               Explore structured lessons across every financial topic. No prior knowledge needed —
               we start from the very basics and build up from there.
             </p>
@@ -264,8 +264,8 @@ export function LearnClient() {
                   { value: "Free", label: "Always" },
                 ].map((s, i) => (
                   <div key={i} className="glass-surface rounded-xl px-4 py-3 text-center min-w-[80px]">
-                    <div className="text-2xl font-black text-white">{s.value}</div>
-                    <div className="text-xs uppercase tracking-wider mt-0.5 text-[#94A3B8]">{s.label}</div>
+                            <div className="text-2xl font-bold text-white">{s.value}</div>
+                    <div className="text-xs uppercase tracking-wider mt-0.5 text-slate-300">{s.label}</div>
                   </div>
                 ))}
               </div>
@@ -299,8 +299,8 @@ export function LearnClient() {
                     {activeTopic.tag}
                   </span>
                 </div>
-                <h2 className="text-3xl font-black text-white mb-4">{activeTopic.title}</h2>
-                <p className="text-lg text-[#94A3B8] leading-relaxed mb-6">{activeTopic.desc}</p>
+                <h2 className="text-3xl font-bold text-white mb-4">{activeTopic.title}</h2>
+                <p className="text-lg text-slate-300 leading-relaxed mb-6">{activeTopic.desc}</p>
                 <div className="flex items-center gap-4 text-sm font-semibold text-[#A78BFA]">
                   <span>⏱ {activeTopic.duration}</span>
                   <span>📚 {activeTopic.lessons.length} {activeTopic.lessons.length === 1 ? "lesson" : "lessons"}</span>
@@ -350,13 +350,13 @@ export function LearnClient() {
                 <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10 pointer-events-none"
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-2xl font-bold text-white mb-3 relative z-10">Topic Completed!</h3>
-                <p className="text-base mb-8 max-w-lg mx-auto relative z-10 text-[#94A3B8]">
+                <p className="text-base mb-8 max-w-lg mx-auto relative z-10 text-slate-300">
                   Ready to test your knowledge? Take a quiz to reinforce what you&apos;ve just learned.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 relative z-10">
                   <Link
                     href="/quiz"
-                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(109,93,251,0.4)] bg-[#6D5DFB] border border-white/10"
+                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 glass-control"
                   >
                     Test Your Knowledge →
                   </Link>
@@ -385,8 +385,8 @@ export function LearnClient() {
                       aria-pressed={isActive}
                       className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 border ${
                         isActive
-                          ? "text-white border-[#8B5CF6]/60 bg-[#6D5DFB] shadow-[0_0_15px_rgba(109,93,251,0.3)]"
-                          : "glass-surface text-[#94A3B8] border-white/10 hover:border-white/20 hover:text-white"
+                          ? "text-white border-[#8B5CF6]/40 glass-control"
+                          : "glass-surface text-slate-300 border-white/10 hover:border-white/20 hover:text-white"
                       }`}
                     >
                       {cat}
@@ -404,7 +404,7 @@ export function LearnClient() {
                     role="listitem"
                     onClick={() => setActiveTopicId(topic.id)}
                     aria-label={`Read lesson: ${topic.title}`}
-                    className="w-full text-left group glass-panel rounded-3xl p-7 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_16px_40px_-12px_rgba(109,93,251,0.3)] flex flex-col h-full cursor-pointer"
+                    className="w-full text-left group glass-panel rounded-3xl p-7 transition-all duration-300 hover:-translate-y-1 flex flex-col h-full cursor-pointer"
                   >
                     <div className="text-4xl mb-4" aria-hidden="true">{topic.icon}</div>
 
@@ -419,10 +419,10 @@ export function LearnClient() {
                     <h2 className="text-base font-bold text-white mb-2 leading-snug group-hover:text-[#C4B5FD] transition-colors duration-300">
                       {topic.title}
                     </h2>
-                    <p className="text-sm text-[#94A3B8] leading-relaxed mb-6 flex-1">{topic.desc}</p>
+                    <p className="text-sm text-slate-300 leading-relaxed mb-6 flex-1">{topic.desc}</p>
 
                     <div className="flex items-center justify-between w-full pt-4 border-t border-white/5">
-                      <span className="text-xs text-[#94A3B8] font-semibold">{topic.duration}</span>
+                      <span className="text-xs text-slate-300 font-semibold">{topic.duration}</span>
                       <span
                         className="text-sm font-bold text-[#A78BFA] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
                         aria-hidden="true"
@@ -439,7 +439,7 @@ export function LearnClient() {
               <div className="text-center py-20">
                 <div className="text-4xl mb-4" aria-hidden="true">🔍</div>
                 <h3 className="text-lg font-bold text-white mb-2">No topics found</h3>
-                <p className="text-sm text-[#94A3B8]">Try selecting a different category.</p>
+                <p className="text-sm text-slate-300">Try selecting a different category.</p>
               </div>
             )}
           </div>
