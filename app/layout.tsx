@@ -70,6 +70,9 @@ export default function RootLayout({
         {/* Preconnect to Supabase so API calls get a head-start on DNS + TLS */}
         <link rel="preconnect" href="https://fpjypwiecgfbxsyutflc.supabase.co" />
         <link rel="dns-prefetch" href="https://fpjypwiecgfbxsyutflc.supabase.co" />
+        {/* PWA & Mobile metadata */}
+        <meta name="theme-color" content="#10b981" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className="min-h-full flex flex-col bg-[#07111F] text-[#F5F7FF] relative">
         <div className="fixed inset-0 liquid-glow -z-10" aria-hidden="true" />

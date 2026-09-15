@@ -20,11 +20,13 @@ const CursorGlow = dynamic(
   { ssr: false }
 );
 
+import { CurrencyProvider } from "@/src/contexts/CurrencyContext";
+
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <CurrencyProvider>
       <CursorGlow />
       {children}
-    </>
+    </CurrencyProvider>
   );
 }

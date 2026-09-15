@@ -1,19 +1,12 @@
 "use client";
 
 import { useState, useCallback, useId, useMemo } from "react";
+import { useCurrency } from "@/src/contexts/CurrencyContext";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Helpers
    ══════════════════════════════════════════════════════════════════════════ */
-
-function fmt(n: number): string {
-  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function fmtInt(n: number): string {
-  return Math.round(n).toLocaleString("en-US");
-}
 
 /** Clamp `value` within [min, max]. */
 function clamp(value: number, min: number, max: number): number {
@@ -141,6 +134,7 @@ function InputBlock({
    ══════════════════════════════════════════════════════════════════════════ */
 
 export function SavingsClient() {
+  const { formatCurrency } = useCurrency();
   /* ── State ── */
   const [goalName, setGoalName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
@@ -244,7 +238,7 @@ export function SavingsClient() {
       } else {
         return {
           type: "warning",
-          text: `You need $${fmt(requiredMonthly)}/mo to hit your target date. You're $${fmt(requiredMonthly - monthlyNum)}/mo short.`,
+          text: `You need ${formatCurrency(requiredMonthly)}/mo to hit your target date. You're ${formatCurrency(requiredMonthly - monthlyNum)}/mo short.`,
         };
       }
     }
@@ -255,7 +249,7 @@ export function SavingsClient() {
       return { type: "info", text: `At your current rate, you'll reach your goal in ~${timeStr} (${estimatedDate}).` };
     }
     return null;
-  }, [targetNum, remaining, monthlyNum, monthsLeft, requiredMonthly, monthsToGoal, estimatedDate, targetDate]);
+  }, [targetNum, remaining, monthlyNum, monthsLeft, requiredMonthly, monthsToGoal, estimatedDate, targetDate, formatCurrency]);
 
   const progressColor = progressPct >= 100 ? "#8B5CF6" : progressPct >= 50 ? "#6D5DFB" : "#4F46E5";
 
@@ -399,9 +393,9 @@ export function SavingsClient() {
                           return (
                             <tr key={p.months} className="border-b border-white/5 hover:bg-white/2 transition-colors">
                               <td className="py-3 font-semibold text-slate-200">{p.label}</td>
-                              <td className="py-3 text-right text-slate-300">${fmtInt(totalContrib)}</td>
-                              <td className="py-3 text-right text-[#8B5CF6] font-semibold">+${fmtInt(Math.max(0, interest))}</td>
-                              <td className="py-3 text-right font-bold text-white">${fmtInt(p.value)}</td>
+                              <td className="py-3 text-right text-slate-300">{formatCurrency(totalContrib, true)}</td>
+                              <td className="py-3 text-right text-[#8B5CF6] font-semibold">+${formatCurrency(Math.max(0, interest))}</td>
+                              <td className="py-3 text-right font-bold text-white">{formatCurrency(p.value, true)}</td>
                             </tr>
                           );
                         })}
@@ -447,21 +441,21 @@ export function SavingsClient() {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                     <span className="text-slate-300">Saved</span>
-                    <span className="font-bold text-[#8B5CF6]">${fmt(currentNum)}</span>
+                    <span className="font-bold text-[#8B5CF6]">{formatCurrency(currentNum)}</span>
                   </div>
                   <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                     <span className="text-slate-300">Remaining</span>
-                    <span className="font-bold text-white">${fmt(remaining)}</span>
+                    <span className="font-bold text-white">{formatCurrency(remaining)}</span>
                   </div>
                   <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                     <span className="text-slate-300">Target</span>
-                    <span className="font-bold text-white">${fmt(targetNum)}</span>
+                    <span className="font-bold text-white">{formatCurrency(targetNum)}</span>
                   </div>
                   {targetDate && monthsLeft > 0 && (
                     <div className="flex justify-between text-sm glass-surface rounded-xl px-4 py-2.5">
                       <span className="text-slate-300">Required/mo</span>
                       <span className="font-bold" style={{ color: monthlyNum >= requiredMonthly ? "#8B5CF6" : "#F59E0B" }}>
-                        ${fmt(requiredMonthly)}
+                        {formatCurrency(requiredMonthly)}
                       </span>
                     </div>
                   )}
@@ -487,7 +481,7 @@ export function SavingsClient() {
                   {monthlyNum > 0 && targetNum > 0 && remaining > 0 && (
                     <div className="glass-surface rounded-xl px-4 py-3">
                       <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Monthly Contribution</div>
-                      <div className="text-xl font-bold text-white">${fmt(monthlyNum)}</div>
+                      <div className="text-xl font-bold text-white">{formatCurrency(monthlyNum)}</div>
                     </div>
                   )}
                 </div>
@@ -501,13 +495,13 @@ export function SavingsClient() {
                      style={{ background: "radial-gradient(circle, #6D5DFB, transparent 70%)" }} aria-hidden="true" />
                 <h3 className="text-base font-bold mb-2 relative z-10 text-white">The Power of Compound Interest</h3>
                 <p className="text-xs leading-relaxed mb-4 relative z-10 text-slate-300">
-                  ${fmt(monthlyNum)}/mo at {rateNum}% annual return:
+                  {formatCurrency(monthlyNum)}/mo at {rateNum}% annual return:
                 </p>
                 <div className="space-y-2.5 relative z-10">
                   {projections.slice(2).map(p => (
                     <div key={p.months} className="flex justify-between items-center glass-surface rounded-lg px-3 py-2">
                       <span className="text-sm text-slate-300">After {p.label}</span>
-                      <span className="text-sm font-bold text-[#8B5CF6]">${fmtInt(p.value)}</span>
+                      <span className="text-sm font-bold text-[#8B5CF6]">{formatCurrency(p.value, true)}</span>
                     </div>
                   ))}
                 </div>

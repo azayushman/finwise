@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/src/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
+import { useCurrency, CurrencyCode } from "@/src/contexts/CurrencyContext";
 
 const navLinks = [
   { href: "/",          label: "Home" },
@@ -62,6 +63,30 @@ function AuthButton({ mobile = false, authLoading, session, onLogout }: AuthButt
     >
       {mobile ? "Login →" : "Login"}
     </Link>
+  );
+}
+
+function CurrencySelector() {
+  const { currency, setCurrency } = useCurrency();
+  return (
+    <div className="relative inline-block">
+      <select
+        value={currency}
+        onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+        className="appearance-none bg-[#6D5DFB]/15 border border-[#8B5CF6]/30 text-white text-sm font-semibold rounded-full px-4 py-2 pr-8 outline-none focus:ring-2 focus:ring-[#8B5CF6]/50 cursor-pointer transition-all hover:bg-[#6D5DFB]/25"
+        aria-label="Select Currency"
+      >
+        <option value="USD">USD ($)</option>
+        <option value="INR">INR (₹)</option>
+        <option value="EUR">EUR (€)</option>
+        <option value="GBP">GBP (£)</option>
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white opacity-70">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
+    </div>
   );
 }
 
@@ -214,6 +239,7 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
+            <CurrencySelector />
             <AuthButton authLoading={authLoading} session={session} onLogout={handleLogout} />
 
             {/* Hamburger */}

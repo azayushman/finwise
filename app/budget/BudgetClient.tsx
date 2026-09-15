@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useId } from "react";
+import { useCurrency } from "@/src/contexts/CurrencyContext";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -41,10 +42,6 @@ const CATEGORY_COLORS: Record<string, string> = {
 /* ══════════════════════════════════════════════════════════════════════════
    Helpers
    ══════════════════════════════════════════════════════════════════════════ */
-
-function fmt(n: number): string {
-  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 function pct(part: number, total: number): number {
   if (total <= 0) return 0;
@@ -129,12 +126,13 @@ function DonutChart({ slices, centerLabel, centerValue }: {
 function BreakdownRow({ label, amount, percentage, color }: {
   label: string; amount: number; percentage: number; color: string;
 }) {
+  const { formatCurrency } = useCurrency();
   return (
     <div className="flex items-center gap-3">
       <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
       <span className="text-sm text-slate-200 flex-1 truncate">{label}</span>
       <span className="text-xs text-slate-300 w-10 text-right">{percentage.toFixed(0)}%</span>
-      <span className="text-sm font-semibold text-white w-20 text-right">${fmt(amount)}</span>
+      <span className="text-sm font-semibold text-white w-20 text-right">{formatCurrency(amount)}</span>
     </div>
   );
 }
@@ -159,6 +157,7 @@ function inputCls(hasError: boolean, extra?: string) {
    ══════════════════════════════════════════════════════════════════════════ */
 
 export function BudgetClient() {
+  const { formatCurrency } = useCurrency();
   /* ── State ── */
   const [income, setIncome] = useState<string>("");
   const [savingsRate, setSavingsRate] = useState<string>("20");
@@ -322,7 +321,7 @@ export function BudgetClient() {
                   <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">{c.label}</span>
                 </div>
                 <div className="text-2xl font-bold" style={{ color: c.color }}>
-                  ${fmt(c.value)}
+                  {formatCurrency(c.value)}
                 </div>
               </div>
             ))}
@@ -393,7 +392,7 @@ export function BudgetClient() {
                   <div className="mt-5 flex items-center gap-3 px-4 py-3 rounded-xl glass-surface border-[#8B5CF6]/20">
                     <span className="text-[#8B5CF6]" aria-hidden="true">💎</span>
                     <span className="text-sm text-[#C4B5FD] font-medium">
-                      Saving <strong className="text-white">${fmt(savingsAllocation)}</strong> / month at {savingsRateNum}%
+                      Saving <strong className="text-white">{formatCurrency(savingsAllocation)}</strong> / month at {savingsRateNum}%
                     </span>
                   </div>
                 )}
@@ -505,7 +504,7 @@ export function BudgetClient() {
                     Expenses <span className="text-slate-300 font-normal text-sm">({expenses.length})</span>
                   </h2>
                   <span className="text-xs text-slate-300">
-                    Fixed ${fmt(fixedTotal)} · Variable ${fmt(variableTotal)}
+                    Fixed {formatCurrency(fixedTotal)} · Variable {formatCurrency(variableTotal)}
                   </span>
                 </div>
 
@@ -535,7 +534,7 @@ export function BudgetClient() {
                             {entry.category} · {entry.type === "fixed" ? "Fixed" : "Variable"}
                           </div>
                         </div>
-                        <div className="text-sm font-bold text-white">${fmt(entry.amount)}</div>
+                        <div className="text-sm font-bold text-white">{formatCurrency(entry.amount)}</div>
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <button
                             onClick={() => handleEdit(entry)}
@@ -607,21 +606,21 @@ export function BudgetClient() {
                         <div
                           className="h-full transition-all duration-500"
                           style={{ width: `${pct(fixedTotal, incomeNum)}%`, background: "#4F46E5" }}
-                          title={`Fixed: $${fmt(fixedTotal)}`}
+                          title={`Fixed: ${formatCurrency(fixedTotal)}`}
                         />
                       )}
                       {variableTotal > 0 && (
                         <div
                           className="h-full transition-all duration-500"
                           style={{ width: `${pct(variableTotal, incomeNum)}%`, background: "#F59E0B" }}
-                          title={`Variable: $${fmt(variableTotal)}`}
+                          title={`Variable: ${formatCurrency(variableTotal)}`}
                         />
                       )}
                       {savingsAllocation > 0 && (
                         <div
                           className="h-full transition-all duration-500"
                           style={{ width: `${pct(savingsAllocation, incomeNum)}%`, background: "#8B5CF6" }}
-                          title={`Savings: $${fmt(savingsAllocation)}`}
+                          title={`Savings: ${formatCurrency(savingsAllocation)}`}
                         />
                       )}
                     </div>
@@ -630,19 +629,19 @@ export function BudgetClient() {
                       <div className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: "#4F46E5" }} aria-hidden="true" />
                         <span className="text-slate-300 flex-1">Fixed</span>
-                        <span className="font-semibold text-white">${fmt(fixedTotal)}</span>
+                        <span className="font-semibold text-white">{formatCurrency(fixedTotal)}</span>
                         <span className="text-slate-300 w-12 text-right">{pct(fixedTotal, incomeNum).toFixed(0)}%</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: "#F59E0B" }} aria-hidden="true" />
                         <span className="text-slate-300 flex-1">Variable</span>
-                        <span className="font-semibold text-white">${fmt(variableTotal)}</span>
+                        <span className="font-semibold text-white">{formatCurrency(variableTotal)}</span>
                         <span className="text-slate-300 w-12 text-right">{pct(variableTotal, incomeNum).toFixed(0)}%</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: "#8B5CF6" }} aria-hidden="true" />
                         <span className="text-slate-300 flex-1">Savings</span>
-                        <span className="font-semibold text-white">${fmt(savingsAllocation)}</span>
+                        <span className="font-semibold text-white">{formatCurrency(savingsAllocation)}</span>
                         <span className="text-slate-300 w-12 text-right">{pct(savingsAllocation, incomeNum).toFixed(0)}%</span>
                       </div>
                       <div className="border-t border-white/5 pt-2.5 flex items-center gap-2">
@@ -651,7 +650,7 @@ export function BudgetClient() {
                           {remaining >= 0 ? "Remaining" : "Over Budget"}
                         </span>
                         <span className="font-bold" style={{ color: remaining >= 0 ? "#8B5CF6" : "#EF4444" }}>
-                          ${fmt(Math.abs(remaining))}
+                          ${formatCurrency(Math.abs(remaining))}
                         </span>
                       </div>
                     </div>
@@ -692,7 +691,7 @@ export function BudgetClient() {
           >
             <span className="text-lg flex-shrink-0" aria-hidden="true">⚠️</span>
             <span>
-              <strong>Over budget by ${fmt(Math.abs(remaining))}.</strong>{" "}
+              <strong>Over budget by {formatCurrency(Math.abs(remaining))}.</strong>{" "}
               Your expenses and savings ({savingsRateNum}%) exceed your income. Consider reducing expenses or adjusting your savings rate.
             </span>
           </div>

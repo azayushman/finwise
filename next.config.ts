@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   // ── Bundle optimisation ───────────────────────────────────────────────────
   // Enable gzip compression for production responses.
   compress: true,
+  output: "standalone",
 
   // Tell the bundler to tree-shake large packages to only the exports that
   // are actually imported, reducing first-load JS on every route.

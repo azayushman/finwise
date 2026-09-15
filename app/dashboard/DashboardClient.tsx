@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { supabase } from "@/src/lib/supabase";
+import { useCurrency } from "@/src/contexts/CurrencyContext";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -67,10 +68,6 @@ const DEMO_QUIZ: QuizProgress[] = [
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function fmt(n: number): string {
-  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
 function formatDate(iso: string): string {
   if (!iso) return "";
   const d = new Date(iso);
@@ -83,6 +80,7 @@ function StatCard({ title, amount, prefix = "$", color = "#FFFFFF", icon, trend 
   title: string; amount: number; prefix?: string; color?: string; icon?: string;
   trend?: { value: string; positive: boolean };
 }) {
+  const { formatCurrency } = useCurrency();
   return (
     <div className="glass-panel rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1">
       <div className="flex items-start justify-between mb-3">
@@ -90,7 +88,7 @@ function StatCard({ title, amount, prefix = "$", color = "#FFFFFF", icon, trend 
         {icon && <span className="text-xl" aria-hidden="true">{icon}</span>}
       </div>
       <div className="text-3xl font-bold mb-3 truncate" style={{ color }}>
-        {prefix}{fmt(amount)}
+        {prefix}{formatCurrency(amount)}
       </div>
       {trend && (
         <div className={`text-xs font-semibold inline-flex items-center gap-1 ${trend.positive ? "text-[#8B5CF6]" : "text-rose-400"}`}>
@@ -105,6 +103,7 @@ function StatCard({ title, amount, prefix = "$", color = "#FFFFFF", icon, trend 
 // ── SpendingChart ──────────────────────────────────────────────────────────
 
 function SpendingChart({ transactions }: { transactions: Transaction[] }) {
+  const { formatCurrency } = useCurrency();
   const chartData = useMemo(() => {
     const data: { month: string; spent: number }[] = [];
     const now = new Date();
@@ -148,7 +147,7 @@ function SpendingChart({ transactions }: { transactions: Transaction[] }) {
           <div
             className="w-full relative rounded-t-lg overflow-hidden glass-surface"
             style={{ height: "140px" }}
-            title={`${d.month}: $${fmt(d.spent)}`}
+            title={`${d.month}: ${formatCurrency(d.spent)}`}
           >
             <div
               className="absolute bottom-0 inset-x-0 rounded-t-lg transition-all duration-700 ease-out group-hover:opacity-80"
@@ -171,6 +170,7 @@ function SpendingChart({ transactions }: { transactions: Transaction[] }) {
 // ── Main Client ────────────────────────────────────────────────────────────
 
 export function DashboardClient() {
+  const { formatCurrency } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [demoMode, setDemoMode] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -450,8 +450,8 @@ export function DashboardClient() {
                             </div>
                           </div>
                           <div className={`text-sm font-bold flex-shrink-0 ml-3 ${tx.type === "income" ? "text-[#8B5CF6]" : "text-white"}`}>
-                            <span aria-label={`${tx.type === "income" ? "income" : "expense"} of $${fmt(tx.amount)}`}>
-                              {tx.type === "income" ? "+" : "-"}${fmt(tx.amount)}
+                            <span aria-label={`${tx.type === "income" ? "income" : "expense"} of ${formatCurrency(tx.amount)}`}>
+                              {tx.type === "income" ? "+" : "-"}{formatCurrency(tx.amount)}
                             </span>
                           </div>
                         </div>
@@ -493,10 +493,10 @@ export function DashboardClient() {
                                 <span className="font-semibold text-slate-200">{b.category}</span>
                                 <span className="font-medium text-slate-300">
                                   <span className={isWarning ? "text-rose-400 font-bold" : "text-white"}>
-                                    ${fmt(b.spent)}
+                                    {formatCurrency(b.spent)}
                                   </span>
                                   {isWarning && <span className="sr-only"> (over budget warning)</span>}
-                                  {" "}/ ${fmt(b.amount_limit)}
+                                  {" "}/ {formatCurrency(b.amount_limit)}
                                 </span>
                               </div>
                               <div
@@ -547,8 +547,8 @@ export function DashboardClient() {
                               <div className="flex justify-between text-sm mb-1.5">
                                 <span className="font-semibold text-slate-200">{g.name}</span>
                                 <span className="font-medium text-slate-300">
-                                  <span className="text-[#8B5CF6] font-bold">${fmt(g.current_amount)}</span>
-                                  {" "}/ ${fmt(g.target_amount)}
+                                  <span className="text-[#8B5CF6] font-bold">{formatCurrency(g.current_amount)}</span>
+                                  {" "}/ {formatCurrency(g.target_amount)}
                                 </span>
                               </div>
                               <div
