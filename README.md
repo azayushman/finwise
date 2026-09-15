@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="/public/icon-512.png" alt="FinWise Logo" width="120" />
+  <h1>FinWise</h1>
+  <p><strong>The ultimate AI-driven personal finance and literacy platform.</strong></p>
+</div>
 
-## Getting Started
+---
 
-First, run the development server:
+## 📖 Project Overview
 
+**FinWise** is a modern, full-stack financial planning and educational web application designed to help users take control of their financial future. It combines highly accurate calculators, a zero-based budget planner, gamified financial literacy quizzes, and a context-aware AI assistant to provide a comprehensive, all-in-one dashboard for personal finance.
+
+### 🏗️ Architecture & Stack
+- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/) using React 19.
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) heavily customized with glassmorphism, fluid animations, and a bespoke "Liquid Glow" aesthetic.
+- **Authentication & Database**: [Supabase](https://supabase.com/) for secure user management and high-performance Postgres storage.
+- **AI Integration**: [Google Gemini](https://deepmind.google/technologies/gemini/) (with OpenAI fallback capabilities) for conversational financial coaching.
+- **Testing**: [Vitest](https://vitest.dev/) for blazing-fast unit tests.
+
+---
+
+## 📸 Live Demo & Screenshots
+
+**Live Demo**: [finwise.app](#) *(Placeholder link)*
+
+> **Note**: Add screenshots of the Dashboard, AI Assistant, and Budget Planner here.
+> 
+> *Example:* `![Dashboard Screenshot](/docs/images/dashboard.png)`
+
+---
+
+## 🚀 Quick Start
+
+Follow these steps to get a local development environment up and running.
+
+### 1. Clone & Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-org/finwise.git
+cd finwise
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Environment Setup
+Copy the template environment file to configure your local credentials:
+```bash
+cp .env.example .env.local
+```
+*Open `.env.local` and fill in your Supabase and Google Gemini API keys.*
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Development Server
+Start the Next.js development server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Test Suite
+Run the Vitest test suite to verify all core financial algorithms:
+```bash
+npm run test
+```
 
-## Learn More
+### 5. Production Build
+To test the highly-optimized production bundle locally:
+```bash
+npm run build && npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛡️ Security & Disclaimers
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Security Features
+FinWise employs rigorous security and privacy-first engineering:
+- **Input Guardrails**: All financial calculations implement strict boundary clamps to prevent integer overflows and malformed injections.
+- **Edge Rate Limiting**: The built-in proxy layer aggressively throttles sensitive API endpoints (like the AI assistant) to prevent abuse.
+- **Privacy-Safe Errors**: Custom React error boundaries prevent sensitive server stack traces or database schema schemas from leaking into production.
 
-## Deploy on Vercel
+### Educational Disclaimer
+**FinWise is for educational and informational purposes only.**
+The calculations, projections, and AI-generated insights provided by this application do not constitute professional financial, investment, or legal advice. Always consult with a certified financial planner or advisor before making major financial decisions.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built with ❤️ by the FinWise Team.*

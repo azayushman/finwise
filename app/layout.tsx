@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ClientProviders } from "@/components/ClientProviders";
+import { WebVitals } from "@/components/WebVitals";
 
 /**
  * Inter — body / UI text
@@ -82,6 +83,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
+          <WebVitals />
         </ClientProviders>
       </body>
     </html>
