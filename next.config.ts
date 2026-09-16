@@ -11,7 +11,11 @@ const nextConfig: NextConfig = {
   // ── Bundle optimisation ───────────────────────────────────────────────────
   // Enable gzip compression for production responses.
   compress: true,
-  output: "standalone",
+  // NOTE: output: "standalone" is intentionally omitted here.
+  // "standalone" is for Docker / self-hosted Node.js deployments only.
+  // Vercel uses its own output adapter; setting "standalone" overrides it
+  // and causes routing issues. The Dockerfile sets NEXT_OUTPUT=standalone
+  // via a build-arg if a containerised build is required.
 
   // Tell the bundler to tree-shake large packages to only the exports that
   // are actually imported, reducing first-load JS on every route.
