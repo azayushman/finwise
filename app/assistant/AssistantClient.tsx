@@ -10,6 +10,7 @@ import {
   type PersistedMessage,
 } from "@/src/lib/storage";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -63,6 +64,7 @@ function buildWelcome(name: string, hasTxData: boolean): Message[] {
 // ── Components ─────────────────────────────────────────────────────────────
 
 export function AssistantClient() {
+  const { isOnline } = useNetworkStatus();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -230,7 +232,7 @@ export function AssistantClient() {
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && isOnline) {
       e.preventDefault();
       handleSend(input);
     }
@@ -333,14 +335,41 @@ export function AssistantClient() {
 
             {/* Input Area */}
             <div className="p-4 glass-surface border-t border-white/10 rounded-b-3xl">
+
+              {/* Offline notice strip */}
+              {!isOnline && (
+                <div
+                  className="flex items-center gap-2 mb-3 px-4 py-2.5 rounded-xl text-xs font-semibold"
+                  style={{
+                    background: "rgba(245,158,11,0.08)",
+                    border: "1px solid rgba(245,158,11,0.25)",
+                    color: "#FCD34D",
+                  }}
+                  role="status"
+                  aria-live="polite"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <line x1="1" y1="1" x2="23" y2="23" />
+                    <path d="M16.72 11.06A10.94 10.94 0 0119 12.55" />
+                    <path d="M5 12.55a10.94 10.94 0 015.17-2.39" />
+                    <path d="M10.71 5.05A16 16 0 0122.56 9" />
+                    <path d="M1.42 9a15.91 15.91 0 014.7-2.88" />
+                    <path d="M8.53 16.11a6 6 0 016.95 0" />
+                    <line x1="12" y1="20" x2="12.01" y2="20" />
+                  </svg>
+                  AI Assistant requires an internet connection
+                </div>
+              )}
+
               {/* Suggestions */}
               {messages.length < 3 && (
                 <div className="flex flex-wrap gap-2 mb-4 pb-2 overflow-x-auto no-scrollbar">
                   {SUGGESTED_QUESTIONS.map(q => (
                     <button
                       key={q}
-                      onClick={() => handleSend(q)}
-                      className="px-3 py-1.5 glass-surface border-white/5 hover:border-[#8B5CF6]/50 rounded-full text-xs font-semibold text-slate-300 hover:text-white transition-colors whitespace-nowrap shrink-0"
+                      onClick={() => isOnline && handleSend(q)}
+                      disabled={!isOnline}
+                      className="px-3 py-1.5 glass-surface border-white/5 hover:border-[#8B5CF6]/50 rounded-full text-xs font-semibold text-slate-300 hover:text-white transition-colors whitespace-nowrap shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-white/5 disabled:hover:text-slate-300"
                     >
                       {q}
                     </button>
@@ -356,21 +385,30 @@ export function AssistantClient() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask about budgeting, investing, or your spending..."
-                  className="w-full pl-5 pr-14 py-4 glass-surface border-white/10 rounded-2xl outline-none transition-all duration-200 focus:border-[#8B5CF6]/60 focus:bg-[#6D5DFB]/5 text-white placeholder:text-slate-300 text-sm shadow-inner"
-                  disabled={isTyping}
+                  placeholder={isOnline ? "Ask about budgeting, investing, or your spending..." : "Go online to use the AI Assistant"}
+                  className="w-full pl-5 pr-14 py-4 glass-surface border-white/10 rounded-2xl outline-none transition-all duration-200 focus:border-[#8B5CF6]/60 focus:bg-[#6D5DFB]/5 text-white placeholder:text-slate-300 text-sm shadow-inner disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isTyping || !isOnline}
+                  aria-disabled={!isOnline}
                 />
-                <button
-                  onClick={() => handleSend(input)}
-                  disabled={!input.trim() || isTyping}
-                  className="absolute right-2 w-10 h-10 rounded-xl glass-control text-white flex items-center justify-center disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
-                  aria-label="Send message"
+
+                {/* Send button — tooltip injected via title when offline */}
+                <div
+                  title={!isOnline ? "AI Assistant requires an internet connection" : undefined}
+                  style={{ position: "absolute", right: "8px" }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="22" y1="2" x2="11" y2="13" />
-                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                  </svg>
-                </button>
+                  <button
+                    onClick={() => handleSend(input)}
+                    disabled={!input.trim() || isTyping || !isOnline}
+                    className="w-10 h-10 rounded-xl glass-control text-white flex items-center justify-center disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
+                    aria-label={!isOnline ? "AI Assistant requires an internet connection" : "Send message"}
+                    aria-disabled={!isOnline}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <p className="text-[10px] text-slate-300 text-center mt-3">
                 The AI Finance Assistant provides educational information, not licensed financial advice.

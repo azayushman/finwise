@@ -3,6 +3,15 @@
 import { useState, useCallback, useId } from "react";
 import { useCurrency } from "@/src/contexts/CurrencyContext";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { ResetConfirmModal } from "@/components/ui/ResetConfirmModal";
+import {
+  downloadJSON,
+  downloadCSV,
+  buildFinWiseBackup,
+  clearFinWiseStorage,
+  todayIso,
+  type CsvRow,
+} from "@/src/lib/exportData";
 
 /* ══════════════════════════════════════════════════════════════════════════
    Types
@@ -157,12 +166,13 @@ function inputCls(hasError: boolean, extra?: string) {
    ══════════════════════════════════════════════════════════════════════════ */
 
 export function BudgetClient() {
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, currency } = useCurrency();
   /* ── State ── */
   const [income, setIncome] = useState<string>("");
   const [savingsRate, setSavingsRate] = useState<string>("20");
   const [expenses, setExpenses] = useState<ExpenseEntry[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [resetModalOpen, setResetModalOpen] = useState(false);
 
   // New expense form
   const [newName, setNewName] = useState("");
@@ -269,6 +279,39 @@ export function BudgetClient() {
     setIncome(""); setSavingsRate("20"); setExpenses([]);
     setNewName(""); setNewAmount(""); setNewCategory("Other"); setNewType("fixed");
     setEditingId(null); setErrors({});
+  }
+
+  /* ── Export handlers ── */
+  function handleExportJSON() {
+    const backup = buildFinWiseBackup({
+      currency,
+      income,
+      savingsRate,
+      expenses: expenses.map(({ id, name, amount, category, type }) => ({
+        id, name, amount, category, type,
+      })),
+      savings: null,
+    });
+    downloadJSON(backup, `finwise-backup-${todayIso()}.json`);
+  }
+
+  function handleExportCSV() {
+    const today = todayIso();
+    // Map expense type to need/want label (fixed ≈ Need, variable ≈ Want)
+    const typeLabel = (t: "fixed" | "variable"): string =>
+      t === "fixed" ? "Need" : "Want";
+    const rows: CsvRow[] = expenses.map((e) => ({
+      Category: e.category,
+      Amount: e.amount,
+      Type: typeLabel(e.type),
+      Date: today,
+    }));
+    downloadCSV(rows, `finwise-budget-${today}.csv`);
+  }
+
+  function handleResetAll() {
+    clearFinWiseStorage();
+    handleReset();
   }
 
   /* ── Summary cards ── */
@@ -696,7 +739,105 @@ export function BudgetClient() {
             </span>
           </div>
         )}
+
+        {/* ── Data & Privacy ── */}
+        <ScrollReveal direction="up" delay={50}>
+          <div className="mt-10 glass-panel rounded-3xl p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(109,93,251,0.15)", border: "1px solid rgba(109,93,251,0.25)" }}
+                aria-hidden="true"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white">Data &amp; Privacy</h2>
+                <p className="text-xs text-slate-400 mt-0.5">Export or permanently clear your local FinWise data.</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 items-center">
+              {/* Export JSON */}
+              <button
+                type="button"
+                id="btn-export-json"
+                onClick={handleExportJSON}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+                style={{
+                  background: "rgba(109,93,251,0.18)",
+                  border: "1px solid rgba(109,93,251,0.35)",
+                }}
+                aria-label="Export budget data as JSON file"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Export Data (JSON)
+              </button>
+
+              {/* Export CSV */}
+              <button
+                type="button"
+                id="btn-export-csv"
+                onClick={handleExportCSV}
+                disabled={expenses.length === 0}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                style={{
+                  background: "rgba(99,102,241,0.15)",
+                  border: "1px solid rgba(99,102,241,0.3)",
+                  color: expenses.length === 0 ? "#94A3B8" : "#E0E7FF",
+                }}
+                title={expenses.length === 0 ? "Add expenses first to export CSV" : "Download budget breakdown as CSV"}
+                aria-label={expenses.length === 0 ? "Export as CSV — add expenses first" : "Export expense breakdown as CSV"}
+                aria-disabled={expenses.length === 0}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M3 9h18M9 21V9" />
+                </svg>
+                Export as CSV
+              </button>
+
+              {/* Spacer pushes danger button right on wide screens */}
+              <div className="flex-1 hidden sm:block" aria-hidden="true" />
+
+              {/* Reset App Data */}
+              <button
+                type="button"
+                id="btn-reset-app-data"
+                onClick={() => setResetModalOpen(true)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+                style={{
+                  background: "rgba(220,38,38,0.10)",
+                  border: "1px solid rgba(220,38,38,0.28)",
+                  color: "#FCA5A5",
+                }}
+                aria-label="Reset all app data — opens confirmation dialog"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                </svg>
+                Reset App Data
+              </button>
+            </div>
+          </div>
+        </ScrollReveal>
       </div>
+
+      {/* ── Reset confirmation modal ── */}
+      <ResetConfirmModal
+        open={resetModalOpen}
+        onClose={() => setResetModalOpen(false)}
+        onConfirm={handleResetAll}
+      />
     </div>
   );
 }

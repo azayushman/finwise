@@ -345,3 +345,188 @@ body {
     transition: none !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Print / Save-as-PDF Stylesheet
+   ══════════════════════════════════════════════════════════════════════════
+   Goals:
+   • One-page Financial Health Summary with crisp black-on-white contrast.
+   • Zero visual clipping — charts and cards stay on the same page.
+   • No printer ink wasted on dark glassmorphism backgrounds.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+  /* ── Page geometry ── */
+  @page {
+    size: A4 portrait;
+    margin: 16mm 18mm;
+  }
+
+  /* ── Base overrides: strip the dark theme ── */
+  *,
+  *::before,
+  *::after {
+    background: white !important;
+    color: #111827 !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    text-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html,
+  body {
+    background: white !important;
+    color: #111827 !important;
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+
+  /* ── Hide all web-only chrome ── */
+
+  /* Navigation & footer */
+  nav,
+  header[role="banner"],
+  footer,
+  [data-print="hide"],
+  .print-hidden {
+    display: none !important;
+  }
+
+  /* Buttons — except the print trigger itself (already hidden by JS before print) */
+  button,
+  [role="button"] {
+    display: none !important;
+  }
+
+  /* All interactive / decorative elements */
+  .fw-cursor-glow,
+  .liquid-glow,
+  .animate-float,
+  .tilt-card,
+  .magnetic-btn,
+  input,
+  select,
+  textarea {
+    display: none !important;
+  }
+
+  /* Scroll-reveal: force visible so nothing is invisible on print */
+  .reveal-hidden {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Ambient background blobs */
+  [aria-hidden="true"][class*="blur"],
+  [aria-hidden="true"][class*="rounded-full"][class*="absolute"] {
+    display: none !important;
+  }
+
+  /* ── Layout: single-column, full-width ── */
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl,
+  .max-w-4xl,
+  .max-w-3xl,
+  .max-w-2xl {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Keep grid but collapse to single column where it would clip */
+  .lg\:grid-cols-3,
+  .lg\:grid-cols-2,
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .lg\:col-span-2 {
+    grid-column: span 2 / span 2 !important;
+  }
+
+  /* ── Page-break control ── */
+
+  /* Cards and chart blocks must never split across pages */
+  .glass-panel,
+  .glass-card,
+  .glass-surface,
+  .print-no-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Allow page breaks between major top-level sections */
+  .print-break-before {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /* ── Typography on white ── */
+  h1 { font-size: 20pt; font-weight: 700; margin-bottom: 4pt; }
+  h2 { font-size: 13pt; font-weight: 600; margin-bottom: 3pt; }
+  h3 { font-size: 11pt; font-weight: 600; }
+  p, span, li, td, th { font-size: 9.5pt; }
+
+  /* Gradient text — readable on paper */
+  .gradient-text {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    -webkit-text-fill-color: #4F46E5 !important;
+    background-clip: unset !important;
+    color: #4F46E5 !important;
+  }
+
+  /* ── Card appearance on paper ── */
+  .glass-panel,
+  .glass-card {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8pt !important;
+    padding: 12pt !important;
+    margin-bottom: 8pt !important;
+  }
+
+  .glass-surface {
+    border: 1px solid #f3f4f6 !important;
+    border-radius: 4pt !important;
+    background: #fafafa !important;
+  }
+
+  /* ── SVG charts: preserve fill colours for readability ── */
+  svg circle,
+  svg rect,
+  svg path,
+  svg line,
+  svg polyline,
+  svg polygon {
+    /* Tailwind's * override would wipe stroke; restore explicitly */
+    color: unset !important;
+  }
+
+  /* ── Print-only header (hidden on screen, shown on print) ── */
+  .print-only-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #4F46E5;
+    padding-bottom: 10pt;
+    margin-bottom: 14pt;
+  }
+
+  /* ── Screen-only elements: hide on print ── */
+  .screen-only {
+    display: none !important;
+  }
+}
+
+/* ── Screen-only helper (complements print-only-header above) ── */
+.print-only-header {
+  display: none;
+}
+

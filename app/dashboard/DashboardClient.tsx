@@ -281,6 +281,27 @@ export function DashboardClient() {
 
   return (
     <div className="min-h-screen text-[#F5F7FF] pb-20 relative">
+
+      {/* ── Print-only branded header (hidden on screen) ── */}
+      <div className="print-only-header" aria-hidden="true">
+        <div style={{ display: "flex", alignItems: "center", gap: "10pt" }}>
+          {/* FinWise wordmark */}
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+               stroke="#4F46E5" strokeWidth="2.2" strokeLinecap="round">
+            <polyline points="2 17 9 10 13 14 22 5" />
+          </svg>
+          <span style={{ fontSize: "18pt", fontWeight: 800, color: "#111827", letterSpacing: "-0.3pt" }}>
+            Fin<span style={{ color: "#4F46E5" }}>Wise</span>
+          </span>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: "13pt", fontWeight: 700, color: "#111827" }}>Personal Financial Summary</div>
+          <div style={{ fontSize: "9pt", color: "#6b7280", marginTop: "2pt" }}>
+            {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          </div>
+        </div>
+      </div>
+
       {/* ── Page ambient depth ── */}
       <div
         className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full blur-[130px] -z-10 pointer-events-none"
@@ -315,13 +336,40 @@ export function DashboardClient() {
                 </p>
               </div>
 
-              {demoMode && (
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-surface self-start sm:self-auto"
-                     style={{ color: "#C4B5FD", borderColor: "rgba(139,92,246,0.35)" }}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Demo Mode</span>
-                </div>
-              )}
+              {/* Right side: demo badge + print button */}
+              <div className="flex items-center gap-3 self-start sm:self-auto">
+                {demoMode && (
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-surface"
+                       style={{ color: "#C4B5FD", borderColor: "rgba(139,92,246,0.35)" }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-pulse" aria-hidden="true" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Demo Mode</span>
+                  </div>
+                )}
+
+                {/* Print / Save as PDF ── hidden on print itself */}
+                <button
+                  type="button"
+                  id="btn-print-summary"
+                  onClick={() => window.print()}
+                  className="screen-only inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+                  style={{
+                    background: "rgba(109,93,251,0.15)",
+                    border: "1px solid rgba(109,93,251,0.32)",
+                  }}
+                  aria-label="Print or save this page as a PDF"
+                >
+                  <svg
+                    width="15" height="15" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                    aria-hidden="true"
+                  >
+                    <polyline points="6 9 6 2 18 2 18 9" />
+                    <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+                    <rect x="6" y="14" width="12" height="8" />
+                  </svg>
+                  Print / Save as PDF
+                </button>
+              </div>
             </div>
           </ScrollReveal>
         </div>

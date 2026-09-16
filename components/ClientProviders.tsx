@@ -20,12 +20,26 @@ const CursorGlow = dynamic(
   { ssr: false }
 );
 
+/**
+ * NetworkStatusBanner listens to window online/offline events — client-only.
+ * Dynamically imported with ssr:false to avoid hydration mismatches and keep
+ * the server render clean.
+ */
+const NetworkStatusBanner = dynamic(
+  () =>
+    import("@/components/ui/NetworkStatusBanner").then(
+      (m) => m.NetworkStatusBanner
+    ),
+  { ssr: false }
+);
+
 import { CurrencyProvider } from "@/src/contexts/CurrencyContext";
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <CurrencyProvider>
       <CursorGlow />
+      <NetworkStatusBanner />
       {children}
     </CurrencyProvider>
   );

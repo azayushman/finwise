@@ -29,7 +29,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="text-slate-300 border-t border-white/5 bg-[#07111F]/80 backdrop-blur-md" role="contentinfo">
+    <footer data-print="hide" className="text-slate-300 border-t border-white/5 bg-[#07111F]/80 backdrop-blur-md" role="contentinfo">
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-8">
 
         {/* Grid */}

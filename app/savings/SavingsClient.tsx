@@ -3,6 +3,14 @@
 import { useState, useCallback, useId, useMemo } from "react";
 import { useCurrency } from "@/src/contexts/CurrencyContext";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { ResetConfirmModal } from "@/components/ui/ResetConfirmModal";
+import {
+  downloadJSON,
+  buildFinWiseBackup,
+  clearFinWiseStorage,
+  todayIso,
+} from "@/src/lib/exportData";
+
 
 /* ══════════════════════════════════════════════════════════════════════════
    Helpers
@@ -134,7 +142,7 @@ function InputBlock({
    ══════════════════════════════════════════════════════════════════════════ */
 
 export function SavingsClient() {
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, currency } = useCurrency();
   /* ── State ── */
   const [goalName, setGoalName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
@@ -143,6 +151,7 @@ export function SavingsClient() {
   const [targetDate, setTargetDate] = useState("");
   const [annualRate, setAnnualRate] = useState("5");
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+  const [resetModalOpen, setResetModalOpen] = useState(false);
 
   const goalId = useId();
   const targetId = useId();
@@ -225,6 +234,30 @@ export function SavingsClient() {
     setGoalName(""); setTargetAmount(""); setCurrentSavings("");
     setMonthlyContrib(""); setTargetDate(""); setAnnualRate("5");
     setErrors({});
+  }
+
+  /* ── Export / Reset handlers ── */
+  function handleExportJSON() {
+    const backup = buildFinWiseBackup({
+      currency,
+      income: "",
+      savingsRate: "",
+      expenses: [],
+      savings: {
+        goalName,
+        targetAmount,
+        currentSavings,
+        monthlyContrib,
+        targetDate,
+        annualRate,
+      },
+    });
+    downloadJSON(backup, `finwise-backup-${todayIso()}.json`);
+  }
+
+  function handleResetAll() {
+    clearFinWiseStorage();
+    handleReset();
   }
 
   /* ── Status message ── */
@@ -507,9 +540,81 @@ export function SavingsClient() {
                 </div>
               </div>
             </ScrollReveal>
+
+            {/* Export & Privacy card */}
+            <ScrollReveal direction="up" delay={200}>
+              <div className="glass-panel rounded-3xl p-6">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: "rgba(109,93,251,0.15)", border: "1px solid rgba(109,93,251,0.25)" }}
+                    aria-hidden="true"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold text-white">Data &amp; Privacy</h2>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Export or clear your data.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5">
+                  {/* Export JSON */}
+                  <button
+                    type="button"
+                    id="savings-btn-export-json"
+                    onClick={handleExportJSON}
+                    className="w-full inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5"
+                    style={{
+                      background: "rgba(109,93,251,0.16)",
+                      border: "1px solid rgba(109,93,251,0.32)",
+                    }}
+                    aria-label="Export savings data as JSON file"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Export Data (JSON)
+                  </button>
+
+                  {/* Reset App Data */}
+                  <button
+                    type="button"
+                    id="savings-btn-reset-app-data"
+                    onClick={() => setResetModalOpen(true)}
+                    className="w-full inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
+                    style={{
+                      background: "rgba(220,38,38,0.09)",
+                      border: "1px solid rgba(220,38,38,0.26)",
+                      color: "#FCA5A5",
+                    }}
+                    aria-label="Reset all app data — opens confirmation dialog"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                    </svg>
+                    Reset App Data
+                  </button>
+                </div>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </div>
+
+      {/* ── Reset confirmation modal ── */}
+      <ResetConfirmModal
+        open={resetModalOpen}
+        onClose={() => setResetModalOpen(false)}
+        onConfirm={handleResetAll}
+      />
     </div>
   );
 }
