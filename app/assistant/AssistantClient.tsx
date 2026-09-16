@@ -11,6 +11,7 @@ import {
 } from "@/src/lib/storage";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import ReactMarkdown from "react-markdown";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -316,7 +317,21 @@ export function AssistantClient() {
                       ? "bg-[#6D5DFB]/15 border border-[#8B5CF6]/30 text-white rounded-tr-none shadow-[0_4px_16px_rgba(109,93,251,0.1)]"
                       : "glass-surface border-white/10 text-slate-200 rounded-tl-none shadow-sm"
                   }`}>
-                    {msg.content}
+                    {msg.role === "assistant" ? (
+                      <ReactMarkdown
+                        components={{
+                          p: ({ node, ...props }) => <p className="mb-2 leading-relaxed last:mb-0" {...props} />,
+                          strong: ({ node, ...props }) => <strong className="font-semibold text-emerald-400" {...props} />,
+                          ul: ({ node, ...props }) => <ul className="list-disc pl-5 space-y-1 my-2" {...props} />,
+                          ol: ({ node, ...props }) => <ol className="list-decimal pl-5 space-y-1 my-2" {...props} />,
+                          li: ({ node, ...props }) => <li className="pl-1" {...props} />
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    ) : (
+                      msg.content
+                    )}
                   </div>
                 </div>
               ))}
