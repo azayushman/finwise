@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "smoke-test": "node scripts/smoke-test.mjs"
+    "smoke-test": "node scripts/smoke-test.mjs",
+    "dry-run": "node scripts/dry-run.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.22.0",
