@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-wallstreet {
+    font-family: 'Cinzel', Georgia, serif;
+    letter-spacing: 0.02em;
+  }
+
+  .font-editorial {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: 0.01em;
+  }
+
+  .font-data {
+    font-family: 'JetBrains Mono', monospace;
+    font-feature-settings: "tnum" 1;
+  }
+
+  .ledger-double-rule {
+    border-top: 3px double rgba(212, 175, 55, 0.45);
+    border-bottom: 3px double rgba(212, 175, 55, 0.45);
+  }
+
+  .ledger-hairline {
+    border-color: rgba(212, 175, 55, 0.22);
+  }
+
+  .ledger-panel {
+    background: #090D15;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.75);
+  }
+
+  .ledger-card {
+    background: #0D121C;
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .ledger-card:hover {
+    border-color: rgba(212, 175, 55, 0.45);
+    background: #111825;
+    box-shadow: 0 14px 32px -8px rgba(0, 0, 0, 0.65);
+  }
+
+  .glass-panel {
+    background: rgba(12, 16, 24, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.65);
+  }
+
+  .glass-surface {
+    background: rgba(14, 18, 27, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+  }
+
+  .glass-card {
+    background: #0E131E;
+    border: 1px solid rgba(212, 175, 55, 0.16);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-card:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: #131926;
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.6);
+  }
+
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #FBF2D5 0%, #D4AF37 50%, #A67C1E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 60%, #94A3B8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+body {
+  background-color: #0B0E14;
+  color: #F8FAFC;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}

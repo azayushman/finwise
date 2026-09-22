@@ -1,0 +1,6 @@
+{
+  "name": "FinWise",
+  "description": "Wall Street grade financial literacy and capital allocation platform with interactive financial engineering tools, 50/30/20 balance sheet budgeting, and historical advisory ledger.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
