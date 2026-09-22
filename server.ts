@@ -172,26 +172,6 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", app: "FinWise", version: "1.0.0", b7_hardened: true });
 });
 
-// Download endpoint for Netlify distribution package
-app.get("/api/download-dist", (_req, res) => {
-  const zipPath = path.join(process.cwd(), "public", "dist.zip");
-  if (fs.existsSync(zipPath)) {
-    res.download(zipPath, "finwise-netlify-dist.zip");
-  } else {
-    res.status(404).send("Bundle not found");
-  }
-});
-
-// Download endpoint for Viva Manual Word Document
-app.get("/api/download-viva-doc", (_req, res) => {
-  const docPath = path.join(process.cwd(), "public", "FinWise_Viva_Project_Defense_Manual.docx");
-  if (fs.existsSync(docPath)) {
-    res.download(docPath, "FinWise_Viva_Project_Defense_Manual.docx");
-  } else {
-    res.status(404).send("Document not found");
-  }
-});
-
 // Hardened B7 AI Assistant Endpoint
 app.post("/api/assistant", async (req, res) => {
   try {

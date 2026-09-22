@@ -12,7 +12,6 @@ import {
   X,
   User,
   ShieldCheck,
-  Download,
 } from "lucide-react";
 import { UserProfile } from "../types";
 
@@ -109,7 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
         </nav>
 
-        {/* Right side controls (User Profile & Word/Zip Downloads) */}
+        {/* Right side controls (User Profile) */}
         <div className="flex items-center gap-2.5">
           <button
             onClick={onOpenAuth}
@@ -118,36 +117,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <User className="w-3.5 h-3.5 text-amber-400" />
             <span className="max-w-[100px] truncate">{user.name}</span>
-            {user.isDemo && (
-              <span className="hidden sm:inline-block text-[10px] text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30 font-medium">
-                Demo
-              </span>
-            )}
           </button>
-
-          {/* Viva Manual Word Doc Download */}
-          <a
-            href="/api/download-viva-doc"
-            download="FinWise_Viva_Project_Defense_Manual.docx"
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition-all duration-200 cursor-pointer"
-            title="Download complete Word Document (.docx) explaining every file, formula, and viva answers"
-            id="download-viva-manual-btn"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Viva Doc</span>
-          </a>
-
-          {/* Netlify Deploy Package Download */}
-          <a
-            href="/api/download-dist"
-            download="finwise-netlify-dist.zip"
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/25 transition-all duration-200 cursor-pointer"
-            title="Download compiled Netlify package (dist.zip) for instant drag & drop"
-            id="download-netlify-bundle-btn"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Netlify Zip</span>
-          </a>
 
           {/* Mobile Hamburger */}
           <button

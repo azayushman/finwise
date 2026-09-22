@@ -67,23 +67,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigateTab }) => {
         </div>
 
         <div className="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-          <span>© {new Date().getFullYear()} FinWise. Independent financial models & client-side security.</span>
-          <div className="flex items-center gap-4">
-            <a
-              href="/api/download-viva-doc"
-              download="FinWise_Viva_Project_Defense_Manual.docx"
-              className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1"
-            >
-              <span>Viva Defense Manual (.docx)</span>
-            </a>
+          <span>© {new Date().getFullYear()} FinWise. Wall Street Heritage Intelligence & Client-Side Privacy.</span>
+          <div className="flex items-center gap-4 text-slate-400">
+            <span>Empirical Models</span>
             <span>•</span>
-            <a
-              href="/api/download-dist"
-              download="finwise-netlify-dist.zip"
-              className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium flex items-center gap-1"
-            >
-              <span>Netlify Production Package (.zip)</span>
-            </a>
+            <span>Audited Calculations</span>
+            <span>•</span>
+            <span>Zero Tracking</span>
           </div>
         </div>
       </div>

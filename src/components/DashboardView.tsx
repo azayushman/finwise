@@ -88,7 +88,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white font-wallstreet tracking-tight">
             Welcome back, <span className="gold-gradient-text">{user.name}</span>
-            {user.isDemo && <span className="text-slate-500 font-sans font-normal text-2xl ml-2">(Demo)</span>}
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">
             {currentDateFormatted}
